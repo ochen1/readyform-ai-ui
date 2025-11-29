@@ -23,6 +23,8 @@ interface UltravoxContextValue {
   startCall: () => Promise<void>;
   endCall: () => Promise<void>;
   toggleMic: () => void;
+  sendText: (text: string, deferResponse?: boolean) => void;
+  notifyFieldFocus: (fieldName: string) => void;
 }
 
 const UltravoxContext = createContext<UltravoxContextValue | null>(null);
@@ -125,6 +127,21 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isMicMuted]);
 
+  const sendText = useCallback((text: string, deferResponse?: boolean) => {
+    if (!sessionRef.current) return;
+    sessionRef.current.sendText(text, deferResponse);
+  }, []);
+
+  const notifyFieldFocus = useCallback((fieldName: string) => {
+    if (!sessionRef.current) return;
+    // Send as deferred message so the agent knows but doesn't necessarily respond
+    // This gives the agent context about what the user is looking at
+    sessionRef.current.sendText(
+      `[USER CLICKED ON FIELD: ${fieldName}] The user just clicked on the ${fieldName} field in the form. They may want to discuss or update this field.`,
+      false // Don't defer - let the agent acknowledge and guide the user
+    );
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -141,7 +158,9 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
     isMicMuted,
     startCall,
     endCall,
-    toggleMic
+    toggleMic,
+    sendText,
+    notifyFieldFocus
   };
 
   return (

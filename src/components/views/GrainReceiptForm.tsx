@@ -1,26 +1,50 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "../ui/GlassCard";
 import { SuperInput } from "../ui/SuperInput";
 import { AnimatedNumber } from "../ui/AnimatedNumber";
-import { 
-  Truck, 
-  Scale, 
-  Wheat, 
-  DollarSign, 
-  Info, 
-  CheckCircle2, 
+import {
+  Truck,
+  Scale,
+  Wheat,
+  DollarSign,
+  Info,
+  CheckCircle2,
   Wand2,
   Calendar,
   User,
   FileText
 } from "lucide-react";
 import { useFormContext } from "../../store/FormContext";
+import { useUltravox } from "../../ultravox/UltravoxProvider";
 import { cn } from "../../lib/utils";
 
 export const GrainReceiptForm = () => {
   const { state, dispatch, getCalculatedValues } = useFormContext();
+  const { isConnected, notifyFieldFocus } = useUltravox();
   const { netWeight, totalValue } = getCalculatedValues();
+
+  // Track which field was last focused by the user to avoid duplicate notifications
+  const lastNotifiedFieldRef = useRef<string | null>(null);
+
+  // Handle user-initiated field focus - notify the voice agent
+  const handleFieldFocus = useCallback((fieldName: string) => {
+    dispatch({ type: 'SET_ACTIVE_FIELD', field: fieldName });
+    
+    // Only notify the agent if:
+    // 1. Voice is active (isConnected)
+    // 2. This is a different field than last notified (avoid spamming)
+    if (isConnected && fieldName !== lastNotifiedFieldRef.current) {
+      lastNotifiedFieldRef.current = fieldName;
+      notifyFieldFocus(fieldName);
+    }
+  }, [dispatch, isConnected, notifyFieldFocus]);
+
+  const handleFieldBlur = useCallback(() => {
+    dispatch({ type: 'SET_ACTIVE_FIELD', field: null });
+    // Reset the last notified field when user blurs
+    lastNotifiedFieldRef.current = null;
+  }, [dispatch]);
 
   // Section refs for voice navigation
   const sectionRefs = {
@@ -137,14 +161,14 @@ export const GrainReceiptForm = () => {
             <Truck className="w-4 h-4" /> Logistics & Identification
           </h2>
           <div className="grid grid-cols-2 gap-6">
-            <SuperInput 
+            <SuperInput
               label="Producer Name"
               value={state.data.producer}
               onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'producer', value: e.target.value })}
               badgeIcon={CheckCircle2}
               badgeText="Verified"
-              onFocus={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: 'producer' })}
-              onBlur={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: null })}
+              onFocus={() => handleFieldFocus('producer')}
+              onBlur={handleFieldBlur}
               isHighlighted={isFieldActive('producer')}
               className={cn(wasFieldUpdated('producer') && 'animate-pulse bg-emerald-50')}
             />
@@ -154,14 +178,14 @@ export const GrainReceiptForm = () => {
               readOnly
               className="bg-slate-100/50 text-slate-500"
             />
-            <SuperInput 
+            <SuperInput
               label="Delivery Date"
               type="date"
               value={state.data.date}
               onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'date', value: e.target.value })}
               badgeIcon={Calendar}
-              onFocus={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: 'date' })}
-              onBlur={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: null })}
+              onFocus={() => handleFieldFocus('date')}
+              onBlur={handleFieldBlur}
               isHighlighted={isFieldActive('date')}
               className={cn(wasFieldUpdated('date') && 'animate-pulse bg-emerald-50')}
             />
@@ -185,24 +209,36 @@ export const GrainReceiptForm = () => {
               (isFieldActive('grossWeight') || isFieldActive('vehicleWeight')) && 'ring-4 ring-gov-blue/30'
             )}
           >
-            <div 
+            <div
               className={cn(
-                "space-y-2 p-2 rounded-lg transition-all",
+                "space-y-2 p-2 rounded-lg transition-all cursor-pointer hover:bg-gov-blue/5",
                 isFieldActive('grossWeight') && 'bg-gov-blue/10 ring-2 ring-gov-blue/50',
                 wasFieldUpdated('grossWeight') && 'animate-pulse bg-emerald-50'
               )}
+              onClick={() => handleFieldFocus('grossWeight')}
+              tabIndex={0}
+              onFocus={() => handleFieldFocus('grossWeight')}
+              onBlur={handleFieldBlur}
+              role="button"
+              aria-label="Gross Weight field - click to discuss with voice assistant"
             >
               <label className="text-xs font-medium text-slate-500 uppercase">Gross Weight</label>
               <div className="text-4xl font-bold text-slate-800">
                 <AnimatedNumber value={state.data.grossWeight} />
               </div>
             </div>
-            <div 
+            <div
               className={cn(
-                "space-y-2 p-2 rounded-lg transition-all",
+                "space-y-2 p-2 rounded-lg transition-all cursor-pointer hover:bg-gov-blue/5",
                 isFieldActive('vehicleWeight') && 'bg-gov-blue/10 ring-2 ring-gov-blue/50',
                 wasFieldUpdated('vehicleWeight') && 'animate-pulse bg-emerald-50'
               )}
+              onClick={() => handleFieldFocus('vehicleWeight')}
+              tabIndex={0}
+              onFocus={() => handleFieldFocus('vehicleWeight')}
+              onBlur={handleFieldBlur}
+              role="button"
+              aria-label="Vehicle Tare Weight field - click to discuss with voice assistant"
             >
               <label className="text-xs font-medium text-slate-500 uppercase">Vehicle Tare</label>
               <div className="text-4xl font-bold text-slate-800">
@@ -225,14 +261,14 @@ export const GrainReceiptForm = () => {
             <Wheat className="w-4 h-4" /> Grading & Dockage
           </h2>
           <div className="grid grid-cols-2 gap-6">
-            <SuperInput 
+            <SuperInput
               label="Grain Type"
               value={state.data.grainType}
               onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'grainType', value: e.target.value })}
               badgeIcon={Wand2}
               badgeText="AI Detected"
-              onFocus={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: 'grainType' })}
-              onBlur={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: null })}
+              onFocus={() => handleFieldFocus('grainType')}
+              onBlur={handleFieldBlur}
               isHighlighted={isFieldActive('grainType')}
               className={cn(wasFieldUpdated('grainType') && 'animate-pulse bg-emerald-50')}
             />
@@ -250,17 +286,17 @@ export const GrainReceiptForm = () => {
                 <label className="text-sm font-medium text-slate-500 uppercase">Dockage Assessment</label>
                 <span className="text-2xl font-bold text-gov-blue">{state.data.dockage}%</span>
               </div>
-              <input 
-                type="range" 
-                min="0" 
-                max="10" 
+              <input
+                type="range"
+                min="0"
+                max="10"
                 step="0.1"
                 value={state.data.dockage}
                 onChange={(e) => {
                   dispatch({ type: 'SET_FIELD', field: 'dockage', value: parseFloat(e.target.value) });
                 }}
-                onFocus={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: 'dockage' })}
-                onBlur={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: null })}
+                onFocus={() => handleFieldFocus('dockage')}
+                onBlur={handleFieldBlur}
                 className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-gov-blue"
               />
               <div className="flex justify-between mt-2 text-xs text-slate-400">
@@ -277,7 +313,7 @@ export const GrainReceiptForm = () => {
             <DollarSign className="w-4 h-4" /> Financials
           </h2>
           <div className="grid grid-cols-2 gap-6">
-            <SuperInput 
+            <SuperInput
               label="Price per Tonne"
               value={`$${state.data.pricePerTonne.toFixed(2)}`}
               onChange={(e) => {
@@ -285,8 +321,8 @@ export const GrainReceiptForm = () => {
                 dispatch({ type: 'SET_FIELD', field: 'pricePerTonne', value });
               }}
               badgeIcon={DollarSign}
-              onFocus={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: 'pricePerTonne' })}
-              onBlur={() => dispatch({ type: 'SET_ACTIVE_FIELD', field: null })}
+              onFocus={() => handleFieldFocus('pricePerTonne')}
+              onBlur={handleFieldBlur}
               isHighlighted={isFieldActive('pricePerTonne')}
               className={cn(wasFieldUpdated('pricePerTonne') && 'animate-pulse bg-emerald-50')}
             />
