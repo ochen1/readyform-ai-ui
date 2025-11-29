@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --color-gov-blue: #002D72;
+  --color-gov-slate: #F8FAFC;
+  --color-gov-amber: #F59E0B;
+  --color-gov-emerald: #10B981;
+
+  --font-sans: "Inter", sans-serif;
+
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-glass-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --shadow-glow: 0 0 20px rgba(0, 45, 114, 0.3);
+  
+  --backdrop-blur-xs: 2px;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-slate-800 bg-slate-50 antialiased overflow-hidden;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(0, 45, 114, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-white/60 backdrop-blur-xl border border-white/40;
+    box-shadow: var(--shadow-glass);
+  }
+  
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-md border border-white/30 shadow-sm transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    box-shadow: var(--shadow-glass-hover);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(0, 45, 114, 0.2);
+  }
+}
+
+/* Custom Scrollbar for that "OS" feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 45, 114, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 45, 114, 0.2);
+}
