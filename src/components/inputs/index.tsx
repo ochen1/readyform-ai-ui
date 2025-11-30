@@ -70,21 +70,21 @@ export function TextInput({ field, value, onChange, onFocus, disabled, className
  */
 export function NumberInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
-    <div className="flex-1 relative">
+    <div className="flex-1 flex gap-2">
       <input
         type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`${baseInputClass} ${className} pr-12`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
         placeholder="0"
         step="any"
       />
       {field.unit && (
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
+        <div className="flex items-center px-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-600 font-medium shrink-0">
           {field.unit}
-        </span>
+        </div>
       )}
     </div>
   );
@@ -104,12 +104,12 @@ export function WeightInput({ field, value, onChange, onFocus, disabled, classNa
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`${baseInputClass} ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
         placeholder="0"
         step="0.01"
         min="0"
       />
-      <div className="flex items-center px-4 bg-amber-50 border-2 border-amber-200 rounded-xl text-amber-700 font-medium">
+      <div className="flex items-center px-4 bg-amber-50 border-2 border-amber-200 rounded-xl text-amber-700 font-medium shrink-0">
         {unit}
       </div>
     </div>
@@ -120,20 +120,18 @@ export function WeightInput({ field, value, onChange, onFocus, disabled, classNa
  * Currency Input - For monetary values with currency symbol
  */
 export function CurrencyInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
-  const currency = field.unit || '$';
-  
   return (
-    <div className="flex-1 relative">
-      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600 text-xl font-medium">
-        {currency}
-      </span>
+    <div className="flex-1 flex gap-2">
+      <div className="flex items-center px-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 font-medium shrink-0">
+        $
+      </div>
       <input
         type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`${baseInputClass} ${className} pl-10`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
         placeholder="0.00"
         step="0.01"
         min="0"
@@ -147,22 +145,22 @@ export function CurrencyInput({ field, value, onChange, onFocus, disabled, class
  */
 export function PercentageInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
-    <div className="flex-1 relative">
+    <div className="flex-1 flex gap-2">
       <input
         type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`${baseInputClass} ${className} pr-12`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
         placeholder="0"
         step="0.1"
         min="0"
         max="100"
       />
-      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-600 text-xl font-medium">
+      <div className="flex items-center px-4 bg-purple-50 border-2 border-purple-200 rounded-xl text-purple-700 font-medium shrink-0">
         %
-      </span>
+      </div>
     </div>
   );
 }
@@ -223,18 +221,18 @@ export function DateInput({ field, value, onChange, onFocus, disabled, className
  */
 export function ReferenceInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
-    <div className="flex-1 relative">
-      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+    <div className="flex-1 flex gap-2">
+      <div className="flex items-center px-3 bg-slate-100 border-2 border-slate-200 rounded-xl text-slate-500 shrink-0">
         <Hash size={20} />
-      </span>
+      </div>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value.toUpperCase())}
         onFocus={onFocus}
         disabled={disabled}
-        className={`${baseInputClass} ${className} pl-12 font-mono tracking-wider`}
-        placeholder={field.name}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${className}`}
+        placeholder="Enter reference..."
       />
     </div>
   );
@@ -282,9 +280,12 @@ export function AddressInput({ field, value, onChange, onFocus, disabled, classN
 }
 
 /**
- * Calculated Input - Read-only display with calculation hint and live updates
+ * Calculated Input - Read-only display with live updates
  */
 export function CalculatedInput({ field, value, className }: InputProps) {
+  // Determine if this is a currency field
+  const isCurrency = field.unit?.toLowerCase().includes('cad') || field.unit === '$';
+  
   // Format the display value based on type hints
   const formatValue = (val: string): string => {
     if (!val || val === '') return '—';
@@ -292,9 +293,9 @@ export function CalculatedInput({ field, value, className }: InputProps) {
     const numVal = parseFloat(val);
     if (isNaN(numVal)) return val;
     
-    // Format based on unit type
-    if (field.unit?.toLowerCase().includes('cad') || field.unit === '$') {
-      return `$${numVal.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // For currency, just format the number (no $ prefix since we show it separately)
+    if (isCurrency) {
+      return numVal.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     
     // Weight or general numbers
@@ -306,20 +307,18 @@ export function CalculatedInput({ field, value, className }: InputProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col gap-1">
-      <div className="flex gap-2">
-        <div className={`${baseInputClass} ${className} cursor-not-allowed bg-gradient-to-r from-blue-50 to-slate-50 border-blue-200 text-blue-900 font-semibold`}>
-          {formatValue(value)}
+    <div className="flex-1 flex gap-2">
+      {isCurrency && (
+        <div className="flex items-center px-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 font-medium shrink-0">
+          $
         </div>
-        {field.unit && !field.unit.includes('$') && !field.unit.toLowerCase().includes('cad') && (
-          <div className="flex items-center px-4 bg-blue-50 border-2 border-blue-200 rounded-xl text-blue-600 font-medium">
-            {field.unit}
-          </div>
-        )}
+      )}
+      <div className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl transition-all duration-200 cursor-not-allowed bg-gradient-to-r from-blue-50 to-slate-50 border-blue-200 text-blue-900 font-semibold`}>
+        {formatValue(value)}
       </div>
-      {field.calculationHint && (
-        <div className="text-xs text-slate-500 italic pl-2">
-          ƒ {field.calculationHint}
+      {field.unit && !isCurrency && (
+        <div className="flex items-center px-4 bg-blue-50 border-2 border-blue-200 rounded-xl text-blue-600 font-medium shrink-0">
+          {field.unit}
         </div>
       )}
     </div>

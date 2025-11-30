@@ -3,7 +3,7 @@ import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, Info } from 'lucide-react';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
 
 interface FieldProps {
@@ -15,7 +15,7 @@ interface FieldProps {
 }
 
 function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }: FieldProps) {
-  const [showDescription, setShowDescription] = React.useState(false);
+  const [showTooltip, setShowTooltip] = React.useState(false);
   
   // Determine styling based on state
   let borderClass = 'border-slate-300 bg-white';
@@ -74,62 +74,54 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
           </div>
           <div className="flex items-center justify-end gap-1 mt-1">
             {field.type !== 'text' && (
-              <span className={`text-xs px-2 py-0.5 rounded-full ${getTypeBadgeColor()}`}>
+              <span className={`hidden text-xs px-2 py-0.5 rounded-full ${getTypeBadgeColor()}`}>
                 {field.type}
               </span>
             )}
             {field.required && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+              <span className="hidden text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600">
                 required
               </span>
-            )}
-            {field.description && (
-              <button
-                type="button"
-                onClick={() => setShowDescription(!showDescription)}
-                className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
-                title="Show field description"
-              >
-                <Info size={14} />
-              </button>
             )}
           </div>
         </div>
         
         {/* Input Section - Uses dynamic input component */}
-        <DynamicInput
-          field={field}
-          value={field.value}
-          onChange={onChange}
-          onFocus={onFocus}
-          disabled={isDisabled}
-          className={borderClass}
-        />
+        <div 
+          className="relative flex-1"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
+          <DynamicInput
+            field={field}
+            value={field.value}
+            onChange={onChange}
+            onFocus={onFocus}
+            disabled={isDisabled}
+            className={borderClass}
+          />
+          {showTooltip && field.description && (
+            <div className="absolute top-full left-0 mt-1 z-10 w-80 p-3 bg-slate-800 text-white text-sm rounded-lg shadow-lg border border-slate-600">
+              <p>{field.description}</p>
+              {field.calculationHint && (
+                <span className="block mt-1 text-slate-300 italic">
+                  Calculation: {field.calculationHint}
+                </span>
+              )}
+              {field.format && (
+                <span className="block mt-1 text-slate-300">
+                  Format: {field.format}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
         
         {/* Status Icon */}
         <div className={`shrink-0 pt-4 ${iconColor}`}>
           <StatusIcon size={32} strokeWidth={2.5} />
         </div>
       </div>
-      
-      {/* Description tooltip */}
-      {showDescription && field.description && (
-        <div className="ml-56 pl-6 mt-2">
-          <p className="text-sm text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-200">
-            {field.description}
-            {field.calculationHint && (
-              <span className="block mt-1 text-slate-400 italic">
-                Calculation: {field.calculationHint}
-              </span>
-            )}
-            {field.format && (
-              <span className="block mt-1 text-slate-400">
-                Format: {field.format}
-              </span>
-            )}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
