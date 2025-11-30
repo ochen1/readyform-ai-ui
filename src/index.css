@@ -1,6 +1,24 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Atkinson Hyperlegible - specifically designed for maximum readability */
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* OpenDyslexic font from CDN */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme {
   --color-gov-blue: #002D72;
@@ -8,7 +26,7 @@
   --color-gov-amber: #F59E0B;
   --color-gov-emerald: #10B981;
 
-  --font-sans: "Inter", sans-serif;
+  --font-sans: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
 
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
   --shadow-glass-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
@@ -18,13 +36,54 @@
 }
 
 @layer base {
+  html {
+    font-size: 18px; /* Larger base font size for accessibility */
+  }
+
   body {
-    @apply font-sans text-slate-800 bg-slate-50 antialiased overflow-hidden;
+    @apply font-sans text-slate-800 bg-slate-50 antialiased overflow-y-auto;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(0, 45, 114, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.05) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(0, 45, 114, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.03) 0px, transparent 50%);
     background-attachment: fixed;
+    line-height: 1.6;
+  }
+
+  /* Dyslexia-friendly font class */
+  .dyslexia-font {
+    font-family: "OpenDyslexic", "Comic Sans MS", "Trebuchet MS", "Arial", sans-serif !important;
+    letter-spacing: 0.08em;
+    word-spacing: 0.2em;
+    line-height: 2;
+  }
+
+  .dyslexia-font * {
+    font-family: "OpenDyslexic", "Comic Sans MS", "Trebuchet MS", "Arial", sans-serif !important;
+  }
+
+  .dyslexia-font input,
+  .dyslexia-font select,
+  .dyslexia-font button,
+  .dyslexia-font textarea {
+    font-family: "OpenDyslexic", "Comic Sans MS", "Trebuchet MS", "Arial", sans-serif !important;
+  }
+
+  /* High contrast mode */
+  .high-contrast {
+    filter: contrast(1.2);
+  }
+
+  .high-contrast * {
+    border-color: currentColor !important;
+  }
+
+  /* Reduced motion preference */
+  .reduced-motion,
+  .reduced-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -49,15 +108,30 @@
 
 /* Custom Scrollbar for that "OS" feel */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 45, 114, 0.1);
-  border-radius: 10px;
+  background: rgba(0, 45, 114, 0.2);
+  border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 45, 114, 0.2);
+  background: rgba(0, 45, 114, 0.3);
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 3px solid rgba(0, 45, 114, 0.5);
+  outline-offset: 2px;
+}
+
+/* Enhanced button focus */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(0, 45, 114, 0.5);
+  outline-offset: 2px;
 }

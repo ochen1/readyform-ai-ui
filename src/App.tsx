@@ -1,14 +1,17 @@
 import { FormProvider } from "./store/FormContext";
 import { UltravoxProvider } from "./ultravox/UltravoxProvider";
+import { AccessibilityProvider } from "./store/AccessibilityContext";
 import { SimpleForm } from "./components/SimpleForm";
 
 function App() {
   return (
-    <FormProvider>
-      <UltravoxProvider>
-        <SimpleForm />
-      </UltravoxProvider>
-    </FormProvider>
+    <AccessibilityProvider>
+      <FormProvider>
+        <UltravoxProvider>
+          <SimpleForm />
+        </UltravoxProvider>
+      </FormProvider>
+    </AccessibilityProvider>
   );
 }
 

@@ -61,7 +61,7 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
     // Create the call via Ultravox API
     const callConfig = {
       systemPrompt: generateSystemPrompt(formContext.getFormSummary()),
-      voice: 'Jessica',
+      voice: 'Mark',
       temperature: 0.4,
       firstSpeaker: 'FIRST_SPEAKER_AGENT',
       selectedTools: formTools

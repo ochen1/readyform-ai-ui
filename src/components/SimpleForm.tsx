@@ -1,8 +1,9 @@
 import React, { useCallback, useRef } from 'react';
 import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
-import { FIELD_LABELS, EDITABLE_FIELDS } from '../store/types';
-import { CheckCircle, Circle, HelpCircle } from 'lucide-react';
+import { useAccessibility } from '../store/AccessibilityContext';
+import { FIELD_LABELS } from '../store/types';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff } from 'lucide-react';
 
 interface FieldProps {
   name: string;
@@ -18,23 +19,26 @@ interface FieldProps {
 
 function FormField({ name, label, value, isActive, isCompleted, onFocus, onChange, type = 'text', options }: FieldProps) {
   // Determine border and icon based on state
-  let borderClass = 'border-slate-300'; // default/pending
+  let borderClass = 'border-slate-300 bg-white'; // default/pending
   let Icon = Circle;
   let iconColor = 'text-slate-400';
+  let labelColor = 'text-slate-600';
   
   if (isActive) {
-    borderClass = 'border-orange-500 border-2 ring-2 ring-orange-200';
+    borderClass = 'border-orange-500 border-2 ring-4 ring-orange-100 bg-orange-50';
     Icon = HelpCircle;
     iconColor = 'text-orange-500';
+    labelColor = 'text-orange-700 font-semibold';
   } else if (isCompleted) {
-    borderClass = 'border-blue-500 border-2';
+    borderClass = 'border-emerald-500 border-2 bg-emerald-50';
     Icon = CheckCircle;
-    iconColor = 'text-blue-500';
+    iconColor = 'text-emerald-500';
+    labelColor = 'text-emerald-700';
   }
 
   return (
-    <div className="flex items-center gap-4 py-3">
-      <label className="w-40 text-right text-slate-700 font-medium shrink-0">
+    <div className="flex items-center gap-6 py-4">
+      <label className={`w-48 text-right text-lg shrink-0 ${labelColor}`}>
         {label}
       </label>
       
@@ -43,7 +47,7 @@ function FormField({ name, label, value, isActive, isCompleted, onFocus, onChang
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onFocus={onFocus}
-          className={`flex-1 px-4 py-3 rounded-lg border ${borderClass} bg-white text-lg focus:outline-none transition-all`}
+          className={`flex-1 px-5 py-4 rounded-xl border-2 ${borderClass} text-xl focus:outline-none transition-all duration-200`}
         >
           {options.map(opt => (
             <option key={opt} value={opt}>{opt}</option>
@@ -55,20 +59,47 @@ function FormField({ name, label, value, isActive, isCompleted, onFocus, onChang
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onFocus={onFocus}
-          className={`flex-1 px-4 py-3 rounded-lg border ${borderClass} bg-white text-lg focus:outline-none transition-all`}
+          className={`flex-1 px-5 py-4 rounded-xl border-2 ${borderClass} text-xl focus:outline-none transition-all duration-200`}
         />
       )}
       
       <div className={`shrink-0 ${iconColor}`}>
-        <Icon size={28} />
+        <Icon size={32} strokeWidth={2.5} />
       </div>
     </div>
   );
 }
 
+// Toggle Switch Component
+function Toggle({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
+  return (
+    <button
+      onClick={onChange}
+      className="flex items-center gap-3 focus:outline-none group"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+    >
+      <div 
+        className={`relative w-14 h-8 rounded-full transition-colors duration-200 ${
+          checked ? 'bg-blue-600' : 'bg-slate-300'
+        }`}
+      >
+        <div 
+          className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${
+            checked ? 'translate-x-7' : 'translate-x-1'
+          }`}
+        />
+      </div>
+      <span className="text-slate-700 text-lg">{label}</span>
+    </button>
+  );
+}
+
 export function SimpleForm() {
   const { state, dispatch } = useFormContext();
-  const { isConnected, notifyFieldFocus, status, startCall, endCall } = useUltravox();
+  const { isConnected, notifyFieldFocus, status, startCall, endCall, isMicMuted, toggleMic } = useUltravox();
+  const { settings, toggleDyslexiaFont } = useAccessibility();
   const lastNotifiedFieldRef = useRef<string | null>(null);
 
   const handleFieldFocus = useCallback((fieldName: string) => {
@@ -108,64 +139,131 @@ export function SimpleForm() {
   const totalValue = adjustedWeight * state.data.pricePerTonne;
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
-      {/* Header with Voice Status */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-800">Grain Receipt Form</h1>
-          
-          <div className="flex items-center gap-4">
-            {/* Status Indicator */}
-            <div className="flex items-center gap-2">
-              {status === 'thinking' && (
-                <span className="text-amber-600 text-sm flex items-center gap-1">
-                  <span className="animate-pulse">●</span> Thinking...
-                </span>
-              )}
-              {status === 'speaking' && (
-                <span className="text-blue-600 text-sm flex items-center gap-1">
-                  <span className="animate-pulse">●</span> Speaking...
-                </span>
-              )}
-              {status === 'listening' && (
-                <span className="text-green-600 text-sm flex items-center gap-1">
-                  <span className="animate-pulse">●</span> Listening...
-                </span>
-              )}
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b-2 border-slate-200 px-8 py-5 sticky top-0 z-10 shadow-sm">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold text-slate-800">Grain Receipt Form</h1>
             
-            {/* Voice Toggle Button */}
-            <button
-              onClick={isConnected ? endCall : startCall}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                isConnected 
-                  ? 'bg-red-500 hover:bg-red-600 text-white' 
-                  : 'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
-            >
-              {isConnected ? 'End Call' : 'Start Voice Assistant'}
-            </button>
+            {/* Voice Controls */}
+            <div className="flex items-center gap-4">
+              {/* Status Indicator */}
+              {isConnected && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
+                  {status === 'thinking' && (
+                    <span className="text-amber-600 text-lg flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
+                      Thinking...
+                    </span>
+                  )}
+                  {status === 'speaking' && (
+                    <span className="text-blue-600 text-lg flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
+                      Speaking...
+                    </span>
+                  )}
+                  {status === 'listening' && (
+                    <span className="text-emerald-600 text-lg flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                      Listening...
+                    </span>
+                  )}
+                  {(status === 'idle' || status === 'connecting') && (
+                    <span className="text-slate-500 text-lg flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-slate-400" />
+                      Ready
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Mic Toggle (only when connected) */}
+              {isConnected && (
+                <button
+                  onClick={toggleMic}
+                  className={`p-3 rounded-full transition-colors ${
+                    isMicMuted 
+                      ? 'bg-red-100 text-red-600 hover:bg-red-200' 
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                  title={isMicMuted ? 'Unmute microphone' : 'Mute microphone'}
+                >
+                  {isMicMuted ? <MicOff size={24} /> : <Mic size={24} />}
+                </button>
+              )}
+              
+              {/* Voice Toggle Button */}
+              <button
+                onClick={isConnected ? endCall : startCall}
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg ${
+                  isConnected 
+                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                {isConnected ? (
+                  <>
+                    <PhoneOff size={22} />
+                    End Call
+                  </>
+                ) : (
+                  <>
+                    <Phone size={22} />
+                    Start Voice Assistant
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Accessibility Bar */}
+          <div className="flex items-center justify-between py-3 px-5 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="flex items-center gap-6">
+              {/* Dyslexia Font Toggle */}
+              <Toggle 
+                checked={settings.dyslexiaFont} 
+                onChange={toggleDyslexiaFont} 
+                label="Dyslexia-Friendly Font"
+              />
+            </div>
+
+            {/* PDF Upload */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {}}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-slate-300 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-all text-base font-medium"
+              >
+                <Upload size={20} />
+                Upload PDF
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Form Content */}
-      <main className="flex-1 py-8">
-        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      <main className="flex-1 py-10 px-6 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
           {/* Read-only Info Section */}
-          <div className="mb-6 pb-6 border-b border-slate-200">
-            <div className="flex items-center gap-4 py-2 text-slate-600">
-              <span className="w-40 text-right font-medium">Receipt #:</span>
-              <span className="text-lg">{state.data.receiptNumber}</span>
-            </div>
-            <div className="flex items-center gap-4 py-2 text-slate-600">
-              <span className="w-40 text-right font-medium">Licensee:</span>
-              <span className="text-lg">{state.data.licensee}</span>
+          <div className="mb-8 pb-8 border-b-2 border-slate-200">
+            <h2 className="text-xl font-semibold text-slate-700 mb-4">Receipt Information</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-4 py-3 px-5 bg-slate-50 rounded-xl">
+                <span className="font-medium text-slate-500">Receipt #:</span>
+                <span className="text-xl font-semibold text-slate-800">{state.data.receiptNumber}</span>
+              </div>
+              <div className="flex items-center gap-4 py-3 px-5 bg-slate-50 rounded-xl">
+                <span className="font-medium text-slate-500">Licensee:</span>
+                <span className="text-xl font-semibold text-slate-800">{state.data.licensee}</span>
+              </div>
             </div>
           </div>
 
           {/* Editable Fields */}
-          <div className="space-y-1">
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-slate-700 mb-4">Delivery Details</h2>
+            
             <FormField
               name="producer"
               label={FIELD_LABELS.producer}
@@ -198,6 +296,11 @@ export function SimpleForm() {
               type="select"
               options={grainTypes}
             />
+          </div>
+
+          {/* Weight Section */}
+          <div className="mt-8 pt-8 border-t-2 border-slate-200 space-y-2">
+            <h2 className="text-xl font-semibold text-slate-700 mb-4">Weight Measurements</h2>
             
             <FormField
               name="grossWeight"
@@ -231,6 +334,11 @@ export function SimpleForm() {
               onChange={(v) => handleFieldChange('dockage', v)}
               type="number"
             />
+          </div>
+
+          {/* Pricing Section */}
+          <div className="mt-8 pt-8 border-t-2 border-slate-200 space-y-2">
+            <h2 className="text-xl font-semibold text-slate-700 mb-4">Pricing</h2>
             
             <FormField
               name="pricePerTonne"
@@ -245,28 +353,36 @@ export function SimpleForm() {
           </div>
 
           {/* Calculated Summary */}
-          <div className="mt-6 pt-6 border-t border-slate-200 bg-slate-50 -mx-8 -mb-8 px-8 py-6 rounded-b-xl">
-            <div className="flex items-center gap-4 py-2">
-              <span className="w-40 text-right font-medium text-slate-600">Net Weight:</span>
-              <span className="text-lg font-semibold">{netWeight.toLocaleString()} kg</span>
-            </div>
-            <div className="flex items-center gap-4 py-2">
-              <span className="w-40 text-right font-medium text-slate-600">Total Value:</span>
-              <span className="text-2xl font-bold text-blue-600">${totalValue.toFixed(2)}</span>
+          <div className="mt-10 p-8 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl border-2 border-slate-200">
+            <h2 className="text-xl font-semibold text-slate-700 mb-6">Summary</h2>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <span className="text-slate-500 text-base">Net Weight</span>
+                <div className="text-2xl font-bold text-slate-800 mt-1">{netWeight.toLocaleString()} kg</div>
+              </div>
+              <div className="bg-white p-5 rounded-xl shadow-sm border border-emerald-200">
+                <span className="text-slate-500 text-base">Total Value</span>
+                <div className="text-3xl font-bold text-emerald-600 mt-1">${totalValue.toFixed(2)}</div>
+              </div>
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className="mt-8 flex justify-center">
+          <div className="mt-10 flex justify-center">
             <button
               type="submit"
-              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-lg shadow-md transition-colors"
+              className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xl shadow-lg hover:shadow-xl transition-all duration-200"
             >
               Submit Form
             </button>
           </div>
         </form>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200 py-4 px-8 text-center text-slate-500">
+        <p>FormAI - Voice-Assisted Form Filling for Seniors</p>
+      </footer>
     </div>
   );
 }
