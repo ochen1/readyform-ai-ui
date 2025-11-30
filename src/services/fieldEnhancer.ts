@@ -94,22 +94,26 @@ function extractTitleFromFilename(filename: string): string {
 
 /**
  * Enhance form fields using Gemini AI
- * 
+ *
  * This is the main orchestration function that:
  * 1. Checks for cached enhancement
  * 2. Calls Gemini API if not cached
  * 3. Caches the result
  * 4. Falls back to basic fields on error
- * 
+ *
  * @param filename - Original PDF filename
  * @param pdfBytes - PDF file bytes for Gemini vision and caching
  * @param basicFields - Fields extracted from PDF by pdfParser
+ * @param pageImages - Optional rendered page images (base64 PNG) for XFA forms
+ * @param isXFA - Whether this is an XFA form (affects how Gemini processes the PDF)
  * @returns Enhanced fields with LLM metadata
  */
 export async function enhanceFormFields(
   filename: string,
   pdfBytes: Uint8Array,
-  basicFields: FormField[]
+  basicFields: FormField[],
+  pageImages?: string[],
+  isXFA: boolean = false
 ): Promise<EnhancementResult> {
   // Try to get cached enhancement first
   const cached = await getCachedEnhancement(filename, pdfBytes);
@@ -141,8 +145,9 @@ export async function enhanceFormFields(
     // Extract field IDs/names for the API call
     const fieldNames = basicFields.map(f => f.id);
     
-    // Call Gemini API
-    const enhancement = await analyzeFormWithGemini(pdfBytes, fieldNames);
+    // Call Gemini API - pass page images and XFA flag
+    // For XFA forms, images are used instead of PDF since Gemini can't parse XFA
+    const enhancement = await analyzeFormWithGemini(pdfBytes, fieldNames, pageImages, isXFA);
     
     // Cache the successful result
     await cacheEnhancement(filename, pdfBytes, enhancement);

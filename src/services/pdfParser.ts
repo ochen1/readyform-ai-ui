@@ -16,6 +16,8 @@ export interface ParsedPDF {
   metadata: FormMetadata;
   writeContext: PDFWriteContext;
   pdfBytes: Uint8Array;
+  /** Rendered page images as base64 PNG (for Gemini vision on XFA forms) */
+  pageImages?: string[];
 }
 
 /**
@@ -33,13 +35,73 @@ interface PDFJSAnnotation {
 }
 
 /**
+ * Check if a field name looks like an XFA path
+ * XFA paths have patterns like: "FormName E[0].Page1[0].Section A[0].txt F FieldName[0]"
+ */
+function isXFAFieldName(fieldName: string): boolean {
+  // XFA paths contain bracketed indices and multiple dots
+  return /\[\d+\]/.test(fieldName) && /\./.test(fieldName);
+}
+
+/**
+ * Extract human-readable field name from XFA path
+ * Example: "LAB1189 E[0].Page1[0].sf Section A[0].txt F Last Name[0]" -> "Last Name"
+ */
+function parseXFAFieldName(xfaPath: string): string {
+  // XFA paths often end with "txt F FieldName[0]" or similar patterns
+  // Try to extract the last meaningful part
+  
+  // Pattern 1: Look for "txt F FieldName[index]" or "txt T FieldName[index]"
+  const txtMatch = xfaPath.match(/\.txt\s+[FT]\s+([^[]+)\[\d+\]$/i);
+  if (txtMatch) {
+    return txtMatch[1].trim();
+  }
+  
+  // Pattern 2: Look for the last segment after the last dot that has a readable name
+  const segments = xfaPath.split('.');
+  for (let i = segments.length - 1; i >= 0; i--) {
+    const segment = segments[i];
+    // Remove index brackets and clean up
+    const cleaned = segment.replace(/\[\d+\]/g, '').trim();
+    
+    // Skip technical segments like "Page1", "E", "sf Section A", etc.
+    if (cleaned &&
+        !/^Page\d*$/i.test(cleaned) &&
+        !/^Section\s+[A-Z]$/i.test(cleaned) &&
+        !/^sf\s/i.test(cleaned) &&
+        !/^[A-Z]$/.test(cleaned) && // Single letters like "E"
+        cleaned.length > 2) {
+      
+      // Check if it contains "txt F" or "txt T" pattern inside
+      const innerMatch = cleaned.match(/txt\s+[FT]\s+(.+)$/i);
+      if (innerMatch) {
+        return innerMatch[1].trim();
+      }
+      
+      return cleaned;
+    }
+  }
+  
+  // Fallback: return original (will be cleaned up by fieldNameToDisplayName)
+  return xfaPath;
+}
+
+/**
  * Convert a PDF field name to a display-friendly name
  * Examples:
  * - "Producers name and address surname first" -> "Producers Name And Address Surname First"
  * - "gross_weight" -> "Gross Weight"
  * - "Date of issue yyyymmdd" -> "Date Of Issue Yyyymmdd"
+ * - XFA: "LAB1189 E[0].Page1[0].txt F Last Name[0]" -> "Last Name"
  */
 export function fieldNameToDisplayName(pdfFieldName: string): string {
+  // Check if this is an XFA-style field name
+  if (isXFAFieldName(pdfFieldName)) {
+    const extractedName = parseXFAFieldName(pdfFieldName);
+    // Recursively process the extracted name (in case it needs title casing)
+    return fieldNameToDisplayName(extractedName);
+  }
+  
   return pdfFieldName
     // Replace underscores with spaces
     .replace(/_/g, ' ')
@@ -60,6 +122,61 @@ function extractTitleFromFilename(filename: string): string {
   const withoutExt = filename.replace(/\.[^/.]+$/, '');
   // Convert to title case
   return fieldNameToDisplayName(withoutExt);
+}
+
+/**
+ * Render PDF pages as images (for XFA forms that need visual analysis)
+ * Returns base64-encoded PNG images for each page
+ *
+ * @param pdf - The loaded PDF document proxy
+ * @param maxPages - Maximum number of pages to render (default: 3)
+ * @param scale - Render scale (default: 1.5 for decent quality without being too large)
+ * @returns Array of base64-encoded PNG image strings
+ */
+async function renderPDFPagesAsImages(
+  pdf: pdfjsLib.PDFDocumentProxy,
+  maxPages: number = 3,
+  scale: number = 1.5
+): Promise<string[]> {
+  const images: string[] = [];
+  const numPagesToRender = Math.min(pdf.numPages, maxPages);
+  
+  for (let pageNum = 1; pageNum <= numPagesToRender; pageNum++) {
+    try {
+      const page = await pdf.getPage(pageNum);
+      const viewport = page.getViewport({ scale });
+      
+      // Create an off-screen canvas
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      
+      if (!context) {
+        console.warn(`[PDF Parser] Could not create canvas context for page ${pageNum}`);
+        continue;
+      }
+      
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      
+      // Render the page to the canvas
+      // pdfjs-dist v5 requires the canvas property
+      await page.render({
+        canvasContext: context,
+        viewport: viewport,
+        canvas: canvas,
+      } as Parameters<typeof page.render>[0]).promise;
+      
+      // Convert to base64 PNG
+      const base64Image = canvas.toDataURL('image/png').split(',')[1];
+      images.push(base64Image);
+      
+      console.log(`[PDF Parser] Rendered page ${pageNum} as image (${canvas.width}x${canvas.height})`);
+    } catch (error) {
+      console.warn(`[PDF Parser] Failed to render page ${pageNum}:`, error);
+    }
+  }
+  
+  return images;
 }
 
 /**
@@ -150,7 +267,25 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
       const isReadonly = anno.readOnly === true;
       
       // Get display name
-      const displayName = fieldNameToDisplayName(fieldName);
+      // For XFA forms, the alternativeText often contains a better human-readable name
+      // than the field path. Use it as the display name if it's available and meaningful.
+      let displayName: string;
+      const hasXFAPath = isXFAFieldName(fieldName);
+      
+      if (hasXFAPath && anno.alternativeText && anno.alternativeText.length > 0) {
+        // For XFA forms with alternativeText, use that as the display name
+        // alternativeText often contains the actual label like "Mailing address (number, street, apartment)"
+        displayName = anno.alternativeText;
+      } else {
+        // Fall back to parsing the field name
+        displayName = fieldNameToDisplayName(fieldName);
+      }
+      
+      // Create a description - for XFA with alternativeText we already used it for name
+      // so provide a generic description
+      const description = hasXFAPath && anno.alternativeText
+        ? `Please provide the value for ${displayName}`
+        : (anno.alternativeText || `Please provide the value for ${displayName}`);
       
       // Create field entry
       fields.push({
@@ -159,7 +294,7 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
         name: displayName,
         value: currentValue,
         type: 'text', // Default type - will be enhanced by LLM
-        description: anno.alternativeText || `Please provide the value for ${displayName}`,
+        description,
         required: false, // Could be enhanced with LLM
         readonly: isReadonly,
         ignore: false, // Will be set by LLM if field should be skipped
@@ -198,6 +333,25 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
     writableFieldIds: isXFA ? [] : fields.filter(f => !f.readonly).map(f => f.id),
   };
   
+  // For XFA forms or forms with poor field names, render pages as images for Gemini
+  // This helps Gemini understand the visual layout and field context
+  let pageImages: string[] | undefined;
+  
+  // Detect if we need visual analysis:
+  // 1. XFA forms (complex field names)
+  // 2. Fields with XFA-style names that weren't fully parsed
+  const hasComplexFieldNames = fields.some(f => isXFAFieldName(f.id));
+  
+  if (isXFA || hasComplexFieldNames) {
+    console.log('[PDF Parser] Rendering pages as images for Gemini visual analysis');
+    try {
+      pageImages = await renderPDFPagesAsImages(pdf, 3, 1.5);
+      console.log(`[PDF Parser] Rendered ${pageImages.length} page images`);
+    } catch (error) {
+      console.warn('[PDF Parser] Failed to render page images:', error);
+    }
+  }
+  
   console.log(`[PDF Parser] Parsed ${fields.length} fields from ${file.name}${isXFA ? ' (XFA form)' : ''}`);
   
   return {
@@ -205,6 +359,7 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
     metadata,
     writeContext,
     pdfBytes,
+    pageImages,
   };
 }
 

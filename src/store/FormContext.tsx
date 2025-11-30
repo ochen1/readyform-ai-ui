@@ -51,7 +51,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   const loadPDF = useCallback(async (file: File) => {
     try {
       // Step 1: Parse PDF and extract basic fields
-      const { fields: basicFields, metadata, writeContext, pdfBytes } = await parsePDF(file);
+      const { fields: basicFields, metadata, writeContext, pdfBytes, pageImages } = await parsePDF(file);
       writeContextRef.current = writeContext;
       
       // Step 2: Load PDF with basic fields first (for immediate display)
@@ -65,8 +65,10 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
       
       try {
         // Step 4: Enhance fields with Gemini AI
+        // Pass page images and isXFA flag for XFA forms - helps Gemini understand field context
+        // For XFA forms, Gemini uses images instead of PDF since XFA PDFs aren't parseable
         const { fields: enhancedFields, formTitle, formDescription, fromCache } =
-          await enhanceFormFields(file.name, pdfBytes, basicFields);
+          await enhanceFormFields(file.name, pdfBytes, basicFields, pageImages, writeContext.isXFA);
         
         // Step 5: Update state with enhanced fields
         dispatch({

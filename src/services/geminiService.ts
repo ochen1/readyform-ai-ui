@@ -299,14 +299,18 @@ function validateFieldType(type: unknown): FieldType {
 
 /**
  * Analyze a PDF form using Gemini Flash with vision capabilities
- * 
- * @param pdfBytes - The raw PDF bytes
+ *
+ * @param pdfBytes - The raw PDF bytes (used for AcroForms, ignored for XFA)
  * @param fieldNames - List of field names extracted from the PDF
+ * @param pageImages - Optional rendered page images (base64 PNG) - REQUIRED for XFA forms
+ * @param isXFA - Whether this is an XFA form (determines whether to send PDF or images)
  * @returns Enhanced field metadata from Gemini
  */
 export async function analyzeFormWithGemini(
   pdfBytes: Uint8Array,
-  fieldNames: string[]
+  fieldNames: string[],
+  pageImages?: string[],
+  isXFA: boolean = false
 ): Promise<GeminiFieldEnhancement> {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
@@ -314,27 +318,83 @@ export async function analyzeFormWithGemini(
     throw new Error('VITE_GEMINI_API_KEY is not configured');
   }
   
-  // Convert PDF to base64
-  const base64PDF = uint8ArrayToBase64(pdfBytes);
-  
   // Build the prompt with field names
   const fieldListText = fieldNames.map(name => `- "${name}"`).join('\n');
-  const fullPrompt = `${FORM_ANALYSIS_PROMPT}\n\n## Field Names Extracted from PDF:\n${fieldListText}`;
+  
+  // Build the parts array - start with the text prompt
+  const parts: Array<{ text?: string; inline_data?: { mime_type: string; data: string } }> = [];
+  
+  // Decide whether to use images (for XFA) or PDF (for AcroForms)
+  const useImagesOnly = isXFA && pageImages && pageImages.length > 0;
+  
+  if (useImagesOnly) {
+    // For XFA forms: Use rendered page images since Gemini can't parse XFA PDFs
+    console.log(`[Gemini] XFA form detected - using ${pageImages!.length} rendered page images instead of PDF`);
+    
+    const imageNote = `\n\n## Visual Context\nThis is an XFA (XML Forms Architecture) form. I'm providing ${pageImages!.length} rendered page image(s) showing the form layout. Use these images to understand the visual structure, identify field labels, and determine the purpose of each field.`;
+    
+    parts.push({
+      text: `${FORM_ANALYSIS_PROMPT}\n\n## Field Names Extracted from PDF:\n${fieldListText}${imageNote}`
+    });
+    
+    // Add all page images
+    for (let i = 0; i < pageImages!.length; i++) {
+      parts.push({
+        inline_data: {
+          mime_type: 'image/png',
+          data: pageImages![i]
+        }
+      });
+    }
+  } else if (pageImages && pageImages.length > 0) {
+    // For AcroForms with page images: Use both PDF and images for best results
+    console.log(`[Gemini] Including PDF and ${pageImages.length} page images for visual analysis`);
+    
+    const base64PDF = uint8ArrayToBase64(pdfBytes);
+    const imageNote = `\n\n## Additional Context\nI'm also providing ${pageImages.length} rendered page image(s) of the PDF form for additional visual context.`;
+    
+    parts.push({
+      text: `${FORM_ANALYSIS_PROMPT}\n\n## Field Names Extracted from PDF:\n${fieldListText}${imageNote}`
+    });
+    
+    parts.push({
+      inline_data: {
+        mime_type: 'application/pdf',
+        data: base64PDF
+      }
+    });
+    
+    // Add page images
+    for (let i = 0; i < pageImages.length; i++) {
+      parts.push({
+        inline_data: {
+          mime_type: 'image/png',
+          data: pageImages[i]
+        }
+      });
+    }
+  } else {
+    // For AcroForms without page images: Use PDF only
+    console.log(`[Gemini] Using PDF only for analysis (no page images provided)`);
+    
+    const base64PDF = uint8ArrayToBase64(pdfBytes);
+    
+    parts.push({
+      text: `${FORM_ANALYSIS_PROMPT}\n\n## Field Names Extracted from PDF:\n${fieldListText}`
+    });
+    
+    parts.push({
+      inline_data: {
+        mime_type: 'application/pdf',
+        data: base64PDF
+      }
+    });
+  }
   
   // Construct the request
   const request: GeminiRequest = {
     contents: [{
-      parts: [
-        {
-          text: fullPrompt
-        },
-        {
-          inline_data: {
-            mime_type: 'application/pdf',
-            data: base64PDF
-          }
-        }
-      ]
+      parts
     }],
     generationConfig: {
       responseMimeType: 'application/json',
