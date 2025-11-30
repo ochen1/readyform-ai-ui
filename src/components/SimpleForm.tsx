@@ -23,13 +23,13 @@ function FormField({ name, label, value, isActive, isCompleted, onFocus, onChang
   let iconColor = 'text-slate-400';
   
   if (isActive) {
-    borderClass = 'border-red-500 border-2 ring-2 ring-red-200';
+    borderClass = 'border-orange-500 border-2 ring-2 ring-orange-200';
     Icon = HelpCircle;
-    iconColor = 'text-red-500';
+    iconColor = 'text-orange-500';
   } else if (isCompleted) {
-    borderClass = 'border-green-500 border-2';
+    borderClass = 'border-blue-500 border-2';
     Icon = CheckCircle;
-    iconColor = 'text-green-500';
+    iconColor = 'text-blue-500';
   }
 
   return (
@@ -252,7 +252,7 @@ export function SimpleForm() {
             </div>
             <div className="flex items-center gap-4 py-2">
               <span className="w-40 text-right font-medium text-slate-600">Total Value:</span>
-              <span className="text-2xl font-bold text-green-600">${totalValue.toFixed(2)}</span>
+              <span className="text-2xl font-bold text-blue-600">${totalValue.toFixed(2)}</span>
             </div>
           </div>
 
