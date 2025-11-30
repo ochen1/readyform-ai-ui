@@ -329,45 +329,45 @@ export function SimpleForm() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex">
       {/* Main Form Area - Left Side */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="bg-white border-b-2 border-slate-200 px-8 py-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-800">
-                {state.pdfLoaded && state.metadata ? state.metadata.title : 'FormAI'}
-              </h1>
-              {state.pdfLoaded && state.metadata && (
-                <div className="flex items-center gap-2 text-slate-500 mt-1">
-                  <span>{state.metadata.sourceFileName}</span>
-                  <span>•</span>
-                  <span>{visibleFields.length} fields</span>
-                  {state.isEnhancing && (
-                    <>
-                      <span>•</span>
-                      <span className="flex items-center gap-1 text-blue-600">
-                        <Loader2 size={14} className="animate-spin" />
-                        Analyzing with AI...
-                      </span>
-                    </>
-                  )}
-                  {state.enhancementCached && (
-                    <>
-                      <span>•</span>
-                      <span className="flex items-center gap-1 text-emerald-600">
-                        <Sparkles size={14} />
-                        AI Enhanced
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-              {state.metadata?.description && (
-                <p className="text-slate-400 text-sm mt-1">
-                  {state.metadata.description}
-                </p>
-              )}
-            </div>
-            {state.pdfLoaded && (
+        {/* Header - Only show when PDF is loaded */}
+        {state.pdfLoaded && (
+          <header className="bg-white border-b-2 border-slate-200 px-8 py-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-slate-800">
+                  {state.metadata ? state.metadata.title : 'Untitled Form'}
+                </h1>
+                {state.metadata && (
+                  <div className="flex items-center gap-2 text-slate-500 mt-1">
+                    <span>{state.metadata.sourceFileName}</span>
+                    <span>•</span>
+                    <span>{visibleFields.length} fields</span>
+                    {state.isEnhancing && (
+                      <>
+                        <span>•</span>
+                        <span className="flex items-center gap-1 text-blue-600">
+                          <Loader2 size={14} className="animate-spin" />
+                          Analyzing with AI...
+                        </span>
+                      </>
+                    )}
+                    {state.enhancementCached && (
+                      <>
+                        <span>•</span>
+                        <span className="flex items-center gap-1 text-emerald-600">
+                          <Sparkles size={14} />
+                          AI Enhanced
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )}
+                {state.metadata?.description && (
+                  <p className="text-slate-400 text-sm mt-1">
+                    {state.metadata.description}
+                  </p>
+                )}
+              </div>
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
                   <div 
@@ -377,9 +377,9 @@ export function SimpleForm() {
                 </div>
                 <span>{progressPercentage}% complete</span>
               </div>
-            )}
-          </div>
-        </header>
+            </div>
+          </header>
+        )}
 
         {/* Form Content */}
         <main className="flex-1 py-10 px-6 overflow-y-auto">
@@ -500,14 +500,19 @@ export function SimpleForm() {
           )}
         </main>
 
-        {/* Footer */}
-        <footer className="bg-white border-t border-slate-200 py-4 px-8 text-center text-slate-500">
-          <p>FormAI - Voice-Assisted Form Filling</p>
-        </footer>
+
       </div>
 
       {/* Right Sidebar - Controls Panel */}
       <aside className="w-96 bg-white border-l-2 border-slate-200 flex flex-col shadow-lg">
+        {/* Branding Header */}
+        <div className="p-6 border-b border-slate-200 bg-slate-50">
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <Sparkles className="text-blue-600" />
+            FormAI
+          </h1>
+        </div>
+
         {/* Voice Assistant Section */}
         <div className="p-6 border-b border-slate-200">
           <h2 className="text-lg font-semibold text-slate-700 mb-4">Voice Assistant</h2>
@@ -663,7 +668,8 @@ export function SimpleForm() {
 
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-slate-200 text-center text-sm text-slate-500">
-          FormAI v2.0
+          <p className="font-medium">FormAI - Voice-Assisted Form Filling</p>
+          <p className="text-xs mt-1 text-slate-400">v2.0</p>
         </div>
       </aside>
     </div>
