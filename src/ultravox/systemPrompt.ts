@@ -20,15 +20,24 @@ When a form is loaded, you will be able to help the user fill it out step by ste
 `.trim();
   }
 
-  // Build field list for the prompt
-  const fieldList = fields.map(f => {
-    const status = f.readonly ? '(read-only)' : '(editable)';
+  // Build field list for the prompt, separating by type
+  const editableFields = fields.filter(f => !f.readonly && !f.ignore && f.type !== 'calculated');
+  const calculatedFields = fields.filter(f => f.type === 'calculated');
+  const readOnlyFields = fields.filter(f => f.readonly && f.type !== 'calculated' && !f.ignore);
+
+  const fieldList = fields.filter(f => !f.ignore).map(f => {
+    let status = '(editable)';
+    if (f.type === 'calculated') {
+      status = '(auto-calculated)';
+    } else if (f.readonly) {
+      status = '(read-only)';
+    }
     const currentValue = f.value ? `Current: "${f.value}"` : 'Empty';
     return `- ${f.name} ${status}: ${currentValue}`;
   }).join('\n');
 
-  const editableFields = fields.filter(f => !f.readonly);
   const editableFieldNames = editableFields.map(f => f.name).join(', ');
+  const calculatedFieldNames = calculatedFields.map(f => f.name).join(', ');
 
   return `
 # FormAI Voice Assistant - ${metadata.title}
@@ -48,6 +57,7 @@ You are FormAI, a patient, friendly voice assistant designed specifically to hel
 **Source File**: ${metadata.sourceFileName}
 **Total Fields**: ${metadata.fieldCount}
 **Editable Fields**: ${editableFields.length}
+**Calculated Fields**: ${calculatedFields.length} (auto-update when you change related fields)
 
 ## Available Fields
 
@@ -57,6 +67,11 @@ ${fieldList}
 
 These are the exact field names you can use with setFieldValue, focusField, and confirmValue tools:
 ${editableFieldNames}
+
+## Calculated Fields (auto-computed, DO NOT try to set these)
+
+These fields are automatically calculated when you update related fields. Just tell the user their computed values:
+${calculatedFieldNames || 'None'}
 
 ## Conversation Guidelines
 
@@ -69,6 +84,12 @@ Begin by greeting the user warmly. Introduce yourself as FormAI and mention you'
 3. **Request confirmation or update**: Ask if it's correct or if they want to change it
 4. **Confirm after changes**: Always read back what you entered
 5. **Visual feedback**: Use the focusField tool so they can see which field you're discussing
+
+### Handling Calculated Fields
+- Calculated fields update AUTOMATICALLY when related fields change
+- NEVER try to use setFieldValue on calculated fields - they are read-only
+- Just read out their current computed value when the user asks
+- Example: "The net weight is now 25,000 kg" (after user updates gross weight)
 
 ### Handling User Input
 - Accept values as spoken naturally

@@ -66,10 +66,23 @@ export function createToolImplementations(formContext: FormContextValue, endCall
       }
       
       const value = field.value || '(empty)';
+      const isCalculated = field.type === 'calculated';
+      
+      // Build a more informative message for calculated fields
+      let message = `Current value of "${field.name}": ${value}`;
+      if (isCalculated) {
+        message = `"${field.name}" is a calculated field that updates automatically. Current value: ${value}`;
+        if (field.calculationHint) {
+          message += ` (${field.calculationHint})`;
+        }
+      }
+      
       return JSON.stringify({
         fieldName: field.name,
         value,
-        message: `Current value of "${field.name}": ${value}`
+        isCalculated,
+        calculationHint: field.calculationHint,
+        message
       });
     },
     
