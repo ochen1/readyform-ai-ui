@@ -10,8 +10,9 @@ export const initialFormState: FormState = {
   pdfBytes: null,
   metadata: null,
   
-  // Fields - empty array until PDF loaded
+  // Fields and sections - empty until PDF loaded
   fields: [],
+  sections: [],
   
   // UI state
   activeFieldId: null,
@@ -120,6 +121,7 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         ...state,
         isEnhancing: false,
         fields: action.fields,
+        sections: action.sections,
         metadata: state.metadata ? {
           ...state.metadata,
           title: action.title,

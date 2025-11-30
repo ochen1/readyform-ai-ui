@@ -67,10 +67,11 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
     // Generate dynamic tools based on loaded fields
     const dynamicTools = generateFormTools(formContext.state.fields);
 
-    // Generate system prompt with current form state
+    // Generate system prompt with current form state (including sections)
     const systemPrompt = generateSystemPrompt(
       formContext.state.metadata,
-      formContext.state.fields
+      formContext.state.fields,
+      formContext.state.sections
     );
 
     // Create the call via Ultravox API

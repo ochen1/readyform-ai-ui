@@ -67,13 +67,14 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
         // Step 4: Enhance fields with Gemini AI
         // Pass page images and isXFA flag for XFA forms - helps Gemini understand field context
         // For XFA forms, Gemini uses images instead of PDF since XFA PDFs aren't parseable
-        const { fields: enhancedFields, formTitle, formDescription, fromCache } =
+        const { fields: enhancedFields, sections, formTitle, formDescription, fromCache } =
           await enhanceFormFields(file.name, pdfBytes, basicFields, pageImages, writeContext.isXFA);
         
-        // Step 5: Update state with enhanced fields
+        // Step 5: Update state with enhanced fields and sections
         dispatch({
           type: 'COMPLETE_ENHANCEMENT',
           fields: enhancedFields,
+          sections,
           title: formTitle,
           description: formDescription,
           cached: fromCache,

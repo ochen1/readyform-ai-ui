@@ -2,7 +2,7 @@
  * Semantic field types for voice assistant context
  * Used to determine how to prompt the user and validate input
  */
-export type FieldType = 
+export type FieldType =
   | 'text'        // General text input (names, descriptions)
   | 'number'      // Plain numeric values (quantities, counts)
   | 'weight'      // Weight measurements (always with unit)
@@ -11,11 +11,26 @@ export type FieldType =
   | 'date'        // Date values (with format specification)
   | 'reference'   // IDs, codes, ticket numbers
   | 'grade'       // Classifications or grades
-  | 'selection'   // Predefined choices
+  | 'selection'   // Predefined choices (MUST have options array)
   | 'address'     // Multi-line addresses
   | 'signature'   // Signature fields (typically ignored)
   | 'calculated'  // Auto-computed fields (read-only)
   | 'ignore';     // Extraneous fields to skip
+
+/**
+ * A logical section/grouping of form fields
+ * Sections are identified by Gemini from the PDF visual structure
+ */
+export interface FormSection {
+  /** Unique ID for the section (e.g., "section_a", "personal_info") */
+  id: string;
+  /** Human-readable section title (e.g., "Section A - Personal and Work Information") */
+  title: string;
+  /** Optional description of what this section covers */
+  description?: string;
+  /** Order in which this section appears (0-indexed) */
+  order: number;
+}
 
 /**
  * Enhanced form field with LLM-generated metadata
@@ -36,12 +51,16 @@ export interface FormField {
   /** Description for voice assistant to read to user */
   description: string;
   
+  // Section grouping
+  /** Section ID this field belongs to (undefined for ungrouped fields) */
+  sectionId?: string;
+  
   // Type-specific attributes
   /** Unit of measurement (kg, tonnes, $CAD) */
   unit?: string;
   /** Expected format (yyyy/mm/dd) */
   format?: string;
-  /** Predefined choices for selection type */
+  /** Predefined choices for selection type (REQUIRED when type is 'selection') */
   options?: string[];
   /** Human-readable hint for how this field is calculated (for display) */
   calculationHint?: string;
@@ -107,9 +126,11 @@ export interface FormState {
   /** Metadata about the loaded form */
   metadata: FormMetadata | null;
   
-  // Fields
+  // Fields and sections
   /** Array of form fields extracted from PDF */
   fields: FormField[];
+  /** Sections identified in the form (empty if no sections detected) */
+  sections: FormSection[];
   
   // UI state
   /** ID of the currently active/focused field */
@@ -136,13 +157,23 @@ export interface FormState {
 export interface GeminiFieldEnhancement {
   formTitle: string;
   formDescription: string;
+  /** Sections identified in the form */
+  sections: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    order: number;
+  }>;
   fields: Array<{
     id: string;
     displayName: string;
     type: FieldType;
     description: string;
+    /** Section ID this field belongs to */
+    sectionId?: string;
     unit?: string;
     format?: string;
+    /** Options for selection type - REQUIRED when type is 'selection' */
     options?: string[];
     /** Human-readable calculation description for display */
     calculationHint?: string;
@@ -178,10 +209,11 @@ export type FormAction =
   | { type: 'RESET_FORM' }
   // Enhancement actions
   | { type: 'START_ENHANCEMENT' }
-  | { 
-      type: 'COMPLETE_ENHANCEMENT'; 
-      fields: FormField[]; 
-      title: string; 
+  | {
+      type: 'COMPLETE_ENHANCEMENT';
+      fields: FormField[];
+      sections: FormSection[];
+      title: string;
       description: string;
       cached: boolean;
     }

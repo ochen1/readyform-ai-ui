@@ -1,4 +1,4 @@
-import type { FormField, FormMetadata } from '../store/types';
+import type { FormField, FormMetadata, FormSection } from '../store/types';
 
 /**
  * Generate a dynamic system prompt based on the loaded PDF form
@@ -6,6 +6,7 @@ import type { FormField, FormMetadata } from '../store/types';
 export function generateSystemPrompt(
   metadata: FormMetadata | null,
   fields: FormField[],
+  sections: FormSection[] = [],
 ): string {
   // If no form loaded, return a minimal prompt
   if (!metadata || fields.length === 0) {
@@ -23,25 +24,83 @@ When a form is loaded, you will be able to help the user fill it out step by ste
   // Build field list for the prompt, separating by type
   const editableFields = fields.filter(f => !f.readonly && !f.ignore && f.type !== 'calculated');
   const calculatedFields = fields.filter(f => f.type === 'calculated');
+  const visibleFields = fields.filter(f => !f.ignore);
 
-  const fieldList = fields.filter(f => !f.ignore).map(f => {
-    let status = '(editable)';
-    if (f.type === 'calculated') {
-      status = '(auto-calculated)';
-    } else if (f.readonly) {
-      status = '(read-only)';
+  // Check if we have sections
+  const hasSections = sections.length > 0;
+
+  // Build field list - grouped by section if sections exist
+  let fieldList: string;
+  
+  if (hasSections) {
+    const fieldsBySection = new Map<string | null, FormField[]>();
+    fieldsBySection.set(null, []); // ungrouped
+    sections.forEach(s => fieldsBySection.set(s.id, []));
+    
+    visibleFields.forEach(f => {
+      const sectionId = f.sectionId || null;
+      const list = fieldsBySection.get(sectionId);
+      if (list) {
+        list.push(f);
+      } else {
+        fieldsBySection.get(null)!.push(f);
+      }
+    });
+    
+    const sectionTexts = sections.map(section => {
+      const sectionFields = fieldsBySection.get(section.id) || [];
+      if (sectionFields.length === 0) return '';
+      
+      const fieldsText = sectionFields.map(f => {
+        let status = '(editable)';
+        if (f.type === 'calculated') status = '(auto-calculated)';
+        else if (f.readonly) status = '(read-only)';
+        const currentValue = f.value ? `Current: "${f.value}"` : 'Empty';
+        return `  - ${f.name} ${status}: ${currentValue}`;
+      }).join('\n');
+      
+      return `### ${section.title}\n${section.description ? `_${section.description}_\n` : ''}${fieldsText}`;
+    }).filter(Boolean);
+    
+    // Add ungrouped fields if any
+    const ungrouped = fieldsBySection.get(null) || [];
+    if (ungrouped.length > 0) {
+      const ungroupedText = ungrouped.map(f => {
+        let status = '(editable)';
+        if (f.type === 'calculated') status = '(auto-calculated)';
+        else if (f.readonly) status = '(read-only)';
+        const currentValue = f.value ? `Current: "${f.value}"` : 'Empty';
+        return `  - ${f.name} ${status}: ${currentValue}`;
+      }).join('\n');
+      sectionTexts.push(`### Other Fields\n${ungroupedText}`);
     }
-    const currentValue = f.value ? `Current: "${f.value}"` : 'Empty';
-    return `- ${f.name} ${status}: ${currentValue}`;
-  }).join('\n');
+    
+    fieldList = sectionTexts.join('\n\n');
+  } else {
+    fieldList = visibleFields.map(f => {
+      let status = '(editable)';
+      if (f.type === 'calculated') {
+        status = '(auto-calculated)';
+      } else if (f.readonly) {
+        status = '(read-only)';
+      }
+      const currentValue = f.value ? `Current: "${f.value}"` : 'Empty';
+      return `- ${f.name} ${status}: ${currentValue}`;
+    }).join('\n');
+  }
 
   const editableFieldNames = editableFields.map(f => f.name).join(', ');
   const calculatedFieldNames = calculatedFields.map(f => f.name).join(', ');
+  
+  // Build section info for the prompt
+  const sectionInfo = hasSections
+    ? `\n## Form Sections\n\nThis form has ${sections.length} section(s):\n${sections.map(s => `- **${s.title}**${s.description ? `: ${s.description}` : ''}`).join('\n')}\n\n**IMPORTANT**: When moving between sections, always announce the transition. For example: "Now let's move to ${sections[0]?.title || 'the next section'}."\n`
+    : '';
 
   return `
 # FormAI Voice Assistant - ${metadata.title}
 
-You are FormAI, a patient, friendly voice assistant designed specifically to help users fill out PDF forms. You are currently helping the user complete the **${metadata.title}** form.
+You are FormAI, a patient, friendly voice assistant designed specifically to help users fill out PDF forms. You are currently helping the user complete the **${metadata.title}** form.${hasSections ? ` This form is organized into ${sections.length} sections.` : ''}
 
 ## Your Core Personality
 
@@ -58,7 +117,7 @@ You are FormAI, a patient, friendly voice assistant designed specifically to hel
 **Editable Fields**: ${editableFields.length}
 **Calculated Fields**: ${calculatedFields.length} (auto-update when you change related fields)
 
-## Available Fields
+${sectionInfo}## Available Fields
 
 ${fieldList}
 
@@ -82,7 +141,8 @@ Begin by greeting the user warmly. Introduce yourself as FormAI and mention you'
 2. **State current value**: If a field has a value, tell the user what it is
 3. **Request confirmation or update**: Ask if it's correct or if they want to change it
 4. **Confirm after changes**: Always read back what you entered
-5. **Visual feedback**: Use the focusField tool so they can see which field you're discussing
+5. **Visual feedback**: Use the focusField tool so they can see which field you're discussing${hasSections ? `
+6. **Section transitions**: When moving to a new section, announce it clearly (e.g., "Now let's move to Section B - Employer Information")` : ''}
 
 ### Handling Calculated Fields
 - Calculated fields update AUTOMATICALLY when related fields change
@@ -136,7 +196,9 @@ Don't fill silence - wait for user responses.
 ## Example Interactions
 
 **Greeting:**
-"Hello! I'm FormAI, and I'm here to help you fill out the ${metadata.title} form. I'll walk you through each field one at a time. Ready to get started?"
+${hasSections
+  ? `"Hello! I'm FormAI, and I'm here to help you fill out the ${metadata.title} form. This form has ${sections.length} sections: ${sections.map(s => s.title).join(', ')}. I'll guide you through each section one at a time. Ready to start with ${sections[0]?.title || 'the first section'}?"`
+  : `"Hello! I'm FormAI, and I'm here to help you fill out the ${metadata.title} form. I'll walk you through each field one at a time. Ready to get started?"`}
 
 **Confirming a value:**
 "That's correct" → [confirmValue] "Perfect. Let's move to the next field. [focusField] What would you like to enter for [next field name]?"

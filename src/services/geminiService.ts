@@ -30,10 +30,47 @@ Assign one of these semantic types to each field:
 | date | Date values | Issue date, delivery date |
 | reference | IDs and codes | Receipt #, ticket #, contract ref |
 | grade | Classifications | Grain grade, quality rating |
-| selection | Predefined choices | Grain type, payment method |
+| selection | ONLY for radio buttons/dropdowns with VISIBLE PREDEFINED choices in the PDF | Province dropdown (with explicit list), Yes/No radio buttons |
 | address | Multi-line addresses | Producer address, delivery location |
 | calculated | Auto-computed fields | Net = Gross - Tare (mark readonly) |
 | ignore | Skip these entirely | undefined_*, signatures, internal fields |
+
+### CRITICAL: Selection Type Rules
+
+**The "selection" type should ONLY be used when:**
+1. The PDF shows a FIXED list of choices (radio buttons, checkboxes, dropdown menu)
+2. You can identify ALL possible options from the PDF
+
+**If you use type: "selection", you MUST provide the "options" array with all valid choices.**
+
+❌ WRONG - Selection without options (WILL BREAK THE UI):
+\`\`\`json
+{
+  "id": "Province",
+  "type": "selection",
+  "options": null
+}
+\`\`\`
+
+✅ CORRECT - Selection WITH options:
+\`\`\`json
+{
+  "id": "Province",
+  "type": "selection",
+  "options": ["Alberta", "British Columbia", "Manitoba", "Ontario", "Quebec", "Saskatchewan"]
+}
+\`\`\`
+
+✅ CORRECT - Use "text" if options are unknown or not visible in PDF:
+\`\`\`json
+{
+  "id": "Province",
+  "type": "text",
+  "description": "Enter your province or territory"
+}
+\`\`\`
+
+**When in doubt, use "text" instead of "selection".**
 
 ## Output Format
 
@@ -42,15 +79,24 @@ Respond with a valid JSON object in this exact structure:
 {
   "formTitle": "Human-readable form title based on the document",
   "formDescription": "Brief description of the form's purpose",
+  "sections": [
+    {
+      "id": "section_a",
+      "title": "Section A - Your Personal and Work Information",
+      "description": "Information about you and your employment",
+      "order": 0
+    }
+  ],
   "fields": [
     {
       "id": "exact_field_id_from_input",
       "displayName": "Human-Friendly Name (NO units - units go in 'unit' field)",
       "type": "one of the types above",
       "description": "Voice prompt description for the user. Be clear and include format hints.",
+      "sectionId": "section_a (reference to a section id, or null if ungrouped)",
       "unit": "kg, tonnes, CAD, % (or null if not applicable)",
       "format": "yyyy-mm-dd (or null if not applicable)",
-      "options": ["option1", "option2"] (or null if not a selection type),
+      "options": ["option1", "option2"] (REQUIRED if type is "selection", otherwise null),
       "calculationHint": "Human-readable description of calculation (for display)",
       "formula": "{Field A} - {Field B} (parseable formula for calculated fields)",
       "required": true/false,
@@ -106,6 +152,69 @@ Respond with a valid JSON object in this exact structure:
    - Understand the form's overall purpose
    - Determine units from column headers or labels
    - Identify which fields are likely required
+   - Identify section headers and group fields into sections
+
+## Section Detection
+
+Many government forms are organized into sections (e.g., "Section A - Personal Information", "Part 1 - Applicant Details").
+Analyze the PDF to identify these sections and assign each field to the appropriate section.
+
+### Section Guidelines
+
+1. **Look for visual section headers** in the PDF:
+   - Bold text with section labels
+   - Background colors or borders separating sections
+   - Numbered or lettered sections (Section A, Part 1, I., etc.)
+
+2. **Section ID format**: Use lowercase with underscores (e.g., "section_a", "personal_info", "employer_details")
+
+3. **Order**: Assign order numbers starting from 0, based on how sections appear in the document
+
+4. **If no clear sections exist**:
+   - Leave the sections array empty: \`"sections": []\`
+   - Leave sectionId as null for all fields
+   - Do NOT create artificial groupings
+
+5. **Every field in a sectioned form should have a sectionId** that references a valid section
+
+### Section Example
+
+For a form with "Section A - Personal Information" and "Section B - Employer Information":
+
+\`\`\`json
+{
+  "sections": [
+    {
+      "id": "section_a",
+      "title": "Section A - Your Personal and Work Information",
+      "description": "Information about you, your employment dates, and job details",
+      "order": 0
+    },
+    {
+      "id": "section_b",
+      "title": "Section B - Employer Information",
+      "description": "Details about your employer and workplace",
+      "order": 1
+    }
+  ],
+  "fields": [
+    {
+      "id": "Last/Family name",
+      "displayName": "Last Name",
+      "type": "text",
+      "sectionId": "section_a",
+      ...
+    },
+    {
+      "id": "Employer name",
+      "displayName": "Employer Name",
+      "type": "text",
+      "sectionId": "section_b",
+      ...
+    }
+  ]
+}
+\`\`\`
 
 ## Example Field Analyses
 
@@ -261,21 +370,57 @@ function validateAndCleanResponse(data: unknown): GeminiFieldEnhancement {
     response.ignoredFields = [];
   }
   
+  // Validate and clean sections
+  if (!Array.isArray(response.sections)) {
+    response.sections = [];
+  } else {
+    response.sections = response.sections.map((section, index) => ({
+      id: section.id || `section_${index}`,
+      title: section.title || `Section ${index + 1}`,
+      description: section.description || undefined,
+      order: typeof section.order === 'number' ? section.order : index,
+    }));
+  }
+  
+  // Create a set of valid section IDs for validation
+  const validSectionIds = new Set(response.sections.map(s => s.id));
+  
   // Validate and clean each field
-  response.fields = response.fields.map(field => ({
-    id: field.id || '',
-    displayName: field.displayName || field.id || 'Unknown Field',
-    type: validateFieldType(field.type),
-    description: field.description || `Please provide the value for ${field.displayName || field.id}`,
-    unit: field.unit || undefined,
-    format: field.format || undefined,
-    options: Array.isArray(field.options) ? field.options : undefined,
-    calculationHint: field.calculationHint || undefined,
-    formula: field.formula || undefined,
-    required: Boolean(field.required),
-    readonly: Boolean(field.readonly),
-    ignore: Boolean(field.ignore),
-  }));
+  response.fields = response.fields.map(field => {
+    // Check if options are valid for selection type
+    const hasValidOptions = Array.isArray(field.options) && field.options.length > 0;
+    const rawType = validateFieldType(field.type);
+    
+    // CRITICAL: If type is "selection" but no valid options, convert to "text"
+    // This prevents broken dropdowns in the UI
+    let effectiveType = rawType;
+    if (rawType === 'selection' && !hasValidOptions) {
+      console.warn(`[Gemini Validation] Field "${field.id}" has type "selection" but no options - converting to "text"`);
+      effectiveType = 'text';
+    }
+    
+    // Validate sectionId - only keep if it references a valid section
+    const sectionId = field.sectionId && validSectionIds.has(field.sectionId)
+      ? field.sectionId
+      : undefined;
+    
+    return {
+      id: field.id || '',
+      displayName: field.displayName || field.id || 'Unknown Field',
+      type: effectiveType,
+      description: field.description || `Please provide the value for ${field.displayName || field.id}`,
+      sectionId,
+      unit: field.unit || undefined,
+      format: field.format || undefined,
+      // Only include options if type is selection AND options are valid
+      options: (effectiveType === 'selection' && hasValidOptions) ? field.options : undefined,
+      calculationHint: field.calculationHint || undefined,
+      formula: field.formula || undefined,
+      required: Boolean(field.required),
+      readonly: Boolean(field.readonly),
+      ignore: Boolean(field.ignore),
+    };
+  });
   
   return response;
 }

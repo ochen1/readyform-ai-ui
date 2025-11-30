@@ -1,4 +1,4 @@
-import type { FormField, GeminiFieldEnhancement } from '../store/types';
+import type { FormField, FormSection, GeminiFieldEnhancement } from '../store/types';
 import { analyzeFormWithGemini, isGeminiConfigured } from './geminiService';
 import { getCachedEnhancement, cacheEnhancement } from './enhancementCache';
 
@@ -8,6 +8,8 @@ import { getCachedEnhancement, cacheEnhancement } from './enhancementCache';
 export interface EnhancementResult {
   /** Enhanced fields with LLM metadata */
   fields: FormField[];
+  /** Sections identified in the form */
+  sections: FormSection[];
   /** Form title from LLM analysis */
   formTitle: string;
   /** Form description from LLM analysis */
@@ -40,6 +42,7 @@ function mergeEnhancements(
         name: enhanced.displayName || field.name,
         type: enhanced.type || 'text',
         description: enhanced.description || field.description,
+        sectionId: enhanced.sectionId, // Section grouping
         unit: enhanced.unit,
         format: enhanced.format,
         options: enhanced.options,
@@ -62,6 +65,22 @@ function mergeEnhancements(
     // Return field as-is if not found in enhancement
     return field;
   });
+}
+
+/**
+ * Extract sections from Gemini enhancement response
+ */
+function extractSections(enhancement: GeminiFieldEnhancement): FormSection[] {
+  if (!Array.isArray(enhancement.sections)) {
+    return [];
+  }
+  
+  return enhancement.sections.map(s => ({
+    id: s.id,
+    title: s.title,
+    description: s.description,
+    order: s.order,
+  })).sort((a, b) => a.order - b.order);
 }
 
 /**
@@ -122,6 +141,7 @@ export async function enhanceFormFields(
     console.log('[Enhancer] Using cached enhancement');
     return {
       fields: mergeEnhancements(basicFields, cached),
+      sections: extractSections(cached),
       formTitle: cached.formTitle,
       formDescription: cached.formDescription,
       fromCache: true,
@@ -133,6 +153,7 @@ export async function enhanceFormFields(
     console.warn('[Enhancer] Gemini API not configured, using basic fields');
     return {
       fields: createBasicFields(basicFields),
+      sections: [], // No sections without AI enhancement
       formTitle: extractTitleFromFilename(filename),
       formDescription: 'Form loaded without AI enhancement (API key not configured)',
       fromCache: false,
@@ -155,6 +176,7 @@ export async function enhanceFormFields(
     // Merge and return
     return {
       fields: mergeEnhancements(basicFields, enhancement),
+      sections: extractSections(enhancement),
       formTitle: enhancement.formTitle,
       formDescription: enhancement.formDescription,
       fromCache: false,
@@ -165,6 +187,7 @@ export async function enhanceFormFields(
     // Fall back to basic fields
     return {
       fields: createBasicFields(basicFields),
+      sections: [], // No sections on error
       formTitle: extractTitleFromFilename(filename),
       formDescription: `Form loaded (AI enhancement failed: ${error instanceof Error ? error.message : 'Unknown error'})`,
       fromCache: false,

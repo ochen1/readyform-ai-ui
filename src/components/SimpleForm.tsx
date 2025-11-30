@@ -1,8 +1,8 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useMemo } from 'react';
 import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
-import type { FormField } from '../store/types';
+import type { FormField, FormSection } from '../store/types';
 import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
 
@@ -286,6 +286,37 @@ export function SimpleForm() {
   // Get visible (non-ignored) fields
   const visibleFields = state.fields.filter(f => !f.ignore);
   
+  // Group fields by section
+  const fieldsBySection = useMemo(() => {
+    const grouped = new Map<string | null, FormField[]>();
+    
+    // Initialize with null for ungrouped fields
+    grouped.set(null, []);
+    
+    // Initialize with each section (in order)
+    state.sections.forEach(section => {
+      grouped.set(section.id, []);
+    });
+    
+    // Distribute fields
+    visibleFields.forEach(field => {
+      const sectionId = field.sectionId || null;
+      const fields = grouped.get(sectionId);
+      if (fields) {
+        fields.push(field);
+      } else {
+        // If sectionId doesn't exist, add to ungrouped
+        grouped.get(null)!.push(field);
+      }
+    });
+    
+    return grouped;
+  }, [visibleFields, state.sections]);
+  
+  // Check if we have any sections with fields
+  const hasSections = state.sections.length > 0 &&
+    state.sections.some(section => (fieldsBySection.get(section.id)?.length || 0) > 0);
+  
   // Calculate progress from visible, editable fields
   const editableFields = visibleFields.filter(f => !f.readonly && f.type !== 'calculated');
   const completedCount = state.completedFieldIds.filter(id =>
@@ -386,19 +417,74 @@ export function SimpleForm() {
                 </div>
               )}
 
-              {/* Dynamic Fields - Only show visible (non-ignored) fields */}
-              <div className="space-y-2">
-                {visibleFields.map((field) => (
-                  <FormFieldComponent
-                    key={field.id}
-                    field={field}
-                    isActive={state.activeFieldId === field.id}
-                    isCompleted={state.completedFieldIds.includes(field.id)}
-                    onFocus={() => handleFieldFocus(field.id)}
-                    onChange={(value) => handleFieldChange(field.id, value)}
-                  />
-                ))}
-              </div>
+              {/* Dynamic Fields - Grouped by section if sections exist */}
+              {hasSections ? (
+                // Render fields grouped by section
+                <div className="space-y-8">
+                  {state.sections.map(section => {
+                    const sectionFields = fieldsBySection.get(section.id) || [];
+                    if (sectionFields.length === 0) return null;
+                    
+                    return (
+                      <div key={section.id} id={`section-${section.id}`} className="scroll-mt-4">
+                        {/* Section Header */}
+                        <div className="mb-4 pb-3 border-b-2 border-slate-200">
+                          <h2 className="text-xl font-bold text-slate-800">
+                            {section.title}
+                          </h2>
+                          {section.description && (
+                            <p className="text-slate-500 text-sm mt-1">{section.description}</p>
+                          )}
+                        </div>
+                        
+                        {/* Section Fields */}
+                        <div className="space-y-2">
+                          {sectionFields.map((field) => (
+                            <FormFieldComponent
+                              key={field.id}
+                              field={field}
+                              isActive={state.activeFieldId === field.id}
+                              isCompleted={state.completedFieldIds.includes(field.id)}
+                              onFocus={() => handleFieldFocus(field.id)}
+                              onChange={(value) => handleFieldChange(field.id, value)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {/* Ungrouped fields (if any) */}
+                  {(fieldsBySection.get(null)?.length || 0) > 0 && (
+                    <div className="space-y-2">
+                      {fieldsBySection.get(null)!.map((field) => (
+                        <FormFieldComponent
+                          key={field.id}
+                          field={field}
+                          isActive={state.activeFieldId === field.id}
+                          isCompleted={state.completedFieldIds.includes(field.id)}
+                          onFocus={() => handleFieldFocus(field.id)}
+                          onChange={(value) => handleFieldChange(field.id, value)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Render all fields without sections (original behavior)
+                <div className="space-y-2">
+                  {visibleFields.map((field) => (
+                    <FormFieldComponent
+                      key={field.id}
+                      field={field}
+                      isActive={state.activeFieldId === field.id}
+                      isCompleted={state.completedFieldIds.includes(field.id)}
+                      onFocus={() => handleFieldFocus(field.id)}
+                      onChange={(value) => handleFieldChange(field.id, value)}
+                    />
+                  ))}
+                </div>
+              )}
 
               {/* Submit/Download Button */}
               <div className="mt-10 flex justify-center gap-4">
