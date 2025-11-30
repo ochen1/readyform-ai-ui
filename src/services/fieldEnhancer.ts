@@ -44,6 +44,7 @@ function mergeEnhancements(
         format: enhanced.format,
         options: enhanced.options,
         calculationHint: enhanced.calculationHint,
+        formula: enhanced.formula, // Parseable formula for calculated fields
         required: enhanced.required ?? field.required,
         readonly: enhanced.readonly ?? field.readonly,
         ignore: enhanced.ignore ?? false,

@@ -1,8 +1,13 @@
-import React, { createContext, useContext, useReducer, useCallback, useMemo, useRef } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useMemo, useRef, useEffect } from 'react';
 import type { FormState, FormAction, FormField } from './types';
 import { formReducer, initialFormState } from './formReducer';
 import { parsePDF, updatePDFField, openPDFInNewTab, downloadPDF as downloadPDFFile } from '../services/pdfParser';
 import { enhanceFormFields, getVisibleFields, getEditableFields } from '../services/fieldEnhancer';
+import {
+  buildDependencyGraph,
+  getFieldsToRecalculate,
+  evaluateFormula
+} from '../services/calculationEngine';
 import type { PDFDocument } from 'pdf-lib';
 
 export interface FormContextValue {
@@ -86,11 +91,81 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Build dependency graph when fields change
+  const dependencyGraphRef = useRef<Map<string, string[]>>(new Map());
+  
+  useEffect(() => {
+    if (state.fields.length > 0) {
+      dependencyGraphRef.current = buildDependencyGraph(state.fields);
+      console.log('[Calculations] Dependency graph built:', dependencyGraphRef.current);
+    }
+  }, [state.fields]);
+
+  // Recalculate all calculated fields (used after initial load or enhancement)
+  const recalculateAllCalculatedFields = useCallback(async () => {
+    const calculatedFields = state.fields.filter(f => f.type === 'calculated' && f.formula);
+    
+    if (calculatedFields.length === 0) return;
+    
+    console.log('[Calculations] Recalculating all calculated fields');
+    
+    // Create a working copy of fields with current values
+    let workingFields = [...state.fields];
+    let changed = true;
+    let iterations = 0;
+    const maxIterations = 10; // Prevent infinite loops
+    
+    // Iterate until no changes (handles cascading calculations)
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+      
+      for (const calcField of calculatedFields) {
+        if (!calcField.formula) continue;
+        
+        const newValue = evaluateFormula(calcField.formula, workingFields);
+        const currentField = workingFields.find(f => f.id === calcField.id);
+        
+        if (currentField && currentField.value !== newValue) {
+          // Update working fields
+          workingFields = workingFields.map(f =>
+            f.id === calcField.id ? { ...f, value: newValue } : f
+          );
+          changed = true;
+          
+          // Dispatch update
+          dispatch({ type: 'SET_FIELD', fieldId: calcField.id, value: newValue });
+          
+          // Update PDF
+          if (pdfDocRef.current) {
+            try {
+              const newBytes = await updatePDFField(pdfDocRef.current, calcField.id, newValue);
+              dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+            } catch (error) {
+              console.error('Failed to update calculated PDF field:', error);
+            }
+          }
+        }
+      }
+    }
+    
+    if (iterations >= maxIterations) {
+      console.warn('[Calculations] Max iterations reached - possible circular dependency');
+    }
+  }, [state.fields]);
+
+  // Trigger initial calculation after enhancement completes
+  useEffect(() => {
+    if (!state.isEnhancing && state.pdfLoaded && state.fields.some(f => f.type === 'calculated' && f.formula)) {
+      recalculateAllCalculatedFields();
+    }
+  }, [state.isEnhancing, state.pdfLoaded, recalculateAllCalculatedFields]);
+
   const setField = useCallback(async (fieldId: string, value: string) => {
-    // Update state
+    // Update the primary field
     dispatch({ type: 'SET_FIELD', fieldId, value });
     
-    // Update PDF document
+    // Update PDF document for the primary field
     if (pdfDocRef.current) {
       try {
         const newBytes = await updatePDFField(pdfDocRef.current, fieldId, value);
@@ -99,7 +174,48 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
         console.error('Failed to update PDF field:', error);
       }
     }
-  }, []);
+    
+    // Recalculate dependent fields
+    const fieldsToRecalculate = getFieldsToRecalculate(fieldId, dependencyGraphRef.current);
+    
+    if (fieldsToRecalculate.length > 0) {
+      console.log(`[Calculations] Field ${fieldId} changed, recalculating:`, fieldsToRecalculate);
+      
+      // Get current fields with the updated value
+      const currentFields = state.fields.map(f =>
+        f.id === fieldId ? { ...f, value } : f
+      );
+      
+      // Recalculate each dependent field
+      for (const calcFieldId of fieldsToRecalculate) {
+        const calcField = currentFields.find(f => f.id === calcFieldId);
+        
+        if (calcField?.type === 'calculated' && calcField.formula) {
+          // Use the updated fields for calculation
+          const calculatedValue = evaluateFormula(calcField.formula, currentFields);
+          
+          // Update state
+          dispatch({ type: 'SET_FIELD', fieldId: calcFieldId, value: calculatedValue });
+          
+          // Update the working fields for cascading calculations
+          const idx = currentFields.findIndex(f => f.id === calcFieldId);
+          if (idx !== -1) {
+            currentFields[idx] = { ...currentFields[idx], value: calculatedValue };
+          }
+          
+          // Update PDF
+          if (pdfDocRef.current) {
+            try {
+              const newBytes = await updatePDFField(pdfDocRef.current, calcFieldId, calculatedValue);
+              dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+            } catch (error) {
+              console.error('Failed to update calculated PDF field:', error);
+            }
+          }
+        }
+      }
+    }
+  }, [state.fields]);
 
   const getField = useCallback((fieldId: string): string | undefined => {
     const field = state.fields.find(f => f.id === fieldId);

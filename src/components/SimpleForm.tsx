@@ -4,6 +4,7 @@ import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
 import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, Info } from 'lucide-react';
+import { DynamicInput, getFieldTypeIcon } from './inputs';
 
 interface FieldProps {
   field: FormField;
@@ -16,36 +17,29 @@ interface FieldProps {
 function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }: FieldProps) {
   const [showDescription, setShowDescription] = React.useState(false);
   
-  // Determine border and icon based on state
-  let borderClass = 'border-slate-300 bg-white'; // default/pending
-  let Icon = Circle;
+  // Determine styling based on state
+  let borderClass = 'border-slate-300 bg-white';
+  let StatusIcon = Circle;
   let iconColor = 'text-slate-400';
   let labelColor = 'text-slate-600';
   
-  if (field.readonly) {
+  const isDisabled = field.readonly || field.type === 'calculated';
+  
+  if (isDisabled) {
     borderClass = 'border-slate-200 bg-slate-50';
     iconColor = 'text-slate-300';
     labelColor = 'text-slate-400';
   } else if (isActive) {
     borderClass = 'border-orange-500 border-2 ring-4 ring-orange-100 bg-orange-50';
-    Icon = HelpCircle;
+    StatusIcon = HelpCircle;
     iconColor = 'text-orange-500';
     labelColor = 'text-orange-700 font-semibold';
   } else if (isCompleted) {
     borderClass = 'border-emerald-500 border-2 bg-emerald-50';
-    Icon = CheckCircle;
+    StatusIcon = CheckCircle;
     iconColor = 'text-emerald-500';
     labelColor = 'text-emerald-700';
   }
-
-  // Generate placeholder based on field type
-  const getPlaceholder = () => {
-    if (field.readonly) return '(Read-only)';
-    if (field.type === 'calculated') return '(Calculated automatically)';
-    if (field.format) return `Format: ${field.format}`;
-    if (field.unit) return `Enter value in ${field.unit}...`;
-    return 'Enter value...';
-  };
 
   // Get type badge color
   const getTypeBadgeColor = () => {
@@ -56,46 +50,65 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
       case 'percentage': return 'bg-purple-100 text-purple-700';
       case 'reference': return 'bg-slate-100 text-slate-700';
       case 'calculated': return 'bg-gray-100 text-gray-600';
+      case 'number': return 'bg-indigo-100 text-indigo-700';
+      case 'address': return 'bg-cyan-100 text-cyan-700';
+      case 'selection': return 'bg-pink-100 text-pink-700';
+      case 'grade': return 'bg-orange-100 text-orange-700';
       default: return 'bg-slate-100 text-slate-600';
     }
   };
 
+  // Get type-specific icon
+  const TypeIcon = getFieldTypeIcon(field.type);
+
   return (
     <div className="py-4">
-      <div className="flex items-center gap-6">
-        <div className="w-56 text-right shrink-0">
-          <label className={`text-lg ${labelColor}`}>
-            {field.name}
-          </label>
-          {field.type !== 'text' && (
-            <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${getTypeBadgeColor()}`}>
-              {field.type}
-            </span>
-          )}
-          {field.description && (
-            <button
-              type="button"
-              onClick={() => setShowDescription(!showDescription)}
-              className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
-              title="Show field description"
-            >
-              <Info size={16} />
-            </button>
-          )}
+      <div className="flex items-start gap-6">
+        {/* Label Section */}
+        <div className="w-56 text-right shrink-0 pt-4">
+          <div className="flex items-center justify-end gap-2">
+            {TypeIcon && <span className="text-slate-400">{TypeIcon}</span>}
+            <label className={`text-lg ${labelColor}`}>
+              {field.name}
+            </label>
+          </div>
+          <div className="flex items-center justify-end gap-1 mt-1">
+            {field.type !== 'text' && (
+              <span className={`text-xs px-2 py-0.5 rounded-full ${getTypeBadgeColor()}`}>
+                {field.type}
+              </span>
+            )}
+            {field.required && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+                required
+              </span>
+            )}
+            {field.description && (
+              <button
+                type="button"
+                onClick={() => setShowDescription(!showDescription)}
+                className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
+                title="Show field description"
+              >
+                <Info size={14} />
+              </button>
+            )}
+          </div>
         </div>
         
-        <input
-          type="text"
+        {/* Input Section - Uses dynamic input component */}
+        <DynamicInput
+          field={field}
           value={field.value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={onChange}
           onFocus={onFocus}
-          disabled={field.readonly || field.type === 'calculated'}
-          className={`flex-1 px-5 py-4 rounded-xl border-2 ${borderClass} text-xl focus:outline-none transition-all duration-200 ${field.readonly || field.type === 'calculated' ? 'cursor-not-allowed' : ''}`}
-          placeholder={getPlaceholder()}
+          disabled={isDisabled}
+          className={borderClass}
         />
         
-        <div className={`shrink-0 ${iconColor}`}>
-          <Icon size={32} strokeWidth={2.5} />
+        {/* Status Icon */}
+        <div className={`shrink-0 pt-4 ${iconColor}`}>
+          <StatusIcon size={32} strokeWidth={2.5} />
         </div>
       </div>
       
@@ -107,6 +120,11 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
             {field.calculationHint && (
               <span className="block mt-1 text-slate-400 italic">
                 Calculation: {field.calculationHint}
+              </span>
+            )}
+            {field.format && (
+              <span className="block mt-1 text-slate-400">
+                Format: {field.format}
               </span>
             )}
           </p>

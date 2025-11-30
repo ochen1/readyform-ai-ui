@@ -51,7 +51,8 @@ Respond with a valid JSON object in this exact structure:
       "unit": "kg, tonnes, $CAD, % (or null if not applicable)",
       "format": "yyyy-mm-dd (or null if not applicable)",
       "options": ["option1", "option2"] (or null if not a selection type),
-      "calculationHint": "How this is calculated (for calculated type, or null)",
+      "calculationHint": "Human-readable description of calculation (for display)",
+      "formula": "{Field A} - {Field B} (parseable formula for calculated fields)",
       "required": true/false,
       "readonly": true/false,
       "ignore": true/false
@@ -78,10 +79,23 @@ Respond with a valid JSON object in this exact structure:
    - Internal/system fields not meant for user input
    - Any field that appears decorative or non-functional
 
-4. **Calculated Fields**: If a field appears to be calculated from other fields (like Net Weight = Gross - Vehicle), mark it as:
+4. **Calculated Fields**: For fields that are computed from other fields:
    - type: "calculated"
    - readonly: true
-   - Include the calculationHint
+   - calculationHint: Human-readable description (e.g., "Gross Weight minus Vehicle Weight")
+   - formula: Parseable formula using field IDs in curly braces
+
+   **IMPORTANT: Formula Syntax**
+   - Reference fields using their EXACT ID in curly braces: {Field ID}
+   - Supported operators: + (add), - (subtract), * (multiply), / (divide)
+   - Use parentheses for grouping: ({A} - {B}) * {C}
+   - Numbers are allowed: {A} / 1000
+   
+   Examples:
+   - Net weight: formula = "{Gross weight} - {Vehicle weight}"
+   - Total price: formula = "({Net weight} / 1000) * {Price per net tonne}"
+   - Net payable: formula = "{Total purchase price} - {Levy deductible}"
+   - Adjusted weight: formula = "{Net weight} * (1 - {Dockage} / 100)"
 
 5. **Required Fields**: Mark fields as required if they seem essential to the form's purpose.
 
@@ -103,6 +117,7 @@ For "Gross weight" in a grain receipt:
   "format": null,
   "options": null,
   "calculationHint": null,
+  "formula": null,
   "required": true,
   "readonly": false,
   "ignore": false
@@ -118,6 +133,7 @@ For "Date of issue yyyymmdd":
   "format": "yyyy-mm-dd",
   "options": null,
   "calculationHint": null,
+  "formula": null,
   "required": true,
   "readonly": false,
   "ignore": false
@@ -133,6 +149,23 @@ For "Net weight" (calculated):
   "format": null,
   "options": null,
   "calculationHint": "Gross Weight minus Vehicle Weight",
+  "formula": "{Gross weight} - {Vehicle weight}",
+  "required": false,
+  "readonly": true,
+  "ignore": false
+}
+
+For "Total purchase price" (calculated):
+{
+  "id": "Total purchase price",
+  "displayName": "Total Purchase Price (CAD)",
+  "type": "calculated",
+  "description": "The total value of the grain delivery. This is calculated automatically based on net weight and price.",
+  "unit": "CAD",
+  "format": null,
+  "options": null,
+  "calculationHint": "Net weight (in tonnes) times price per tonne",
+  "formula": "({Net weight} / 1000) * {Price per net tonne}",
   "required": false,
   "readonly": true,
   "ignore": false
@@ -148,6 +181,7 @@ For "undefined_3":
   "format": null,
   "options": null,
   "calculationHint": null,
+  "formula": null,
   "required": false,
   "readonly": false,
   "ignore": true
@@ -235,6 +269,7 @@ function validateAndCleanResponse(data: unknown): GeminiFieldEnhancement {
     format: field.format || undefined,
     options: Array.isArray(field.options) ? field.options : undefined,
     calculationHint: field.calculationHint || undefined,
+    formula: field.formula || undefined,
     required: Boolean(field.required),
     readonly: Boolean(field.readonly),
     ignore: Boolean(field.ignore),

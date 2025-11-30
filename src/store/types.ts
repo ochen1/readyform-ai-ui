@@ -45,8 +45,14 @@ export interface FormField {
   format?: string;
   /** Predefined choices for selection type */
   options?: string[];
-  /** How this field is calculated (for calculated type) */
+  /** Human-readable hint for how this field is calculated (for display) */
   calculationHint?: string;
+  /**
+   * Parseable formula for calculated fields
+   * Uses field IDs/names in curly braces: "{Gross weight} - {Vehicle weight}"
+   * Supports: +, -, *, /, (, ), numbers
+   */
+  formula?: string;
   
   // Behavioral flags
   /** Whether field is required */
@@ -128,7 +134,10 @@ export interface GeminiFieldEnhancement {
     unit?: string;
     format?: string;
     options?: string[];
+    /** Human-readable calculation description for display */
     calculationHint?: string;
+    /** Parseable formula: "{Field A} - {Field B}" */
+    formula?: string;
     required: boolean;
     readonly: boolean;
     ignore: boolean;
