@@ -139,112 +139,17 @@ export function SimpleForm() {
   const totalValue = adjustedWeight * state.data.pricePerTonne;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b-2 border-slate-200 px-8 py-5 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-slate-800">Grain Receipt Form</h1>
-            
-            {/* Voice Controls */}
-            <div className="flex items-center gap-4">
-              {/* Status Indicator */}
-              {isConnected && (
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
-                  {status === 'thinking' && (
-                    <span className="text-amber-600 text-lg flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
-                      Thinking...
-                    </span>
-                  )}
-                  {status === 'speaking' && (
-                    <span className="text-blue-600 text-lg flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
-                      Speaking...
-                    </span>
-                  )}
-                  {status === 'listening' && (
-                    <span className="text-emerald-600 text-lg flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
-                      Listening...
-                    </span>
-                  )}
-                  {(status === 'idle' || status === 'connecting') && (
-                    <span className="text-slate-500 text-lg flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-slate-400" />
-                      Ready
-                    </span>
-                  )}
-                </div>
-              )}
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex">
+      {/* Main Form Area - Left Side */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <header className="bg-white border-b-2 border-slate-200 px-8 py-5 shadow-sm">
+          <h1 className="text-3xl font-bold text-slate-800">Grain Receipt Form</h1>
+        </header>
 
-              {/* Mic Toggle (only when connected) */}
-              {isConnected && (
-                <button
-                  onClick={toggleMic}
-                  className={`p-3 rounded-full transition-colors ${
-                    isMicMuted 
-                      ? 'bg-red-100 text-red-600 hover:bg-red-200' 
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                  title={isMicMuted ? 'Unmute microphone' : 'Mute microphone'}
-                >
-                  {isMicMuted ? <MicOff size={24} /> : <Mic size={24} />}
-                </button>
-              )}
-              
-              {/* Voice Toggle Button */}
-              <button
-                onClick={isConnected ? endCall : startCall}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg ${
-                  isConnected 
-                    ? 'bg-red-500 hover:bg-red-600 text-white' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                }`}
-              >
-                {isConnected ? (
-                  <>
-                    <PhoneOff size={22} />
-                    End Call
-                  </>
-                ) : (
-                  <>
-                    <Phone size={22} />
-                    Start Voice Assistant
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Accessibility Bar */}
-          <div className="flex items-center justify-between py-3 px-5 bg-slate-50 rounded-xl border border-slate-200">
-            <div className="flex items-center gap-6">
-              {/* Dyslexia Font Toggle */}
-              <Toggle 
-                checked={settings.dyslexiaFont} 
-                onChange={toggleDyslexiaFont} 
-                label="Dyslexia-Friendly Font"
-              />
-            </div>
-
-            {/* PDF Upload */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {}}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-slate-300 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-all text-base font-medium"
-              >
-                <Upload size={20} />
-                Upload PDF
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Form Content */}
-      <main className="flex-1 py-10 px-6 overflow-y-auto">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
+        {/* Form Content */}
+        <main className="flex-1 py-10 px-6 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
           {/* Read-only Info Section */}
           <div className="mb-8 pb-8 border-b-2 border-slate-200">
             <h2 className="text-xl font-semibold text-slate-700 mb-4">Receipt Information</h2>
@@ -367,22 +272,133 @@ export function SimpleForm() {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="mt-10 flex justify-center">
-            <button
-              type="submit"
-              className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xl shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              Submit Form
-            </button>
-          </div>
-        </form>
-      </main>
+            {/* Submit Button */}
+            <div className="mt-10 flex justify-center">
+              <button
+                type="submit"
+                className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xl shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                Submit Form
+              </button>
+            </div>
+          </form>
+        </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4 px-8 text-center text-slate-500">
-        <p>FormAI - Voice-Assisted Form Filling for Seniors</p>
-      </footer>
+        {/* Footer */}
+        <footer className="bg-white border-t border-slate-200 py-4 px-8 text-center text-slate-500">
+          <p>FormAI - Voice-Assisted Form Filling for Seniors</p>
+        </footer>
+      </div>
+
+      {/* Right Sidebar - Controls Panel */}
+      <aside className="w-96 bg-white border-l-2 border-slate-200 flex flex-col shadow-lg">
+        {/* Voice Assistant Section */}
+        <div className="p-6 border-b border-slate-200">
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">Voice Assistant</h2>
+          
+          {/* Voice Toggle Button */}
+          <button
+            onClick={isConnected ? endCall : startCall}
+            className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg ${
+              isConnected
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            }`}
+          >
+            {isConnected ? (
+              <>
+                <PhoneOff size={22} />
+                End Call
+              </>
+            ) : (
+              <>
+                <Phone size={22} />
+                Start Voice Assistant
+              </>
+            )}
+          </button>
+
+          {/* Status Indicator */}
+          {isConnected && (
+            <div className="mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-50">
+              {status === 'thinking' && (
+                <span className="text-amber-600 text-lg flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
+                  Thinking...
+                </span>
+              )}
+              {status === 'speaking' && (
+                <span className="text-blue-600 text-lg flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
+                  Speaking...
+                </span>
+              )}
+              {status === 'listening' && (
+                <span className="text-emerald-600 text-lg flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                  Listening...
+                </span>
+              )}
+              {(status === 'idle' || status === 'connecting') && (
+                <span className="text-slate-500 text-lg flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-slate-400" />
+                  Ready
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Mic Toggle (only when connected) */}
+          {isConnected && (
+            <button
+              onClick={toggleMic}
+              className={`mt-3 w-full flex items-center justify-center gap-2 p-3 rounded-xl transition-colors ${
+                isMicMuted
+                  ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              title={isMicMuted ? 'Unmute microphone' : 'Mute microphone'}
+            >
+              {isMicMuted ? <MicOff size={24} /> : <Mic size={24} />}
+              <span className="font-medium">{isMicMuted ? 'Unmute' : 'Mute'}</span>
+            </button>
+          )}
+        </div>
+
+        {/* Accessibility Section */}
+        <div className="p-6 border-b border-slate-200">
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">Accessibility</h2>
+          
+          {/* Dyslexia Font Toggle */}
+          <Toggle
+            checked={settings.dyslexiaFont}
+            onChange={toggleDyslexiaFont}
+            label="Dyslexia-Friendly Font"
+          />
+        </div>
+
+        {/* Actions Section */}
+        <div className="p-6">
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">Actions</h2>
+          
+          {/* PDF Upload */}
+          <button
+            onClick={() => {}}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-all text-base font-medium"
+          >
+            <Upload size={20} />
+            Upload PDF
+          </button>
+        </div>
+
+        {/* Spacer to push footer down */}
+        <div className="flex-1" />
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-slate-200 text-center text-sm text-slate-500">
+          FormAI v1.0
+        </div>
+      </aside>
     </div>
   );
 }
