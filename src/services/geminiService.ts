@@ -45,10 +45,10 @@ Respond with a valid JSON object in this exact structure:
   "fields": [
     {
       "id": "exact_field_id_from_input",
-      "displayName": "Human-Friendly Name (with units if applicable)",
+      "displayName": "Human-Friendly Name (NO units - units go in 'unit' field)",
       "type": "one of the types above",
       "description": "Voice prompt description for the user. Be clear and include format hints.",
-      "unit": "kg, tonnes, $CAD, % (or null if not applicable)",
+      "unit": "kg, tonnes, CAD, % (or null if not applicable)",
       "format": "yyyy-mm-dd (or null if not applicable)",
       "options": ["option1", "option2"] (or null if not a selection type),
       "calculationHint": "Human-readable description of calculation (for display)",
@@ -63,15 +63,17 @@ Respond with a valid JSON object in this exact structure:
 
 ## Guidelines
 
-1. **Display Names**: Create clear, human-friendly names. Include units in parentheses when applicable.
-   - "Gross weight" → "Gross Weight (tonnes)"
-   - "Price per net tonne" → "Price Per Net Tonne (CAD)"
+1. **Display Names**: Create clear, human-friendly names. **DO NOT include units in the display name** - units are shown separately in the UI.
+   - "Gross weight" → "Gross Weight" (NOT "Gross Weight (tonnes)")
+   - "Price per net tonne" → "Price Per Tonne" (NOT "Price Per Net Tonne (CAD)")
+   - "Date of issue yyyymmdd" → "Date of Issue" (remove format hints)
+   - "Levy deductible" → "Levy Deductible"
 
 2. **Descriptions**: Write descriptions that a voice assistant will read aloud. Be clear and helpful.
    - Include format requirements (e.g., "in year-month-day format")
    - Mention units (e.g., "in tonnes" or "in Canadian dollars")
    - Explain what the field is for if not obvious
-   - It's OK to repeat units in both displayName AND description
+   - Units should be mentioned in descriptions for voice context, but NOT in displayName
 
 3. **Identify Ignored Fields**: Mark these fields as ignore: true
    - Fields named "undefined" followed by numbers (undefined_3, undefined_4)
@@ -110,7 +112,7 @@ Respond with a valid JSON object in this exact structure:
 For "Gross weight" in a grain receipt:
 {
   "id": "Gross weight",
-  "displayName": "Gross Weight (tonnes)",
+  "displayName": "Gross Weight",
   "type": "weight",
   "description": "The total weight of the vehicle when fully loaded with grain. Please provide the weight in tonnes, as shown on the scale ticket.",
   "unit": "tonnes",
@@ -142,7 +144,7 @@ For "Date of issue yyyymmdd":
 For "Net weight" (calculated):
 {
   "id": "Net weight",
-  "displayName": "Net Weight (tonnes)",
+  "displayName": "Net Weight",
   "type": "calculated",
   "description": "The weight of the grain after subtracting the vehicle weight. This is calculated automatically.",
   "unit": "tonnes",
@@ -158,7 +160,7 @@ For "Net weight" (calculated):
 For "Total purchase price" (calculated):
 {
   "id": "Total purchase price",
-  "displayName": "Total Purchase Price (CAD)",
+  "displayName": "Total Purchase Price",
   "type": "calculated",
   "description": "The total value of the grain delivery. This is calculated automatically based on net weight and price.",
   "unit": "CAD",
