@@ -37,7 +37,7 @@
 
 @layer base {
   html {
-    font-size: 14px; /* Larger base font size for accessibility */
+    font-size: calc(14px * var(--font-scale, 1)); /* Larger base font size for accessibility */
   }
 
   body {

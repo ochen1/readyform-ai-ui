@@ -4,7 +4,7 @@ interface AccessibilitySettings {
   dyslexiaFont: boolean;
   highContrast: boolean;
   reducedMotion: boolean;
-  largeText: boolean;
+  fontSizeScale: number;
 }
 
 interface AccessibilityContextValue {
@@ -12,15 +12,16 @@ interface AccessibilityContextValue {
   toggleDyslexiaFont: () => void;
   toggleHighContrast: () => void;
   toggleReducedMotion: () => void;
-  toggleLargeText: () => void;
-  updateSetting: (key: keyof AccessibilitySettings, value: boolean) => void;
+  increaseFontSize: () => void;
+  decreaseFontSize: () => void;
+  updateSetting: (key: keyof AccessibilitySettings, value: boolean | number) => void;
 }
 
 const defaultSettings: AccessibilitySettings = {
   dyslexiaFont: false,
   highContrast: false,
   reducedMotion: false,
-  largeText: false,
+  fontSizeScale: 1.0,
 };
 
 const AccessibilityContext = createContext<AccessibilityContextValue | null>(null);
@@ -77,16 +78,12 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
     }
   }, [settings.reducedMotion]);
 
-  // Apply large text mode
+  // Apply font size scale
   useEffect(() => {
-    if (settings.largeText) {
-      document.body.classList.add('large-text');
-    } else {
-      document.body.classList.remove('large-text');
-    }
-  }, [settings.largeText]);
+    document.documentElement.style.setProperty('--font-scale', settings.fontSizeScale.toString());
+  }, [settings.fontSizeScale]);
 
-  const updateSetting = useCallback((key: keyof AccessibilitySettings, value: boolean) => {
+  const updateSetting = useCallback((key: keyof AccessibilitySettings, value: boolean | number) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   }, []);
 
@@ -102,8 +99,12 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
     setSettings(prev => ({ ...prev, reducedMotion: !prev.reducedMotion }));
   }, []);
 
-  const toggleLargeText = useCallback(() => {
-    setSettings(prev => ({ ...prev, largeText: !prev.largeText }));
+  const increaseFontSize = useCallback(() => {
+    setSettings(prev => ({ ...prev, fontSizeScale: Math.min(prev.fontSizeScale + 0.1, 2.0) }));
+  }, []);
+
+  const decreaseFontSize = useCallback(() => {
+    setSettings(prev => ({ ...prev, fontSizeScale: Math.max(prev.fontSizeScale - 0.1, 0.5) }));
   }, []);
 
   const value: AccessibilityContextValue = {
@@ -111,7 +112,8 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
     toggleDyslexiaFont,
     toggleHighContrast,
     toggleReducedMotion,
-    toggleLargeText,
+    increaseFontSize,
+    decreaseFontSize,
     updateSetting,
   };
 

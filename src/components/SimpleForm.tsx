@@ -3,7 +3,7 @@ import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText } from 'lucide-react';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus } from 'lucide-react';
 
 interface FieldProps {
   field: FormField;
@@ -172,7 +172,7 @@ function EmptyState({ onUpload }: { onUpload: (file: File) => void }) {
 export function SimpleForm() {
   const { state, dispatch, loadPDF, setField, openPDFPreview } = useFormContext();
   const { isConnected, notifyFieldFocus, status, startCall, endCall, isMicMuted, toggleMic } = useUltravox();
-  const { settings, toggleDyslexiaFont } = useAccessibility();
+  const { settings, toggleDyslexiaFont, increaseFontSize, decreaseFontSize } = useAccessibility();
   const lastNotifiedFieldRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -387,6 +387,30 @@ export function SimpleForm() {
             onChange={toggleDyslexiaFont}
             label="Dyslexia-Friendly Font"
           />
+
+          {/* Font Size Controls */}
+          <div className="mt-4">
+            <label className="block text-slate-700 text-lg mb-2">Font Size</label>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={decreaseFontSize}
+                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-colors"
+                title="Decrease font size"
+              >
+                <Minus size={20} />
+              </button>
+              <span className="text-slate-700 font-medium min-w-[3rem] text-center">
+                {Math.round(settings.fontSizeScale * 100)}%
+              </span>
+              <button
+                onClick={increaseFontSize}
+                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-colors"
+                title="Increase font size"
+              >
+                <Plus size={20} />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Actions Section */}
