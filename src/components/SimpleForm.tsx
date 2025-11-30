@@ -16,15 +16,15 @@ interface FieldProps {
 
 function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }: FieldProps) {
   const [showTooltip, setShowTooltip] = React.useState(false);
-  
+
   // Determine styling based on state
   let borderClass = 'border-slate-300 bg-white';
   let StatusIcon = Circle;
   let iconColor = 'text-slate-400';
   let labelColor = 'text-slate-600';
-  
+
   const isDisabled = field.readonly || field.type === 'calculated';
-  
+
   if (isDisabled) {
     borderClass = 'border-slate-200 bg-slate-50';
     iconColor = 'text-slate-300';
@@ -85,9 +85,9 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
             )}
           </div>
         </div>
-        
+
         {/* Input Section - Uses dynamic input component */}
-        <div 
+        <div
           className="relative flex-1"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
@@ -116,7 +116,7 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
             </div>
           )}
         </div>
-        
+
         {/* Status Icon */}
         <div className={`shrink-0 pt-4 ${iconColor}`}>
           <StatusIcon size={32} strokeWidth={2.5} />
@@ -136,15 +136,13 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: () =
       aria-checked={checked}
       aria-label={label}
     >
-      <div 
-        className={`relative w-14 h-8 rounded-full transition-colors duration-200 ${
-          checked ? 'bg-blue-600' : 'bg-slate-300'
-        }`}
-      >
-        <div 
-          className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${
-            checked ? 'translate-x-7' : 'translate-x-1'
+      <div
+        className={`relative w-14 h-8 rounded-full transition-colors duration-200 ${checked ? 'bg-blue-600' : 'bg-slate-300'
           }`}
+      >
+        <div
+          className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${checked ? 'translate-x-7' : 'translate-x-1'
+            }`}
         />
       </div>
       <span className="text-slate-700 text-lg">{label}</span>
@@ -170,7 +168,7 @@ function PDFUploader({ onUpload }: { onUpload: (file: File) => void }) {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const file = e.dataTransfer.files[0];
     if (file && file.type === 'application/pdf') {
       onUpload(file);
@@ -194,8 +192,8 @@ function PDFUploader({ onUpload }: { onUpload: (file: File) => void }) {
         flex flex-col items-center justify-center gap-4 p-12 
         border-3 border-dashed rounded-2xl cursor-pointer
         transition-all duration-200
-        ${isDragging 
-          ? 'border-blue-500 bg-blue-50' 
+        ${isDragging
+          ? 'border-blue-500 bg-blue-50'
           : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/50'
         }
       `}
@@ -245,7 +243,7 @@ export function SimpleForm() {
 
   const handleFieldFocus = useCallback((fieldId: string) => {
     dispatch({ type: 'SET_ACTIVE_FIELD', fieldId });
-    
+
     // Notify the voice agent when user clicks a field
     if (isConnected && fieldId !== lastNotifiedFieldRef.current) {
       lastNotifiedFieldRef.current = fieldId;
@@ -285,19 +283,19 @@ export function SimpleForm() {
 
   // Get visible (non-ignored) fields
   const visibleFields = state.fields.filter(f => !f.ignore);
-  
+
   // Group fields by section
   const fieldsBySection = useMemo(() => {
     const grouped = new Map<string | null, FormField[]>();
-    
+
     // Initialize with null for ungrouped fields
     grouped.set(null, []);
-    
+
     // Initialize with each section (in order)
     state.sections.forEach(section => {
       grouped.set(section.id, []);
     });
-    
+
     // Distribute fields
     visibleFields.forEach(field => {
       const sectionId = field.sectionId || null;
@@ -309,14 +307,14 @@ export function SimpleForm() {
         grouped.get(null)!.push(field);
       }
     });
-    
+
     return grouped;
   }, [visibleFields, state.sections]);
-  
+
   // Check if we have any sections with fields
   const hasSections = state.sections.length > 0 &&
     state.sections.some(section => (fieldsBySection.get(section.id)?.length || 0) > 0);
-  
+
   // Calculate progress from visible, editable fields
   const editableFields = visibleFields.filter(f => !f.readonly && f.type !== 'calculated');
   const completedCount = state.completedFieldIds.filter(id =>
@@ -329,57 +327,7 @@ export function SimpleForm() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex">
       {/* Main Form Area - Left Side */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header - Only show when PDF is loaded */}
-        {state.pdfLoaded && (
-          <header className="bg-white border-b-2 border-slate-200 px-8 py-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-slate-800">
-                  {state.metadata ? state.metadata.title : 'Untitled Form'}
-                </h1>
-                {state.metadata && (
-                  <div className="flex items-center gap-2 text-slate-500 mt-1">
-                    <span>{state.metadata.sourceFileName}</span>
-                    <span>•</span>
-                    <span>{visibleFields.length} fields</span>
-                    {state.isEnhancing && (
-                      <>
-                        <span>•</span>
-                        <span className="flex items-center gap-1 text-blue-600">
-                          <Loader2 size={14} className="animate-spin" />
-                          Analyzing with AI...
-                        </span>
-                      </>
-                    )}
-                    {state.enhancementCached && (
-                      <>
-                        <span>•</span>
-                        <span className="flex items-center gap-1 text-emerald-600">
-                          <Sparkles size={14} />
-                          AI Enhanced
-                        </span>
-                      </>
-                    )}
-                  </div>
-                )}
-                {state.metadata?.description && (
-                  <p className="text-slate-400 text-sm mt-1">
-                    {state.metadata.description}
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-emerald-500 transition-all duration-300"
-                    style={{ width: `${progressPercentage}%` }}
-                  />
-                </div>
-                <span>{progressPercentage}% complete</span>
-              </div>
-            </div>
-          </header>
-        )}
+
 
         {/* Form Content */}
         <main className="flex-1 py-10 px-6 overflow-y-auto">
@@ -424,7 +372,7 @@ export function SimpleForm() {
                   {state.sections.map(section => {
                     const sectionFields = fieldsBySection.get(section.id) || [];
                     if (sectionFields.length === 0) return null;
-                    
+
                     return (
                       <div key={section.id} id={`section-${section.id}`} className="scroll-mt-4">
                         {/* Section Header */}
@@ -436,7 +384,7 @@ export function SimpleForm() {
                             <p className="text-slate-500 text-sm mt-1">{section.description}</p>
                           )}
                         </div>
-                        
+
                         {/* Section Fields */}
                         <div className="space-y-2">
                           {sectionFields.map((field) => (
@@ -453,7 +401,7 @@ export function SimpleForm() {
                       </div>
                     );
                   })}
-                  
+
                   {/* Ungrouped fields (if any) */}
                   {(fieldsBySection.get(null)?.length || 0) > 0 && (
                     <div className="space-y-2">
@@ -513,21 +461,71 @@ export function SimpleForm() {
           </h1>
         </div>
 
+        {/* Form Details - Only show when PDF is loaded */}
+        {state.pdfLoaded && (
+          <div className="p-6 border-b border-slate-200 bg-slate-50/50">
+            <h2 className="text-lg font-bold text-slate-800 leading-tight">
+              {state.metadata ? state.metadata.title : 'Untitled Form'}
+            </h2>
+
+            {state.metadata && (
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-slate-500 font-medium truncate" title={state.metadata.sourceFileName}>
+                  {state.metadata.sourceFileName}
+                </p>
+                <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+                  <span>{visibleFields.length} fields</span>
+                  {state.isEnhancing && (
+                    <span className="flex items-center gap-1 text-blue-600">
+                      <Loader2 size={12} className="animate-spin" />
+                      Analyzing...
+                    </span>
+                  )}
+                  {state.enhancementCached && (
+                    <span className="flex items-center gap-1 text-emerald-600">
+                      <Sparkles size={12} />
+                      AI Enhanced
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {state.metadata?.description && (
+              <p className="text-slate-500 text-xs mt-2 line-clamp-2" title={state.metadata.description}>
+                {state.metadata.description}
+              </p>
+            )}
+
+            <div className="mt-4">
+              <div className="flex justify-between text-xs text-slate-600 mb-1">
+                <span>Progress</span>
+                <span>{progressPercentage}%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-emerald-500 transition-all duration-300"
+                  style={{ width: `${progressPercentage}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Voice Assistant Section */}
         <div className="p-6 border-b border-slate-200">
           <h2 className="text-lg font-semibold text-slate-700 mb-4">Voice Assistant</h2>
-          
+
           {/* Voice Toggle Button */}
           <button
             onClick={isConnected ? endCall : startCall}
             disabled={!state.pdfLoaded}
-            className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg ${
-              !state.pdfLoaded
+            className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg ${!state.pdfLoaded
                 ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                 : isConnected
                   ? 'bg-red-500 hover:bg-red-600 text-white'
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
+              }`}
           >
             {isConnected ? (
               <>
@@ -582,11 +580,10 @@ export function SimpleForm() {
           {isConnected && (
             <button
               onClick={toggleMic}
-              className={`mt-3 w-full flex items-center justify-center gap-2 p-3 rounded-xl transition-colors ${
-                isMicMuted
+              className={`mt-3 w-full flex items-center justify-center gap-2 p-3 rounded-xl transition-colors ${isMicMuted
                   ? 'bg-red-100 text-red-600 hover:bg-red-200'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
+                }`}
               title={isMicMuted ? 'Unmute microphone' : 'Mute microphone'}
             >
               {isMicMuted ? <MicOff size={24} /> : <Mic size={24} />}
@@ -598,7 +595,7 @@ export function SimpleForm() {
         {/* Accessibility Section */}
         <div className="p-6 border-b border-slate-200">
           <h2 className="text-lg font-semibold text-slate-700 mb-4">Accessibility</h2>
-          
+
           {/* Dyslexia Font Toggle */}
           <Toggle
             checked={settings.dyslexiaFont}
@@ -634,7 +631,7 @@ export function SimpleForm() {
         {/* Actions Section */}
         <div className="p-6">
           <h2 className="text-lg font-semibold text-slate-700 mb-4">Actions</h2>
-          
+
           {/* PDF Upload - Hidden file input with button trigger */}
           <input
             ref={fileInputRef}
