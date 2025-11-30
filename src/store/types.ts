@@ -12,6 +12,11 @@ export type FieldType =
   | 'reference'   // IDs, codes, ticket numbers
   | 'grade'       // Classifications or grades
   | 'selection'   // Predefined choices (MUST have options array)
+  | 'boolean'     // Yes/No toggle (for radio buttons with Yes/No options)
+  | 'checkbox'    // Single checkbox (checked/unchecked, for consent)
+  | 'phone'       // Phone number with formatting
+  | 'email'       // Email address with validation
+  | 'postalcode'  // Canadian postal code (A1A 1A1)
   | 'address'     // Multi-line addresses
   | 'signature'   // Signature fields (typically ignored)
   | 'calculated'  // Auto-computed fields (read-only)

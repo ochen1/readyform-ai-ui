@@ -1,6 +1,6 @@
 import React from 'react';
 import type { FormField, FieldType } from '../../store/types';
-import { Calendar, DollarSign, Percent, Scale, Hash, MapPin, List, Calculator } from 'lucide-react';
+import { Calendar, DollarSign, Percent, Scale, Hash, MapPin, List, Calculator, ToggleLeft, CheckSquare, Phone, Mail, MapPinned } from 'lucide-react';
 
 /**
  * Props for all input components
@@ -43,6 +43,16 @@ export function getFieldTypeIcon(type: FieldType): React.ReactNode {
       return <List {...iconProps} />;
     case 'calculated':
       return <Calculator {...iconProps} />;
+    case 'boolean':
+      return <ToggleLeft {...iconProps} />;
+    case 'checkbox':
+      return <CheckSquare {...iconProps} />;
+    case 'phone':
+      return <Phone {...iconProps} />;
+    case 'email':
+      return <Mail {...iconProps} />;
+    case 'postalcode':
+      return <MapPinned {...iconProps} />;
     default:
       return null;
   }
@@ -358,6 +368,211 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
 }
 
 /**
+ * Boolean Input - Toggle switch for Yes/No questions
+ */
+export function BooleanInput({ field, value, onChange, onFocus, disabled, className: _className }: InputProps) {
+  const isYes = value.toLowerCase() === 'yes' || value === 'true' || value === '1';
+  
+  return (
+    <div className="flex-1 flex items-center gap-4">
+      <button
+        type="button"
+        onClick={() => {
+          onFocus();
+          onChange(isYes ? 'No' : 'Yes');
+        }}
+        disabled={disabled}
+        className={`relative w-16 h-9 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+          isYes ? 'bg-emerald-500' : 'bg-slate-300'
+        } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        aria-label={`${field.name}: ${isYes ? 'Yes' : 'No'}`}
+      >
+        <span
+          className={`absolute top-1 w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-200 ${
+            isYes ? 'translate-x-8' : 'translate-x-1'
+          }`}
+        />
+      </button>
+      <span className={`text-xl font-medium ${isYes ? 'text-emerald-600' : 'text-slate-500'}`}>
+        {isYes ? 'Yes' : 'No'}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Checkbox Input - Single checkbox for consent/agreement
+ */
+export function CheckboxInput({ field, value, onChange, onFocus, disabled, className: _className }: InputProps) {
+  const isChecked = value.toLowerCase() === 'yes' || value === 'true' || value === '1' || value === 'checked';
+  
+  return (
+    <div className="flex-1 flex items-center gap-4">
+      <button
+        type="button"
+        onClick={() => {
+          onFocus();
+          onChange(isChecked ? '' : 'checked');
+        }}
+        disabled={disabled}
+        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+          isChecked
+            ? 'bg-blue-600 border-blue-600 text-white'
+            : 'bg-white border-slate-300 hover:border-blue-400'
+        } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        aria-label={field.name}
+        aria-checked={isChecked}
+        role="checkbox"
+      >
+        {isChecked && (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+        )}
+      </button>
+      <span className={`text-lg ${isChecked ? 'text-slate-800' : 'text-slate-500'}`}>
+        {field.description || field.name}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Phone Input - Formatted phone number input
+ */
+export function PhoneInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  // Format phone number as user types (North American format)
+  const formatPhone = (input: string): string => {
+    // Remove all non-digits
+    const digits = input.replace(/\D/g, '');
+    
+    // Limit to 10 digits (North American)
+    const limited = digits.slice(0, 10);
+    
+    // Format based on length
+    if (limited.length <= 3) {
+      return limited;
+    } else if (limited.length <= 6) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3)}`;
+    } else {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`;
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    onChange(formatted);
+  };
+
+  return (
+    <div className="flex-1 flex gap-2">
+      <div className="flex items-center px-3 bg-slate-100 border-2 border-slate-200 rounded-xl text-slate-500 shrink-0">
+        <Phone size={20} />
+      </div>
+      <input
+        type="tel"
+        value={value}
+        onChange={handleChange}
+        onFocus={onFocus}
+        disabled={disabled}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
+        placeholder={field.format || "(999) 999-9999"}
+      />
+    </div>
+  );
+}
+
+/**
+ * Email Input - Email address with validation styling
+ */
+export function EmailInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  // Basic email validation
+  const isValidEmail = (email: string): boolean => {
+    if (!email) return true; // Empty is valid (not required)
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+  
+  const valid = isValidEmail(value);
+
+  return (
+    <div className="flex-1 flex gap-2">
+      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${
+        !valid ? 'bg-red-50 border-red-200 text-red-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+      }`}>
+        <Mail size={20} />
+      </div>
+      <input
+        type="email"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={onFocus}
+        disabled={disabled}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${
+          !valid ? 'border-red-300 bg-red-50' : ''
+        } ${className}`}
+        placeholder={`Enter ${field.name.toLowerCase()}...`}
+      />
+    </div>
+  );
+}
+
+/**
+ * Postal Code Input - Canadian postal code format (A1A 1A1)
+ */
+export function PostalCodeInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  // Format Canadian postal code as user types
+  const formatPostalCode = (input: string): string => {
+    // Remove all non-alphanumeric and convert to uppercase
+    const cleaned = input.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    
+    // Limit to 6 characters
+    const limited = cleaned.slice(0, 6);
+    
+    // Add space after first 3 characters
+    if (limited.length > 3) {
+      return `${limited.slice(0, 3)} ${limited.slice(3)}`;
+    }
+    return limited;
+  };
+
+  // Validate Canadian postal code format
+  const isValidPostalCode = (code: string): boolean => {
+    if (!code) return true; // Empty is valid
+    // Canadian postal code: letter-digit-letter space digit-letter-digit
+    return /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/.test(code.toUpperCase());
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPostalCode(e.target.value);
+    onChange(formatted);
+  };
+
+  const valid = isValidPostalCode(value);
+
+  return (
+    <div className="flex-1 flex gap-2">
+      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${
+        value && !valid ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+      }`}>
+        <MapPinned size={20} />
+      </div>
+      <input
+        type="text"
+        value={value}
+        onChange={handleChange}
+        onFocus={onFocus}
+        disabled={disabled}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${
+          value && !valid ? 'border-amber-300' : ''
+        } ${className}`}
+        placeholder={field.format || "A1A 1A1"}
+        maxLength={7}
+      />
+    </div>
+  );
+}
+
+/**
  * Get the appropriate input component for a field type
  */
 export function getInputComponent(type: FieldType): React.ComponentType<InputProps> {
@@ -382,6 +597,16 @@ export function getInputComponent(type: FieldType): React.ComponentType<InputPro
       return CalculatedInput;
     case 'grade':
       return GradeInput;
+    case 'boolean':
+      return BooleanInput;
+    case 'checkbox':
+      return CheckboxInput;
+    case 'phone':
+      return PhoneInput;
+    case 'email':
+      return EmailInput;
+    case 'postalcode':
+      return PostalCodeInput;
     case 'text':
     default:
       return TextInput;

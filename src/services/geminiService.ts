@@ -30,18 +30,31 @@ Assign one of these semantic types to each field:
 | date | Date values | Issue date, delivery date |
 | reference | IDs and codes | Receipt #, ticket #, contract ref |
 | grade | Classifications | Grain grade, quality rating |
-| selection | ONLY for radio buttons/dropdowns with VISIBLE PREDEFINED choices in the PDF | Province dropdown (with explicit list), Yes/No radio buttons |
+| selection | ONLY for dropdowns with 3+ VISIBLE PREDEFINED choices | Province dropdown (with explicit list), Payment method |
+| boolean | Yes/No questions (2 options only) | "Temporary foreign worker? Yes/No", "Still employed? Yes/No" |
+| checkbox | Single consent/agreement checkbox | "I agree to terms", "Declaration of truthfulness" |
+| phone | Phone/telephone numbers | Telephone, Fax, Contact number |
+| email | Email addresses | Contact email, Business email |
+| postalcode | Postal/ZIP codes | Canadian postal code (A1A 1A1), US ZIP |
 | address | Multi-line addresses | Producer address, delivery location |
 | calculated | Auto-computed fields | Net = Gross - Tare (mark readonly) |
 | ignore | Skip these entirely | undefined_*, signatures, internal fields |
 
-### CRITICAL: Selection Type Rules
+### CRITICAL: Selection and Boolean Type Rules
 
-**The "selection" type should ONLY be used when:**
-1. The PDF shows a FIXED list of choices (radio buttons, checkboxes, dropdown menu)
-2. You can identify ALL possible options from the PDF
+**Selection type (3+ options):**
+- ONLY use when the PDF shows 3 or more FIXED choices
+- You MUST provide the "options" array with all valid choices
+- If options are unknown, use "text" instead
 
-**If you use type: "selection", you MUST provide the "options" array with all valid choices.**
+**Boolean type (Yes/No questions):**
+- Use for questions with exactly 2 choices: Yes/No, True/False
+- The UI will render a toggle switch
+- Store value as "true" or "false"
+
+**Checkbox type (consent/agreement):**
+- Use for single checkboxes for consent/agreement
+- Store value as "true" (checked) or "false" (unchecked)
 
 ❌ WRONG - Selection without options (WILL BREAK THE UI):
 \`\`\`json
@@ -52,7 +65,7 @@ Assign one of these semantic types to each field:
 }
 \`\`\`
 
-✅ CORRECT - Selection WITH options:
+✅ CORRECT - Selection WITH options (3+ choices):
 \`\`\`json
 {
   "id": "Province",
@@ -61,12 +74,30 @@ Assign one of these semantic types to each field:
 }
 \`\`\`
 
-✅ CORRECT - Use "text" if options are unknown or not visible in PDF:
+✅ CORRECT - Boolean for Yes/No question:
 \`\`\`json
 {
-  "id": "Province",
-  "type": "text",
-  "description": "Enter your province or territory"
+  "id": "Temporary Foreign Worker",
+  "type": "boolean",
+  "description": "Are you a temporary foreign worker?"
+}
+\`\`\`
+
+✅ CORRECT - Checkbox for consent:
+\`\`\`json
+{
+  "id": "Declaration of Truthfulness",
+  "type": "checkbox",
+  "description": "I declare that the information provided is true and complete."
+}
+\`\`\`
+
+✅ CORRECT - Phone for telephone numbers:
+\`\`\`json
+{
+  "id": "Telephone",
+  "type": "phone",
+  "description": "Your telephone number in (999) 999-9999 format"
 }
 \`\`\`
 
@@ -431,7 +462,8 @@ function validateAndCleanResponse(data: unknown): GeminiFieldEnhancement {
 function validateFieldType(type: unknown): FieldType {
   const validTypes: FieldType[] = [
     'text', 'number', 'weight', 'currency', 'percentage',
-    'date', 'reference', 'grade', 'selection', 'address',
+    'date', 'reference', 'grade', 'selection', 'boolean',
+    'checkbox', 'phone', 'email', 'postalcode', 'address',
     'signature', 'calculated', 'ignore'
   ];
   
