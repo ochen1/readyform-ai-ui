@@ -23,7 +23,6 @@ When a form is loaded, you will be able to help the user fill it out step by ste
   // Build field list for the prompt, separating by type
   const editableFields = fields.filter(f => !f.readonly && !f.ignore && f.type !== 'calculated');
   const calculatedFields = fields.filter(f => f.type === 'calculated');
-  const readOnlyFields = fields.filter(f => f.readonly && f.type !== 'calculated' && !f.ignore);
 
   const fieldList = fields.filter(f => !f.ignore).map(f => {
     let status = '(editable)';

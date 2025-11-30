@@ -1,5 +1,3 @@
-import type { PDFDocument } from 'pdf-lib';
-
 /**
  * Semantic field types for voice assistant context
  * Used to determine how to prompt the user and validate input
@@ -84,15 +82,27 @@ export interface FormMetadata {
 }
 
 /**
+ * Information about the parsed PDF for writing back
+ */
+export interface PDFWriteContext {
+  /** Original file bytes for re-loading with pdf-lib */
+  originalBytes: ArrayBuffer;
+  /** Whether this is an XFA form (write-back not supported) */
+  isXFA: boolean;
+  /** Field IDs that can be written back (AcroForm fields only) */
+  writableFieldIds: string[];
+}
+
+/**
  * Complete form state for arbitrary PDF forms
  */
 export interface FormState {
   // PDF-related state
   /** Whether a PDF has been loaded */
   pdfLoaded: boolean;
-  /** Reference to the loaded PDFDocument for updates */
-  pdfDoc: PDFDocument | null;
-  /** Current PDF bytes for download */
+  /** Context for writing fields back to PDF */
+  writeContext: PDFWriteContext | null;
+  /** Current PDF bytes for rendering/download */
   pdfBytes: Uint8Array | null;
   /** Metadata about the loaded form */
   metadata: FormMetadata | null;
@@ -149,12 +159,12 @@ export interface GeminiFieldEnhancement {
  * Actions that can be dispatched to modify form state
  */
 export type FormAction =
-  | { 
-      type: 'LOAD_PDF'; 
-      payload: { 
-        fields: FormField[]; 
-        metadata: FormMetadata; 
-        pdfDoc: PDFDocument;
+  | {
+      type: 'LOAD_PDF';
+      payload: {
+        fields: FormField[];
+        metadata: FormMetadata;
+        writeContext: PDFWriteContext;
         pdfBytes: Uint8Array;
       };
     }

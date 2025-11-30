@@ -119,7 +119,7 @@ export function WeightInput({ field, value, onChange, onFocus, disabled, classNa
 /**
  * Currency Input - For monetary values with currency symbol
  */
-export function CurrencyInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+export function CurrencyInput({ field: _field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
     <div className="flex-1 flex gap-2">
       <div className="flex items-center px-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 font-medium shrink-0">
@@ -143,7 +143,7 @@ export function CurrencyInput({ field, value, onChange, onFocus, disabled, class
 /**
  * Percentage Input - For percentage values with % suffix
  */
-export function PercentageInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+export function PercentageInput({ field: _field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
     <div className="flex-1 flex gap-2">
       <input
@@ -219,7 +219,7 @@ export function DateInput({ field, value, onChange, onFocus, disabled, className
 /**
  * Reference Input - For IDs, codes, ticket numbers
  */
-export function ReferenceInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+export function ReferenceInput({ field: _field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
     <div className="flex-1 flex gap-2">
       <div className="flex items-center px-3 bg-slate-100 border-2 border-slate-200 rounded-xl text-slate-500 shrink-0">
@@ -282,7 +282,7 @@ export function AddressInput({ field, value, onChange, onFocus, disabled, classN
 /**
  * Calculated Input - Read-only display with live updates
  */
-export function CalculatedInput({ field, value, className }: InputProps) {
+export function CalculatedInput({ field, value, onFocus: _onFocus, onChange: _onChange, disabled: _disabled, className: _className }: InputProps) {
   // Determine if this is a currency field
   const isCurrency = field.unit?.toLowerCase().includes('cad') || field.unit === '$';
   

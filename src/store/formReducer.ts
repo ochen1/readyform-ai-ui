@@ -6,7 +6,7 @@ import type { FormState, FormAction } from './types';
 export const initialFormState: FormState = {
   // PDF state - empty until loaded
   pdfLoaded: false,
-  pdfDoc: null,
+  writeContext: null,
   pdfBytes: null,
   metadata: null,
   
@@ -34,7 +34,7 @@ export function formReducer(state: FormState, action: FormAction): FormState {
       return {
         ...initialFormState, // Reset to clean state
         pdfLoaded: true,
-        pdfDoc: action.payload.pdfDoc,
+        writeContext: action.payload.writeContext,
         pdfBytes: action.payload.pdfBytes,
         metadata: action.payload.metadata,
         fields: action.payload.fields,

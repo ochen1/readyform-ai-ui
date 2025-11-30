@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback, useMemo, useRef, useEffect } from 'react';
-import type { FormState, FormAction, FormField } from './types';
+import type { FormState, FormAction, FormField, PDFWriteContext } from './types';
 import { formReducer, initialFormState } from './formReducer';
 import { parsePDF, updatePDFField, openPDFInNewTab, downloadPDF as downloadPDFFile } from '../services/pdfParser';
 import { enhanceFormFields, getVisibleFields, getEditableFields } from '../services/fieldEnhancer';
@@ -8,7 +8,6 @@ import {
   getFieldsToRecalculate,
   evaluateFormula
 } from '../services/calculationEngine';
-import type { PDFDocument } from 'pdf-lib';
 
 export interface FormContextValue {
   state: FormState;
@@ -41,24 +40,24 @@ const FormContext = createContext<FormContextValue | null>(null);
 export function FormProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(formReducer, initialFormState);
   
-  // Keep a ref to the PDF document for updates
-  const pdfDocRef = useRef<PDFDocument | null>(null);
+  // Keep a ref to the write context for PDF updates
+  const writeContextRef = useRef<PDFWriteContext | null>(null);
 
-  // Update pdfDocRef when state changes
-  React.useEffect(() => {
-    pdfDocRef.current = state.pdfDoc;
-  }, [state.pdfDoc]);
+  // Update writeContextRef when state changes
+  useEffect(() => {
+    writeContextRef.current = state.writeContext;
+  }, [state.writeContext]);
 
   const loadPDF = useCallback(async (file: File) => {
     try {
       // Step 1: Parse PDF and extract basic fields
-      const { fields: basicFields, metadata, pdfDoc, pdfBytes } = await parsePDF(file);
-      pdfDocRef.current = pdfDoc;
+      const { fields: basicFields, metadata, writeContext, pdfBytes } = await parsePDF(file);
+      writeContextRef.current = writeContext;
       
       // Step 2: Load PDF with basic fields first (for immediate display)
       dispatch({
         type: 'LOAD_PDF',
-        payload: { fields: basicFields, metadata, pdfDoc, pdfBytes },
+        payload: { fields: basicFields, metadata, writeContext, pdfBytes },
       });
       
       // Step 3: Start enhancement process
@@ -136,11 +135,13 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
           // Dispatch update
           dispatch({ type: 'SET_FIELD', fieldId: calcField.id, value: newValue });
           
-          // Update PDF
-          if (pdfDocRef.current) {
+          // Update PDF (if write-back is supported)
+          if (writeContextRef.current && !writeContextRef.current.isXFA) {
             try {
-              const newBytes = await updatePDFField(pdfDocRef.current, calcField.id, newValue);
-              dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+              const newBytes = await updatePDFField(writeContextRef.current, calcField.id, newValue);
+              if (newBytes) {
+                dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+              }
             } catch (error) {
               console.error('Failed to update calculated PDF field:', error);
             }
@@ -165,11 +166,13 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     // Update the primary field
     dispatch({ type: 'SET_FIELD', fieldId, value });
     
-    // Update PDF document for the primary field
-    if (pdfDocRef.current) {
+    // Update PDF document for the primary field (if write-back is supported)
+    if (writeContextRef.current && !writeContextRef.current.isXFA) {
       try {
-        const newBytes = await updatePDFField(pdfDocRef.current, fieldId, value);
-        dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+        const newBytes = await updatePDFField(writeContextRef.current, fieldId, value);
+        if (newBytes) {
+          dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+        }
       } catch (error) {
         console.error('Failed to update PDF field:', error);
       }
@@ -203,11 +206,13 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
             currentFields[idx] = { ...currentFields[idx], value: calculatedValue };
           }
           
-          // Update PDF
-          if (pdfDocRef.current) {
+          // Update PDF (if write-back is supported)
+          if (writeContextRef.current && !writeContextRef.current.isXFA) {
             try {
-              const newBytes = await updatePDFField(pdfDocRef.current, calcFieldId, calculatedValue);
-              dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+              const newBytes = await updatePDFField(writeContextRef.current, calcFieldId, calculatedValue);
+              if (newBytes) {
+                dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+              }
             } catch (error) {
               console.error('Failed to update calculated PDF field:', error);
             }
