@@ -18,6 +18,11 @@ export const initialFormState: FormState = {
   completedFieldIds: [],
   validationErrors: {},
   isVoiceActive: false,
+  
+  // Enhancement state
+  isEnhancing: false,
+  enhancementError: null,
+  enhancementCached: false,
 };
 
 /**
@@ -33,6 +38,10 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         pdfBytes: action.payload.pdfBytes,
         metadata: action.payload.metadata,
         fields: action.payload.fields,
+        // Reset enhancement state for new PDF
+        isEnhancing: false,
+        enhancementError: null,
+        enhancementCached: false,
       };
 
     case 'SET_FIELD': {
@@ -97,6 +106,36 @@ export function formReducer(state: FormState, action: FormAction): FormState {
 
     case 'RESET_FORM':
       return initialFormState;
+
+    // Enhancement actions
+    case 'START_ENHANCEMENT':
+      return {
+        ...state,
+        isEnhancing: true,
+        enhancementError: null,
+      };
+
+    case 'COMPLETE_ENHANCEMENT':
+      return {
+        ...state,
+        isEnhancing: false,
+        fields: action.fields,
+        metadata: state.metadata ? {
+          ...state.metadata,
+          title: action.title,
+          description: action.description,
+          visibleFieldCount: action.fields.filter(f => !f.ignore).length,
+        } : null,
+        enhancementCached: action.cached,
+        enhancementError: null,
+      };
+
+    case 'ENHANCEMENT_ERROR':
+      return {
+        ...state,
+        isEnhancing: false,
+        enhancementError: action.error,
+      };
 
     default:
       return state;

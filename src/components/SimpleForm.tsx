@@ -3,7 +3,7 @@ import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus } from 'lucide-react';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, Info } from 'lucide-react';
 
 interface FieldProps {
   field: FormField;
@@ -14,6 +14,8 @@ interface FieldProps {
 }
 
 function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }: FieldProps) {
+  const [showDescription, setShowDescription] = React.useState(false);
+  
   // Determine border and icon based on state
   let borderClass = 'border-slate-300 bg-white'; // default/pending
   let Icon = Circle;
@@ -36,25 +38,80 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
     labelColor = 'text-emerald-700';
   }
 
+  // Generate placeholder based on field type
+  const getPlaceholder = () => {
+    if (field.readonly) return '(Read-only)';
+    if (field.type === 'calculated') return '(Calculated automatically)';
+    if (field.format) return `Format: ${field.format}`;
+    if (field.unit) return `Enter value in ${field.unit}...`;
+    return 'Enter value...';
+  };
+
+  // Get type badge color
+  const getTypeBadgeColor = () => {
+    switch (field.type) {
+      case 'weight': return 'bg-amber-100 text-amber-700';
+      case 'currency': return 'bg-green-100 text-green-700';
+      case 'date': return 'bg-blue-100 text-blue-700';
+      case 'percentage': return 'bg-purple-100 text-purple-700';
+      case 'reference': return 'bg-slate-100 text-slate-700';
+      case 'calculated': return 'bg-gray-100 text-gray-600';
+      default: return 'bg-slate-100 text-slate-600';
+    }
+  };
+
   return (
-    <div className="flex items-center gap-6 py-4">
-      <label className={`w-56 text-right text-lg shrink-0 ${labelColor}`}>
-        {field.name}
-      </label>
-      
-      <input
-        type="text"
-        value={field.value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={onFocus}
-        disabled={field.readonly}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 ${borderClass} text-xl focus:outline-none transition-all duration-200 ${field.readonly ? 'cursor-not-allowed' : ''}`}
-        placeholder={field.readonly ? '(Read-only)' : 'Enter value...'}
-      />
-      
-      <div className={`shrink-0 ${iconColor}`}>
-        <Icon size={32} strokeWidth={2.5} />
+    <div className="py-4">
+      <div className="flex items-center gap-6">
+        <div className="w-56 text-right shrink-0">
+          <label className={`text-lg ${labelColor}`}>
+            {field.name}
+          </label>
+          {field.type !== 'text' && (
+            <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${getTypeBadgeColor()}`}>
+              {field.type}
+            </span>
+          )}
+          {field.description && (
+            <button
+              type="button"
+              onClick={() => setShowDescription(!showDescription)}
+              className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
+              title="Show field description"
+            >
+              <Info size={16} />
+            </button>
+          )}
+        </div>
+        
+        <input
+          type="text"
+          value={field.value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={onFocus}
+          disabled={field.readonly || field.type === 'calculated'}
+          className={`flex-1 px-5 py-4 rounded-xl border-2 ${borderClass} text-xl focus:outline-none transition-all duration-200 ${field.readonly || field.type === 'calculated' ? 'cursor-not-allowed' : ''}`}
+          placeholder={getPlaceholder()}
+        />
+        
+        <div className={`shrink-0 ${iconColor}`}>
+          <Icon size={32} strokeWidth={2.5} />
+        </div>
       </div>
+      
+      {/* Description tooltip */}
+      {showDescription && field.description && (
+        <div className="ml-56 pl-6 mt-2">
+          <p className="text-sm text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-200">
+            {field.description}
+            {field.calculationHint && (
+              <span className="block mt-1 text-slate-400 italic">
+                Calculation: {field.calculationHint}
+              </span>
+            )}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -216,9 +273,14 @@ export function SimpleForm() {
     }
   }, [handlePDFUpload]);
 
-  // Calculate progress
-  const editableFields = state.fields.filter(f => !f.readonly);
-  const completedCount = state.completedFieldIds.length;
+  // Get visible (non-ignored) fields
+  const visibleFields = state.fields.filter(f => !f.ignore);
+  
+  // Calculate progress from visible, editable fields
+  const editableFields = visibleFields.filter(f => !f.readonly && f.type !== 'calculated');
+  const completedCount = state.completedFieldIds.filter(id =>
+    editableFields.some(f => f.id === id)
+  ).length;
   const totalCount = editableFields.length;
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -234,8 +296,33 @@ export function SimpleForm() {
                 {state.pdfLoaded && state.metadata ? state.metadata.title : 'FormAI'}
               </h1>
               {state.pdfLoaded && state.metadata && (
-                <p className="text-slate-500 mt-1">
-                  {state.metadata.sourceFileName} • {state.metadata.fieldCount} fields
+                <div className="flex items-center gap-2 text-slate-500 mt-1">
+                  <span>{state.metadata.sourceFileName}</span>
+                  <span>•</span>
+                  <span>{visibleFields.length} fields</span>
+                  {state.isEnhancing && (
+                    <>
+                      <span>•</span>
+                      <span className="flex items-center gap-1 text-blue-600">
+                        <Loader2 size={14} className="animate-spin" />
+                        Analyzing with AI...
+                      </span>
+                    </>
+                  )}
+                  {state.enhancementCached && (
+                    <>
+                      <span>•</span>
+                      <span className="flex items-center gap-1 text-emerald-600">
+                        <Sparkles size={14} />
+                        AI Enhanced
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+              {state.metadata?.description && (
+                <p className="text-slate-400 text-sm mt-1">
+                  {state.metadata.description}
                 </p>
               )}
             </div>
@@ -259,9 +346,39 @@ export function SimpleForm() {
             <EmptyState onUpload={handlePDFUpload} />
           ) : (
             <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
-              {/* Dynamic Fields */}
+              {/* Enhancement Loading Indicator */}
+              {state.isEnhancing && (
+                <div className="mb-6 flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <Loader2 size={24} className="animate-spin text-blue-600" />
+                  <div>
+                    <p className="font-medium text-blue-800">Analyzing form with AI...</p>
+                    <p className="text-sm text-blue-600">This will improve field labels and add helpful descriptions.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Enhancement Error */}
+              {state.enhancementError && (
+                <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                  <p className="font-medium text-amber-800">AI enhancement unavailable</p>
+                  <p className="text-sm text-amber-600">{state.enhancementError}</p>
+                  <p className="text-sm text-amber-600 mt-1">Form is still usable with basic field names.</p>
+                </div>
+              )}
+
+              {/* Enhancement Success */}
+              {state.enhancementCached && !state.isEnhancing && (
+                <div className="mb-6 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                  <Sparkles size={20} className="text-emerald-600" />
+                  <p className="text-sm text-emerald-700">
+                    Form enhanced with AI • {visibleFields.length} fields identified • {state.fields.length - visibleFields.length} fields hidden
+                  </p>
+                </div>
+              )}
+
+              {/* Dynamic Fields - Only show visible (non-ignored) fields */}
               <div className="space-y-2">
-                {state.fields.map((field) => (
+                {visibleFields.map((field) => (
                   <FormFieldComponent
                     key={field.id}
                     field={field}

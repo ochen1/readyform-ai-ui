@@ -86,13 +86,18 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
       currentValue = '';
     }
     
+    const displayName = fieldNameToDisplayName(fieldName);
+    
     fields.push({
       id: fieldName,
-      name: fieldNameToDisplayName(fieldName),
+      originalName: fieldName, // Raw PDF field name
+      name: displayName, // Display-friendly name (will be enhanced by LLM)
       value: currentValue,
-      type: 'text', // All fields treated as text for now
-      required: false, // Could be enhanced with PDF field flags
+      type: 'text', // Default type - will be enhanced by LLM
+      description: `Please provide the value for ${displayName}`, // Default description
+      required: false, // Could be enhanced with PDF field flags or LLM
       readonly: isReadonly,
+      ignore: false, // Will be set by LLM if field should be skipped
     });
   }
   

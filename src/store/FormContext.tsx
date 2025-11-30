@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, useMemo, use
 import type { FormState, FormAction, FormField } from './types';
 import { formReducer, initialFormState } from './formReducer';
 import { parsePDF, updatePDFField, openPDFInNewTab, downloadPDF as downloadPDFFile } from '../services/pdfParser';
+import { enhanceFormFields, getVisibleFields, getEditableFields } from '../services/fieldEnhancer';
 import type { PDFDocument } from 'pdf-lib';
 
 export interface FormContextValue {
@@ -26,6 +27,8 @@ export interface FormContextValue {
   // For Ultravox tool generation
   getFieldNames: () => string[];
   getFieldIds: () => string[];
+  getVisibleFields: () => FormField[];
+  getEditableFields: () => FormField[];
 }
 
 const FormContext = createContext<FormContextValue | null>(null);
@@ -43,13 +46,40 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
 
   const loadPDF = useCallback(async (file: File) => {
     try {
-      const { fields, metadata, pdfDoc, pdfBytes } = await parsePDF(file);
+      // Step 1: Parse PDF and extract basic fields
+      const { fields: basicFields, metadata, pdfDoc, pdfBytes } = await parsePDF(file);
       pdfDocRef.current = pdfDoc;
       
+      // Step 2: Load PDF with basic fields first (for immediate display)
       dispatch({
         type: 'LOAD_PDF',
-        payload: { fields, metadata, pdfDoc, pdfBytes },
+        payload: { fields: basicFields, metadata, pdfDoc, pdfBytes },
       });
+      
+      // Step 3: Start enhancement process
+      dispatch({ type: 'START_ENHANCEMENT' });
+      
+      try {
+        // Step 4: Enhance fields with Gemini AI
+        const { fields: enhancedFields, formTitle, formDescription, fromCache } =
+          await enhanceFormFields(file.name, pdfBytes, basicFields);
+        
+        // Step 5: Update state with enhanced fields
+        dispatch({
+          type: 'COMPLETE_ENHANCEMENT',
+          fields: enhancedFields,
+          title: formTitle,
+          description: formDescription,
+          cached: fromCache,
+        });
+      } catch (enhanceError) {
+        console.error('Enhancement failed:', enhanceError);
+        dispatch({
+          type: 'ENHANCEMENT_ERROR',
+          error: enhanceError instanceof Error ? enhanceError.message : 'Enhancement failed'
+        });
+        // Form is still usable with basic fields
+      }
     } catch (error) {
       console.error('Failed to load PDF:', error);
       throw error;
@@ -91,29 +121,47 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
       return 'No form loaded.';
     }
 
+    // Get only visible (non-ignored) fields
+    const visibleFields = state.fields.filter(f => !f.ignore);
+
     const lines = [
       `Form: ${state.metadata.title}`,
+      state.metadata.description ? `Description: ${state.metadata.description}` : '',
       `File: ${state.metadata.sourceFileName}`,
-      `Fields: ${state.metadata.fieldCount}`,
+      `Fields: ${visibleFields.length} (${state.metadata.fieldCount} total)`,
       '',
       'Current Values:',
-    ];
+    ].filter(Boolean); // Remove empty lines
 
-    for (const field of state.fields) {
+    for (const field of visibleFields) {
       const status = state.completedFieldIds.includes(field.id) ? '✓' : '○';
       const value = field.value || '(empty)';
-      lines.push(`${status} ${field.name}: ${value}`);
+      const readonlyTag = field.readonly ? ' [read-only]' : '';
+      const unitSuffix = field.unit ? ` (${field.unit})` : '';
+      lines.push(`${status} ${field.name}${unitSuffix}: ${value}${readonlyTag}`);
     }
 
     return lines.join('\n');
   }, [state]);
 
   const getProgress = useCallback(() => {
-    const total = state.fields.filter(f => !f.readonly).length;
-    const completed = state.completedFieldIds.length;
+    // Only count editable, visible fields
+    const editableFields = state.fields.filter(f => !f.readonly && !f.ignore);
+    const total = editableFields.length;
+    const completed = state.completedFieldIds.filter(id =>
+      editableFields.some(f => f.id === id)
+    ).length;
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
     return { completed, total, percentage };
   }, [state.fields, state.completedFieldIds]);
+
+  const getVisibleFieldsCallback = useCallback((): FormField[] => {
+    return getVisibleFields(state.fields);
+  }, [state.fields]);
+
+  const getEditableFieldsCallback = useCallback((): FormField[] => {
+    return getEditableFields(state.fields);
+  }, [state.fields]);
 
   const getFieldNames = useCallback((): string[] => {
     return state.fields.map(f => f.name);
@@ -153,6 +201,8 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     getProgress,
     getFieldNames,
     getFieldIds,
+    getVisibleFields: getVisibleFieldsCallback,
+    getEditableFields: getEditableFieldsCallback,
   }), [
     state,
     loadPDF,
@@ -166,6 +216,8 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     getProgress,
     getFieldNames,
     getFieldIds,
+    getVisibleFieldsCallback,
+    getEditableFieldsCallback,
   ]);
 
   return (
