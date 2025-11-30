@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useRef, useEff
 import { UltravoxSession } from 'ultravox-client';
 import { useFormContext } from '../store/FormContext';
 import { generateSystemPrompt } from './systemPrompt';
-import { formTools } from './tools';
+import { generateFormTools } from './tools';
 import { createToolImplementations } from './toolImplementations';
 
 // Define our own status type that matches the SDK's possible values
@@ -58,13 +58,28 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Check if a PDF is loaded
+    if (!formContext.state.pdfLoaded) {
+      console.error('No PDF loaded - cannot start voice call');
+      return;
+    }
+
+    // Generate dynamic tools based on loaded fields
+    const dynamicTools = generateFormTools(formContext.state.fields);
+
+    // Generate system prompt with current form state
+    const systemPrompt = generateSystemPrompt(
+      formContext.state.metadata,
+      formContext.state.fields
+    );
+
     // Create the call via Ultravox API
     const callConfig = {
-      systemPrompt: generateSystemPrompt(formContext.getFormSummary()),
+      systemPrompt,
       voice: 'Mark',
       temperature: 0.4,
       firstSpeaker: 'FIRST_SPEAKER_AGENT',
-      selectedTools: formTools
+      selectedTools: dynamicTools
     };
 
     try {
@@ -134,10 +149,9 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
 
   const notifyFieldFocus = useCallback((fieldName: string) => {
     if (!sessionRef.current) return;
-    // Send as deferred message so the agent knows but doesn't necessarily respond
-    // This gives the agent context about what the user is looking at
+    // Send as message so the agent knows the user clicked on a field
     sessionRef.current.sendText(
-      `[USER CLICKED ON FIELD: ${fieldName}] The user just clicked on the ${fieldName} field in the form. They may want to discuss or update this field.`,
+      `[USER CLICKED ON FIELD: ${fieldName}] The user just clicked on the "${fieldName}" field in the form. They may want to discuss or update this field.`,
       false // Don't defer - let the agent acknowledge and guide the user
     );
   }, []);

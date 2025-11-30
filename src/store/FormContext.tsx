@@ -1,95 +1,172 @@
-import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
-import type { FormState, FormAction, GrainReceiptFormData } from './types';
-import { EDITABLE_FIELDS, FIELD_LABELS } from './types';
+import React, { createContext, useContext, useReducer, useCallback, useMemo, useRef } from 'react';
+import type { FormState, FormAction, FormField } from './types';
 import { formReducer, initialFormState } from './formReducer';
+import { parsePDF, updatePDFField, openPDFInNewTab, downloadPDF as downloadPDFFile } from '../services/pdfParser';
+import type { PDFDocument } from 'pdf-lib';
 
 export interface FormContextValue {
   state: FormState;
   dispatch: React.Dispatch<FormAction>;
   
-  // Convenience methods for voice tools
-  setField: (field: string, value: string | number) => void;
-  getField: (field: string) => string | number | undefined;
-  focusField: (field: string | null) => void;
+  // PDF operations
+  loadPDF: (file: File) => Promise<void>;
+  downloadPDF: () => void;
+  openPDFPreview: () => void;
+  
+  // Field operations
+  setField: (fieldId: string, value: string) => void;
+  getField: (fieldId: string) => string | undefined;
+  getFieldByName: (name: string) => FormField | undefined;
+  focusField: (fieldId: string | null) => void;
+  
+  // Summary operations
   getFormSummary: () => string;
   getProgress: () => { completed: number; total: number; percentage: number };
-  getCalculatedValues: () => { netWeight: number; totalValue: number };
+  
+  // For Ultravox tool generation
+  getFieldNames: () => string[];
+  getFieldIds: () => string[];
 }
 
 const FormContext = createContext<FormContextValue | null>(null);
 
 export function FormProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(formReducer, initialFormState);
+  
+  // Keep a ref to the PDF document for updates
+  const pdfDocRef = useRef<PDFDocument | null>(null);
 
-  const setField = useCallback((field: string, value: string | number) => {
-    if (EDITABLE_FIELDS.includes(field as typeof EDITABLE_FIELDS[number])) {
-      dispatch({ 
-        type: 'SET_FIELD', 
-        field: field as keyof GrainReceiptFormData, 
-        value 
+  // Update pdfDocRef when state changes
+  React.useEffect(() => {
+    pdfDocRef.current = state.pdfDoc;
+  }, [state.pdfDoc]);
+
+  const loadPDF = useCallback(async (file: File) => {
+    try {
+      const { fields, metadata, pdfDoc, pdfBytes } = await parsePDF(file);
+      pdfDocRef.current = pdfDoc;
+      
+      dispatch({
+        type: 'LOAD_PDF',
+        payload: { fields, metadata, pdfDoc, pdfBytes },
       });
+    } catch (error) {
+      console.error('Failed to load PDF:', error);
+      throw error;
     }
   }, []);
 
-  const getField = useCallback((field: string): string | number | undefined => {
-    if (field === 'netWeight') {
-      return state.data.grossWeight - state.data.vehicleWeight;
+  const setField = useCallback(async (fieldId: string, value: string) => {
+    // Update state
+    dispatch({ type: 'SET_FIELD', fieldId, value });
+    
+    // Update PDF document
+    if (pdfDocRef.current) {
+      try {
+        const newBytes = await updatePDFField(pdfDocRef.current, fieldId, value);
+        dispatch({ type: 'UPDATE_PDF_BYTES', pdfBytes: newBytes });
+      } catch (error) {
+        console.error('Failed to update PDF field:', error);
+      }
     }
-    if (field === 'totalValue') {
-      const netWeight = state.data.grossWeight - state.data.vehicleWeight;
-      return (netWeight / 1000) * state.data.pricePerTonne * (1 - state.data.dockage / 100);
-    }
-    return state.data[field as keyof GrainReceiptFormData];
-  }, [state.data]);
+  }, []);
 
-  const focusField = useCallback((field: string | null) => {
-    dispatch({ type: 'SET_ACTIVE_FIELD', field });
+  const getField = useCallback((fieldId: string): string | undefined => {
+    const field = state.fields.find(f => f.id === fieldId);
+    return field?.value;
+  }, [state.fields]);
+
+  const getFieldByName = useCallback((name: string): FormField | undefined => {
+    // Case-insensitive search by display name
+    const lowerName = name.toLowerCase();
+    return state.fields.find(f => f.name.toLowerCase() === lowerName);
+  }, [state.fields]);
+
+  const focusField = useCallback((fieldId: string | null) => {
+    dispatch({ type: 'SET_ACTIVE_FIELD', fieldId });
   }, []);
 
   const getFormSummary = useCallback((): string => {
-    const { data } = state;
-    const netWeight = data.grossWeight - data.vehicleWeight;
-    const totalValue = (netWeight / 1000) * data.pricePerTonne * (1 - data.dockage / 100);
-    
-    return `
-Form Summary:
-- Receipt Number: ${data.receiptNumber} (auto-generated)
-- Licensee: ${data.licensee}
-- Producer: ${data.producer}
-- Delivery Date: ${data.date}
-- Gross Weight: ${data.grossWeight.toLocaleString()} kg
-- Vehicle Tare: ${data.vehicleWeight.toLocaleString()} kg
-- Net Weight: ${netWeight.toLocaleString()} kg
-- Grain Type: ${data.grainType}
-- Dockage: ${data.dockage}%
-- Price per Tonne: $${data.pricePerTonne.toFixed(2)}
-- Total Net Payable: $${totalValue.toFixed(2)} CAD
-    `.trim();
-  }, [state.data]);
+    if (!state.pdfLoaded || !state.metadata) {
+      return 'No form loaded.';
+    }
+
+    const lines = [
+      `Form: ${state.metadata.title}`,
+      `File: ${state.metadata.sourceFileName}`,
+      `Fields: ${state.metadata.fieldCount}`,
+      '',
+      'Current Values:',
+    ];
+
+    for (const field of state.fields) {
+      const status = state.completedFieldIds.includes(field.id) ? '✓' : '○';
+      const value = field.value || '(empty)';
+      lines.push(`${status} ${field.name}: ${value}`);
+    }
+
+    return lines.join('\n');
+  }, [state]);
 
   const getProgress = useCallback(() => {
-    const total = EDITABLE_FIELDS.length;
-    const completed = state.completedFields.length;
-    const percentage = Math.round((completed / total) * 100);
+    const total = state.fields.filter(f => !f.readonly).length;
+    const completed = state.completedFieldIds.length;
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
     return { completed, total, percentage };
-  }, [state.completedFields]);
+  }, [state.fields, state.completedFieldIds]);
 
-  const getCalculatedValues = useCallback(() => {
-    const netWeight = state.data.grossWeight - state.data.vehicleWeight;
-    const totalValue = (netWeight / 1000) * state.data.pricePerTonne * (1 - state.data.dockage / 100);
-    return { netWeight, totalValue };
-  }, [state.data]);
+  const getFieldNames = useCallback((): string[] => {
+    return state.fields.map(f => f.name);
+  }, [state.fields]);
+
+  const getFieldIds = useCallback((): string[] => {
+    return state.fields.map(f => f.id);
+  }, [state.fields]);
+
+  const downloadPDF = useCallback(() => {
+    if (!state.pdfBytes || !state.metadata) {
+      console.warn('No PDF loaded to download');
+      return;
+    }
+    downloadPDFFile(state.pdfBytes, state.metadata.sourceFileName);
+  }, [state.pdfBytes, state.metadata]);
+
+  const openPDFPreview = useCallback(() => {
+    if (!state.pdfBytes) {
+      console.warn('No PDF loaded to preview');
+      return;
+    }
+    openPDFInNewTab(state.pdfBytes);
+  }, [state.pdfBytes]);
 
   const value = useMemo(() => ({
     state,
     dispatch,
+    loadPDF,
+    downloadPDF,
+    openPDFPreview,
     setField,
     getField,
+    getFieldByName,
     focusField,
     getFormSummary,
     getProgress,
-    getCalculatedValues,
-  }), [state, setField, getField, focusField, getFormSummary, getProgress, getCalculatedValues]);
+    getFieldNames,
+    getFieldIds,
+  }), [
+    state,
+    loadPDF,
+    downloadPDF,
+    openPDFPreview,
+    setField,
+    getField,
+    getFieldByName,
+    focusField,
+    getFormSummary,
+    getProgress,
+    getFieldNames,
+    getFieldIds,
+  ]);
 
   return (
     <FormContext.Provider value={value}>
@@ -105,5 +182,3 @@ export function useFormContext() {
   }
   return context;
 }
-
-export { FIELD_LABELS, EDITABLE_FIELDS };

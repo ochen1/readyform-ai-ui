@@ -1,71 +1,103 @@
 import type { FormContextValue } from '../store/FormContext';
 
-const HELP_TEXTS: Record<string, string> = {
-  producer: 'The producer is the person or business delivering the grain. This must match your registered name.',
-  date: 'The delivery date when the grain arrives at the elevator. Affects pricing.',
-  weights: 'Gross weight is truck plus grain. Vehicle tare is empty truck. Net weight is calculated automatically.',
-  grossWeight: 'The total weight measured when the truck arrives fully loaded.',
-  vehicleWeight: 'The weight of the empty truck, measured after unloading or from registered tare.',
-  grainType: 'The grain classification per Canadian Grain Commission standards. CWRS means Canada Western Red Spring wheat.',
-  dockage: 'Percentage deducted for foreign material and damaged kernels. Set by the grain inspector.',
-  pricePerTonne: 'Current market price for this grain type and grade.',
-  general: 'I help you fill out this grain receipt. Just tell me the information and I will enter it. Ask to go back to any field anytime.'
-};
-
-const NUMERIC_FIELDS = ['grossWeight', 'vehicleWeight', 'dockage', 'pricePerTonne'];
-
+/**
+ * Create tool implementations that work with dynamic form fields
+ * All field lookups are done by display name (case-insensitive)
+ */
 export function createToolImplementations(formContext: FormContextValue, endCall: () => void) {
+  /**
+   * Find a field by its display name (case-insensitive)
+   */
+  const findFieldByName = (fieldName: string) => {
+    return formContext.state.fields.find(
+      f => f.name.toLowerCase() === fieldName.toLowerCase()
+    );
+  };
+
   return {
+    /**
+     * Set a form field value
+     */
     setFieldValue: ({ fieldName, value }: { fieldName: string; value: string }) => {
-      const parsedValue = NUMERIC_FIELDS.includes(fieldName) 
-        ? parseFloat(value) 
-        : value;
+      const field = findFieldByName(fieldName);
       
-      formContext.setField(fieldName, parsedValue);
-      formContext.focusField(fieldName);
+      if (!field) {
+        return JSON.stringify({
+          success: false,
+          message: `Field "${fieldName}" not found in form.`,
+          fieldName,
+        });
+      }
+
+      if (field.readonly) {
+        return JSON.stringify({
+          success: false,
+          message: `Field "${fieldName}" is read-only and cannot be modified.`,
+          fieldName,
+        });
+      }
+
+      formContext.setField(field.id, value);
+      formContext.focusField(field.id);
       
       // Clear focus after 3 seconds
       setTimeout(() => formContext.focusField(null), 3000);
       
-      let displayValue = String(parsedValue);
-      if (fieldName.includes('Weight')) displayValue += ' kg';
-      if (fieldName === 'dockage') displayValue += '%';
-      if (fieldName === 'pricePerTonne') displayValue = '$' + parsedValue;
+      return JSON.stringify({
+        success: true,
+        message: `Set "${field.name}" to "${value}". Please confirm this with the user.`,
+        fieldName: field.name,
+        newValue: value
+      });
+    },
+    
+    /**
+     * Get current value of a form field
+     */
+    getFieldValue: ({ fieldName }: { fieldName: string }) => {
+      const field = findFieldByName(fieldName);
+      
+      if (!field) {
+        return JSON.stringify({
+          fieldName,
+          value: 'Not found',
+          message: `Field "${fieldName}" not found in form.`
+        });
+      }
+      
+      const value = field.value || '(empty)';
+      return JSON.stringify({
+        fieldName: field.name,
+        value,
+        message: `Current value of "${field.name}": ${value}`
+      });
+    },
+    
+    /**
+     * Highlight a field in the UI
+     */
+    focusField: ({ fieldName }: { fieldName: string }) => {
+      const field = findFieldByName(fieldName);
+      
+      if (!field) {
+        return JSON.stringify({
+          success: false,
+          message: `Field "${fieldName}" not found in form.`
+        });
+      }
+
+      formContext.focusField(field.id);
+      setTimeout(() => formContext.focusField(null), 5000);
       
       return JSON.stringify({
         success: true,
-        message: `Set ${fieldName} to ${displayValue}. Please confirm this with the user.`,
-        fieldName,
-        newValue: parsedValue
+        message: `Highlighting "${field.name}" on screen.`
       });
     },
     
-    getFieldValue: ({ fieldName }: { fieldName: string }) => {
-      const value = formContext.getField(fieldName);
-      return JSON.stringify({
-        fieldName,
-        value: value ?? 'Not set',
-        message: `Current value of ${fieldName}: ${value ?? 'not set'}`
-      });
-    },
-    
-    focusField: ({ fieldName }: { fieldName: string }) => {
-      formContext.focusField(fieldName);
-      setTimeout(() => formContext.focusField(null), 5000);
-      return JSON.stringify({
-        success: true,
-        message: `Highlighting ${fieldName} on screen.`
-      });
-    },
-    
-    navigateToSection: ({ section }: { section: string }) => {
-      window.dispatchEvent(new CustomEvent('form:navigate', { detail: { section } }));
-      return JSON.stringify({
-        success: true,
-        message: `Scrolled to ${section} section.`
-      });
-    },
-    
+    /**
+     * Get form completion progress
+     */
     getFormProgress: () => {
       const progress = formContext.getProgress();
       return JSON.stringify({
@@ -74,25 +106,60 @@ export function createToolImplementations(formContext: FormContextValue, endCall
       });
     },
     
+    /**
+     * Get complete form summary
+     */
     getFormSummary: () => {
       const summary = formContext.getFormSummary();
       return JSON.stringify({ summary, message: summary });
     },
     
+    /**
+     * Mark a field as confirmed
+     */
     confirmValue: ({ fieldName }: { fieldName: string }) => {
-      formContext.dispatch({ type: 'MARK_FIELD_COMPLETE', field: fieldName });
+      const field = findFieldByName(fieldName);
+      
+      if (!field) {
+        return JSON.stringify({
+          success: false,
+          message: `Field "${fieldName}" not found in form.`
+        });
+      }
+
+      formContext.dispatch({ type: 'MARK_FIELD_COMPLETE', fieldId: field.id });
+      
       return JSON.stringify({
         success: true,
-        message: `Marked ${fieldName} as confirmed.`
+        message: `Marked "${field.name}" as confirmed.`
       });
     },
     
+    /**
+     * Show help information for a topic
+     */
     showHelp: ({ topic }: { topic: string }) => {
-      const helpText = HELP_TEXTS[topic] || HELP_TEXTS.general;
+      let helpText: string;
+      
+      if (topic === 'general') {
+        helpText = 'I help you fill out this form. Just tell me the information and I will enter it. Ask to go back to any field anytime.';
+      } else {
+        // Try to find the field and give generic help
+        const field = findFieldByName(topic);
+        if (field) {
+          helpText = `"${field.name}" is a form field. ${field.readonly ? 'This field is read-only.' : 'You can update this field by telling me the new value.'}`;
+        } else {
+          helpText = `I don't have specific help for "${topic}". You can ask me about any field in the form or say "general" for an overview.`;
+        }
+      }
+      
       window.dispatchEvent(new CustomEvent('form:showHelp', { detail: { topic, helpText } }));
       return JSON.stringify({ topic, helpText, message: helpText });
     },
     
+    /**
+     * End the call
+     */
     hangUp: ({ reason }: { reason: string }) => {
       const message = reason === 'completed' 
         ? 'Form complete! Thank you for using FormAI.'

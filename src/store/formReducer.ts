@@ -1,53 +1,69 @@
-import type { FormState, FormAction, GrainReceiptFormData } from './types';
+import type { FormState, FormAction } from './types';
 
-export const initialFormData: GrainReceiptFormData = {
-  receiptNumber: 'GR-2024-8842',
-  licensee: 'Prairie Grain Co-op',
-  producer: 'Oliver Smith',
-  date: '2024-11-20',
-  grossWeight: 42500,
-  vehicleWeight: 18200,
-  grainType: 'CWRS Wheat',
-  dockage: 2.5,
-  pricePerTonne: 385.50,
-};
-
+/**
+ * Initial form state - empty until PDF is loaded
+ */
 export const initialFormState: FormState = {
-  data: initialFormData,
-  activeField: null,
-  lastUpdatedField: null,
-  lastUpdateTimestamp: 0,
-  completedFields: [],
+  // PDF state - empty until loaded
+  pdfLoaded: false,
+  pdfDoc: null,
+  pdfBytes: null,
+  metadata: null,
+  
+  // Fields - empty array until PDF loaded
+  fields: [],
+  
+  // UI state
+  activeFieldId: null,
+  completedFieldIds: [],
   validationErrors: {},
   isVoiceActive: false,
 };
 
+/**
+ * Form reducer for handling dynamic PDF form state
+ */
 export function formReducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
-    case 'SET_FIELD':
+    case 'LOAD_PDF':
+      return {
+        ...initialFormState, // Reset to clean state
+        pdfLoaded: true,
+        pdfDoc: action.payload.pdfDoc,
+        pdfBytes: action.payload.pdfBytes,
+        metadata: action.payload.metadata,
+        fields: action.payload.fields,
+      };
+
+    case 'SET_FIELD': {
+      const fieldIndex = state.fields.findIndex(f => f.id === action.fieldId);
+      if (fieldIndex === -1) return state;
+      
+      const updatedFields = [...state.fields];
+      updatedFields[fieldIndex] = {
+        ...updatedFields[fieldIndex],
+        value: action.value,
+      };
+      
       return {
         ...state,
-        data: {
-          ...state.data,
-          [action.field]: action.value,
-        },
-        lastUpdatedField: action.field,
-        lastUpdateTimestamp: Date.now(),
+        fields: updatedFields,
       };
+    }
 
     case 'SET_ACTIVE_FIELD':
       return {
         ...state,
-        activeField: action.field,
+        activeFieldId: action.fieldId,
       };
 
     case 'MARK_FIELD_COMPLETE':
-      if (state.completedFields.includes(action.field)) {
+      if (state.completedFieldIds.includes(action.fieldId)) {
         return state;
       }
       return {
         ...state,
-        completedFields: [...state.completedFields, action.field],
+        completedFieldIds: [...state.completedFieldIds, action.fieldId],
       };
 
     case 'SET_VALIDATION_ERROR':
@@ -55,12 +71,12 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         ...state,
         validationErrors: {
           ...state.validationErrors,
-          [action.field]: action.error,
+          [action.fieldId]: action.error,
         },
       };
 
     case 'CLEAR_VALIDATION_ERROR': {
-      const { [action.field]: _, ...remainingErrors } = state.validationErrors;
+      const { [action.fieldId]: _, ...remainingErrors } = state.validationErrors;
       return {
         ...state,
         validationErrors: remainingErrors,
@@ -71,6 +87,12 @@ export function formReducer(state: FormState, action: FormAction): FormState {
       return {
         ...state,
         isVoiceActive: action.active,
+      };
+
+    case 'UPDATE_PDF_BYTES':
+      return {
+        ...state,
+        pdfBytes: action.pdfBytes,
       };
 
     case 'RESET_FORM':

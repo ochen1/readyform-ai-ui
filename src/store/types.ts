@@ -1,56 +1,83 @@
-export interface GrainReceiptFormData {
-  receiptNumber: string;
-  licensee: string;
-  producer: string;
-  date: string;
-  grossWeight: number;
-  vehicleWeight: number;
-  grainType: string;
-  dockage: number;
-  pricePerTonne: number;
+import type { PDFDocument } from 'pdf-lib';
+
+/**
+ * Generic form field extracted from PDF
+ * All values are strings - no type inference for simplicity
+ */
+export interface FormField {
+  /** Unique ID from PDF field name */
+  id: string;
+  /** Display-friendly name derived from PDF field name */
+  name: string;
+  /** Current value - always a string */
+  value: string;
+  /** Field type - always 'text' for now, can expand later with AI inference */
+  type: 'text';
+  /** Whether field is required - default false */
+  required: boolean;
+  /** Whether field is read-only - default false */
+  readonly: boolean;
 }
 
+/**
+ * Metadata about the loaded PDF form
+ */
+export interface FormMetadata {
+  /** Form title - derived from filename or default */
+  title: string;
+  /** Original PDF filename */
+  sourceFileName: string;
+  /** Number of fillable fields in the form */
+  fieldCount: number;
+}
+
+/**
+ * Complete form state for arbitrary PDF forms
+ */
 export interface FormState {
-  data: GrainReceiptFormData;
-  activeField: string | null;
-  lastUpdatedField: string | null;
-  lastUpdateTimestamp: number;
-  completedFields: string[];
+  // PDF-related state
+  /** Whether a PDF has been loaded */
+  pdfLoaded: boolean;
+  /** Reference to the loaded PDFDocument for updates */
+  pdfDoc: PDFDocument | null;
+  /** Current PDF bytes for download */
+  pdfBytes: Uint8Array | null;
+  /** Metadata about the loaded form */
+  metadata: FormMetadata | null;
+  
+  // Fields
+  /** Array of form fields extracted from PDF */
+  fields: FormField[];
+  
+  // UI state
+  /** ID of the currently active/focused field */
+  activeFieldId: string | null;
+  /** IDs of fields that have been confirmed by the user */
+  completedFieldIds: string[];
+  /** Validation errors keyed by field ID */
   validationErrors: Record<string, string>;
+  /** Whether voice assistant is currently active */
   isVoiceActive: boolean;
 }
 
+/**
+ * Actions that can be dispatched to modify form state
+ */
 export type FormAction =
-  | { type: 'SET_FIELD'; field: keyof GrainReceiptFormData; value: string | number }
-  | { type: 'SET_ACTIVE_FIELD'; field: string | null }
-  | { type: 'MARK_FIELD_COMPLETE'; field: string }
-  | { type: 'SET_VALIDATION_ERROR'; field: string; error: string }
-  | { type: 'CLEAR_VALIDATION_ERROR'; field: string }
+  | { 
+      type: 'LOAD_PDF'; 
+      payload: { 
+        fields: FormField[]; 
+        metadata: FormMetadata; 
+        pdfDoc: PDFDocument;
+        pdfBytes: Uint8Array;
+      };
+    }
+  | { type: 'SET_FIELD'; fieldId: string; value: string }
+  | { type: 'SET_ACTIVE_FIELD'; fieldId: string | null }
+  | { type: 'MARK_FIELD_COMPLETE'; fieldId: string }
+  | { type: 'SET_VALIDATION_ERROR'; fieldId: string; error: string }
+  | { type: 'CLEAR_VALIDATION_ERROR'; fieldId: string }
   | { type: 'SET_VOICE_ACTIVE'; active: boolean }
+  | { type: 'UPDATE_PDF_BYTES'; pdfBytes: Uint8Array }
   | { type: 'RESET_FORM' };
-
-export const EDITABLE_FIELDS = [
-  'producer',
-  'date',
-  'grossWeight',
-  'vehicleWeight',
-  'grainType',
-  'dockage',
-  'pricePerTonne'
-] as const;
-
-export type EditableField = typeof EDITABLE_FIELDS[number];
-
-export const FIELD_LABELS: Record<string, string> = {
-  receiptNumber: 'Receipt Number',
-  licensee: 'Licensee',
-  producer: 'Producer Name',
-  date: 'Delivery Date',
-  grossWeight: 'Gross Weight (kg)',
-  vehicleWeight: 'Vehicle Tare Weight (kg)',
-  grainType: 'Grain Type',
-  dockage: 'Dockage (%)',
-  pricePerTonne: 'Price per Tonne ($)',
-  netWeight: 'Net Weight (kg)',
-  totalValue: 'Total Net Payable ($)'
-};
