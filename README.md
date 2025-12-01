@@ -38,3 +38,17 @@ For ease of setup, our interface currently uses
 (such as reading units), grab a free api key from aistudio and fill it in
 `.env`. You can also change out the endpoint (eg. vLLM) to host this model
 locally.
+
+Install the dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`. Open this URL in your browser to start using ReadyFormAI.
