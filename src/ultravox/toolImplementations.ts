@@ -51,12 +51,15 @@ export function createToolImplementations(formContext: FormContextValue, endCall
       formContext.setField(field.id, processedValue);
       formContext.focusField(field.id);
       
+      // Auto-mark field as complete when value is set by voice assistant
+      formContext.dispatch({ type: 'MARK_FIELD_COMPLETE', fieldId: field.id });
+      
       // Clear focus after 3 seconds
       setTimeout(() => formContext.focusField(null), 3000);
       
       return JSON.stringify({
         success: true,
-        message: `Set "${field.name}" to "${processedValue}". Please confirm this with the user.`,
+        message: `Set "${field.name}" to "${processedValue}".`,
         fieldName: field.name,
         newValue: processedValue
       });
