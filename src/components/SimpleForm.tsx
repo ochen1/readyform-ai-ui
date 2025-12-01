@@ -475,7 +475,6 @@ export function SimpleForm() {
                   {state.metadata.sourceFileName}
                 </p>
                 <div className="flex flex-wrap gap-2 text-xs text-slate-700">
-                  <span>{visibleFields.length} fields</span>
                   {state.isEnhancing && (
                     <span className="flex items-center gap-1 text-blue-600">
                       <Loader2 size={12} className="animate-spin" />
