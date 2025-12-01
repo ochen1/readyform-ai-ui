@@ -335,7 +335,7 @@ export function SimpleForm() {
           {!state.pdfLoaded ? (
             <EmptyState onUpload={handlePDFUpload} />
           ) : (
-            <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
+            <form onSubmit={handleSubmit} className="w-full bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
               {/* Page-by-Page Enhancement Progress */}
               {state.isEnhancing && state.enhancementProgress && (
                 <div className="mb-6">
