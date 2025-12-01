@@ -75,12 +75,12 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
           </div>
           <div className="flex items-center justify-end gap-1 mt-1">
             {field.type !== 'text' && (
-              <span className={`hidden text-xs px-2 py-0.5 rounded-full ${getTypeBadgeColor()}`}>
+              <span className={`hidden text-sm px-2 py-0.5 rounded-full ${getTypeBadgeColor()}`}>
                 {field.type}
               </span>
             )}
             {field.required && (
-              <span className="hidden text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+              <span className="hidden text-sm px-2 py-0.5 rounded-full bg-red-100 text-red-600">
                 required
               </span>
             )}
@@ -102,7 +102,7 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
             className={borderClass}
           />
           {showTooltip && field.description && (
-            <div className="absolute top-full left-0 mt-1 z-10 w-80 p-3 bg-slate-800 text-white text-sm rounded-lg shadow-lg border border-slate-600">
+            <div className="absolute top-full left-0 mt-1 z-10 w-80 p-3 bg-slate-800 text-white text-base rounded-lg shadow-lg border border-slate-600">
               <p>{field.description}</p>
               {field.calculationHint && (
                 <span className="block mt-1 text-slate-200 italic">
@@ -392,7 +392,7 @@ export function SimpleForm() {
                             {section.title}
                           </h2>
                           {section.description && (
-                            <p className="text-slate-700 text-sm mt-1">{section.description}</p>
+                            <p className="text-slate-700 text-base mt-1">{section.description}</p>
                           )}
                         </div>
 
@@ -481,13 +481,13 @@ export function SimpleForm() {
 
             {state.metadata && (
               <div className="mt-2 space-y-1">
-                <p className="text-xs text-slate-700 font-medium truncate" title={state.metadata.sourceFileName}>
+                <p className="text-sm text-slate-700 font-medium truncate" title={state.metadata.sourceFileName}>
                   {state.metadata.sourceFileName}
                 </p>
-                <div className="flex flex-wrap gap-2 text-xs text-slate-700">
+                <div className="flex flex-wrap gap-2 text-sm text-slate-700">
                   {state.isEnhancing && (
                     <span className="flex items-center gap-1 text-blue-600">
-                      <Loader2 size={12} className="animate-spin" />
+                      <Loader2 size={14} className="animate-spin" />
                       Analyzing...
                     </span>
                   )}
@@ -496,7 +496,7 @@ export function SimpleForm() {
             )}
 
             {state.metadata?.description && (
-              <p className="text-slate-700 text-xs mt-2 line-clamp-2" title={state.metadata.description}>
+              <p className="text-slate-700 text-sm mt-2 line-clamp-2" title={state.metadata.description}>
                 {state.metadata.description}
               </p>
             )}
@@ -517,8 +517,8 @@ export function SimpleForm() {
               <div className="mt-4 flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
                 <Loader2 size={20} className="animate-spin text-blue-600" />
                 <div>
-                  <p className="font-medium text-blue-800 text-sm">Preparing to analyze...</p>
-                  <p className="text-xs text-blue-600">Loading PDF and extracting fields.</p>
+                  <p className="font-medium text-blue-800 text-base">Preparing to analyze...</p>
+                  <p className="text-sm text-blue-600">Loading PDF and extracting fields.</p>
                 </div>
               </div>
             )}
@@ -529,10 +529,10 @@ export function SimpleForm() {
                 {/* Error Summary */}
                 {state.enhancementProgress.errorPages > 0 && (
                   <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                    <p className="font-medium text-amber-800 text-sm">
+                    <p className="font-medium text-amber-800 text-base">
                       {state.enhancementProgress.errorPages} page(s) failed analysis
                     </p>
-                    <div className="mt-1 text-xs text-amber-700">
+                    <div className="mt-1 text-sm text-amber-700">
                       {state.enhancementProgress.pageStatuses
                         .filter(p => p.status === 'error')
                         .map(p => `Page ${p.pageNumber}`)
@@ -543,8 +543,8 @@ export function SimpleForm() {
 
                 {/* Success Stats */}
                 {state.enhancementProgress.errorPages === 0 && (
-                  <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
-                    <Sparkles size={14} className="text-emerald-600 shrink-0" />
+                  <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                    <Sparkles size={16} className="text-emerald-600 shrink-0" />
                     <span>
                       AI Enhanced • {visibleFields.length} fields found
                     </span>
@@ -556,15 +556,15 @@ export function SimpleForm() {
             {/* Global Enhancement Error */}
             {state.enhancementError && (
               <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="font-medium text-amber-800 text-sm">AI enhancement failed</p>
-                <p className="text-xs text-amber-600 mt-1">{state.enhancementError}</p>
+                <p className="font-medium text-amber-800 text-base">AI enhancement failed</p>
+                <p className="text-sm text-amber-600 mt-1">{state.enhancementError}</p>
               </div>
             )}
 
             {/* Legacy Success (Full Cache) */}
             {state.enhancementCached && !state.isEnhancing && !state.enhancementProgress && (
-              <div className="mt-4 flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
-                <Sparkles size={14} className="text-emerald-600 shrink-0" />
+              <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                <Sparkles size={16} className="text-emerald-600 shrink-0" />
                 <span>
                   AI Enhanced • {visibleFields.length} fields
                 </span>
@@ -572,7 +572,7 @@ export function SimpleForm() {
             )}
 
             <div className="mt-4">
-              <div className="flex justify-between text-xs text-slate-800 mb-1">
+              <div className="flex justify-between text-sm text-slate-800 mb-1">
                 <span>Progress</span>
                 <span>{progressPercentage}%</span>
               </div>
@@ -615,7 +615,7 @@ export function SimpleForm() {
           </button>
 
           {!state.pdfLoaded && (
-            <p className="text-sm text-slate-700 mt-2 text-center">
+            <p className="text-base text-slate-700 mt-2 text-center">
               Upload a PDF to enable voice assistant
             </p>
           )}
