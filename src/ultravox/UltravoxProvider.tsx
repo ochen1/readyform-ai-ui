@@ -64,8 +64,9 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Generate dynamic tools based on loaded fields
-    const dynamicTools = generateFormTools(formContext.state.fields);
+    // Generate dynamic tools based on loaded fields and sections
+    const sectionIds = formContext.state.sections.map(s => s.id);
+    const dynamicTools = generateFormTools(formContext.state.fields, sectionIds);
 
     // Generate system prompt with current form state (including sections)
     const systemPrompt = generateSystemPrompt(
@@ -78,7 +79,7 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
     const callConfig = {
       systemPrompt,
       voice: 'Mark',
-      temperature: 0.4,
+      temperature: 0,
       firstSpeaker: 'FIRST_SPEAKER_AGENT',
       selectedTools: dynamicTools
     };
@@ -113,13 +114,32 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
         setStatus(session.status as SessionStatus);
       });
 
+      // Track logged transcripts to avoid duplicates
+      const loggedTranscriptTexts = new Set<string>();
+      
       session.addEventListener('transcripts', () => {
-        setTranscripts(session.transcripts.map(t => ({
+        const newTranscripts = session.transcripts.map(t => ({
           text: t.text,
           isFinal: t.isFinal,
           speaker: t.speaker as 'user' | 'agent',
           medium: t.medium as 'voice' | 'text'
-        })));
+        }));
+        
+        setTranscripts(newTranscripts);
+        
+        // Log ALL final transcripts to console for debugging
+        // Use a Set to track what we've already logged to avoid duplicates
+        for (const transcript of newTranscripts) {
+          if (transcript.isFinal) {
+            // Create a unique key for this transcript
+            const key = `${transcript.speaker}:${transcript.text}`;
+            if (!loggedTranscriptTexts.has(key)) {
+              loggedTranscriptTexts.add(key);
+              const prefix = transcript.speaker === 'user' ? '🎤 User' : '🤖 Agent';
+              console.log(`[Transcript] ${prefix}: ${transcript.text}`);
+            }
+          }
+        }
       });
 
       // Join the call

@@ -123,7 +123,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (state.fields.length > 0) {
       dependencyGraphRef.current = buildDependencyGraph(state.fields);
-      console.log('[Calculations] Dependency graph built:', dependencyGraphRef.current);
+      // console.log('[Calculations] Dependency graph built:', dependencyGraphRef.current);
     }
   }, [state.fields]);
 
@@ -133,7 +133,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     
     if (calculatedFields.length === 0) return;
     
-    console.log('[Calculations] Recalculating all calculated fields');
+    // console.log('[Calculations] Recalculating all calculated fields');
     
     // Create a working copy of fields with current values
     let workingFields = [...state.fields];

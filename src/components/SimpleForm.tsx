@@ -329,6 +329,36 @@ export function SimpleForm() {
     }
   }, [state.activeFieldId]);
 
+  // Listen for section navigation events from voice assistant
+  useEffect(() => {
+    const handleSectionNavigate = (event: CustomEvent<{ section: string }>) => {
+      const sectionId = event.detail.section;
+      const sectionElement = document.getElementById(`section-${sectionId}`);
+      
+      if (sectionElement) {
+        // Add a highlight animation to the section
+        sectionElement.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-75', 'rounded-xl');
+        
+        // Smooth scroll to the section with a slight offset at the top
+        sectionElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+        
+        // Remove highlight after animation
+        setTimeout(() => {
+          sectionElement.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-75', 'rounded-xl');
+        }, 2000);
+      }
+    };
+    
+    window.addEventListener('form:navigate', handleSectionNavigate as EventListener);
+    
+    return () => {
+      window.removeEventListener('form:navigate', handleSectionNavigate as EventListener);
+    };
+  }, []);
+
   // Log cache usage when enhancement completes
   useEffect(() => {
     if (!state.isEnhancing && state.enhancementProgress) {

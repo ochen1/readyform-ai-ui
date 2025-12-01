@@ -63,10 +63,39 @@ export const staticTools: ToolDefinition[] = [
 ];
 
 /**
+ * Generate a navigateToSection tool with section IDs from the form
+ */
+export function generateSectionTool(sectionIds: string[]): ToolDefinition | null {
+  if (sectionIds.length === 0) {
+    return null;
+  }
+  
+  return {
+    temporaryTool: {
+      modelToolName: 'navigateToSection',
+      description: 'Scroll to and highlight a specific section of the form. Use when moving between major form sections. The form will animate smoothly to the section.',
+      dynamicParameters: [
+        {
+          name: 'sectionId',
+          location: 'PARAMETER_LOCATION_BODY',
+          schema: {
+            type: 'string',
+            description: 'The section ID to navigate to',
+            enum: sectionIds
+          },
+          required: true
+        }
+      ],
+      client: {}
+    }
+  };
+}
+
+/**
  * Generate dynamic tools based on loaded form fields
  * This creates tools with enum values for the specific fields in the PDF
  */
-export function generateFormTools(fields: FormField[]): ToolDefinition[] {
+export function generateFormTools(fields: FormField[], sectionIds: string[] = []): ToolDefinition[] {
   // Get field names for enums (excluding readonly fields for setters)
   const editableFieldNames = fields
     .filter(f => !f.readonly)
@@ -185,6 +214,12 @@ export function generateFormTools(fields: FormField[]): ToolDefinition[] {
       }
     }
   ];
+
+  // Add section navigation tool if sections exist
+  const sectionTool = generateSectionTool(sectionIds);
+  if (sectionTool) {
+    dynamicTools.push(sectionTool);
+  }
 
   return [...dynamicTools, ...staticTools];
 }
