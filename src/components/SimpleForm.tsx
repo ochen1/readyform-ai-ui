@@ -68,7 +68,7 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
         {/* Label Section */}
         <div className="w-56 text-right shrink-0 pt-4">
           <div className="flex items-center justify-end gap-2">
-            {TypeIcon && <span className="text-slate-700">{TypeIcon}</span>}
+            {TypeIcon && <span className="text-slate-700 mr-auto">{TypeIcon}</span>}
             <label className={`text-lg ${labelColor}`}>
               {field.name}
             </label>

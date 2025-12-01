@@ -131,22 +131,17 @@ export function WeightInput({ field, value, onChange, onFocus, disabled, classNa
  */
 export function CurrencyInput({ field: _field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
-    <div className="flex-1 flex gap-2">
-      <div className="flex items-center px-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 font-medium shrink-0">
-        $
-      </div>
-      <input
-        type="number"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={onFocus}
-        disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${className}`}
-        placeholder="0.00"
-        step="0.01"
-        min="0"
-      />
-    </div>
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onFocus={onFocus}
+      disabled={disabled}
+      className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${className}`}
+      placeholder="0.00"
+      step="0.01"
+      min="0"
+    />
   );
 }
 
@@ -313,11 +308,6 @@ export function CalculatedInput({ field, value, onFocus: _onFocus, onChange: _on
 
   return (
     <div className="flex-1 flex gap-2">
-      {isCurrency && (
-        <div className="flex items-center px-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 font-medium shrink-0">
-          $
-        </div>
-      )}
       <div className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl transition-all duration-200 placeholder-slate-700 cursor-not-allowed bg-gradient-to-r from-blue-50 to-slate-50 border-blue-200 text-blue-900 font-semibold`}>
         {formatValue(value)}
       </div>
@@ -458,9 +448,6 @@ export function PhoneInput({ field, value, onChange, onFocus, disabled, classNam
 
   return (
     <div className="flex-1 flex gap-2">
-      <div className="flex items-center px-3 bg-slate-100 border-2 border-slate-200 rounded-xl text-slate-800 shrink-0">
-        <Phone size={20} />
-      </div>
       <input
         type="tel"
         value={value}
@@ -541,10 +528,6 @@ export function PostalCodeInput({ field, value, onChange, onFocus, disabled, cla
 
   return (
     <div className="flex-1 flex gap-2">
-      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${value && !valid ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-slate-100 border-slate-200 text-slate-800'
-        }`}>
-        <MapPinned size={20} />
-      </div>
       <input
         type="text"
         value={value}
