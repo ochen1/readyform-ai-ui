@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useMemo } from 'react';
+import React, { useCallback, useRef, useMemo, useEffect } from 'react';
 import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
@@ -64,7 +64,7 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
   const TypeIcon = getFieldTypeIcon(field.type);
 
   return (
-    <div className="py-4">
+    <div className="py-4" data-field-id={field.id}>
       <div className="flex items-start gap-6">
         {/* Label Section */}
         <div className="w-56 text-right shrink-0 pt-4">
@@ -311,8 +311,26 @@ export function SimpleForm() {
     }
   }, [handlePDFUpload]);
 
+  // Auto-scroll to active field when it changes
+  useEffect(() => {
+    if (state.activeFieldId) {
+      // Small delay to allow any animations to complete
+      const timeoutId = setTimeout(() => {
+        const fieldElement = document.querySelector(`[data-field-id="${state.activeFieldId}"]`);
+        if (fieldElement) {
+          fieldElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [state.activeFieldId]);
+
   // Log cache usage when enhancement completes
-  React.useEffect(() => {
+  useEffect(() => {
     if (!state.isEnhancing && state.enhancementProgress) {
       const cachedCount = state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length;
       if (cachedCount > 0) {
