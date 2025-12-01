@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# ReadyFormAI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ReadyFormAI turns filling in PDF forms into a conversation. It aims to make
+public services more accessible to visually impaired citizens, as accessing said
+services is largely done through submitting digital PDF forms. Our accessible
+interface is compatible with screen-readers and uses an AI-powered voice
+assistant that is capable for filling out the entire form with you. Once
+complete, the interface allows you to export the filled in PDF form.
 
-Currently, two official plugins are available:
+ReadyFormAI can be run with entirely open-source components. Specifically, we
+recommend using:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+ - [Ultravox](https://huggingface.co/collections/fixie-ai/ultravox-v05) the
+   voice to text model
+ - [UltraVAD](https://huggingface.co/collections/fixie-ai/ultravad) to allow
+   users to interrupt the conversation naturally.
+ - [Kokoro TTS](https://huggingface.co/hexgrad/Kokoro-82M) for generating the
+   vocals in the reply.
 
-## React Compiler
+However, for ease of testing, this demo version uses Ultravox's cloud API. This
+uses the same open-source pipeline, but makes it much easier to test out! New
+accounts get 30 minutes of call time for free. We recommend switching to the
+open source components in production, to keep user data secure and private.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the ESLint configuration
+Copy `.env.example` to `.env`:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Sign up to [Ultravox cloud](https://app.ultravox.ai/) and obtain an api key from
+the dashboard. Fill in the `VITE_ULTRAVOX_API_KEY` in `.env` with your key.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+For ease of setup, our interface currently uses
+[aistudio](https://aistudio.google.com/app/apikey) for enhancing form context
+(such as reading units), grab a free api key from aistudio and fill it in
+`.env`. You can also change out the endpoint (eg. vLLM) to host this model
+locally.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Install the dependencies:
+
+```bash
+npm install
 ```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`. Open this URL in your browser to start using ReadyFormAI.
