@@ -414,6 +414,8 @@ export async function enhanceFormFieldsPageByPage(
   const allSections: FormSection[][] = [];
   let cachedPages = 0;
   let errorPages = 0;
+  let aiFormTitle: string | undefined;
+  let aiFormDescription: string | undefined;
   
   for (let i = 0; i < pageResults.length; i++) {
     const result = pageResults[i];
@@ -421,6 +423,15 @@ export async function enhanceFormFieldsPageByPage(
     if (result) {
       enhancedFields = mergePageResults(enhancedFields, result);
       allSections.push(result.sections);
+      
+      // Extract form title from the first page result (page 1 typically has the header)
+      // Only use if it's not a generic fallback value
+      if (!aiFormTitle && result.formTitle && result.formTitle !== 'Untitled Form') {
+        aiFormTitle = result.formTitle;
+      }
+      if (!aiFormDescription && result.formDescription && result.formDescription !== 'A fillable PDF form') {
+        aiFormDescription = result.formDescription;
+      }
       
       // Check if this was from cache
       const pageNum = pagesWithFields[i];
@@ -436,11 +447,11 @@ export async function enhanceFormFieldsPageByPage(
   // Merge and deduplicate sections
   const sections = mergeSections(allSections);
   
-  // Generate title and description
-  const formTitle = extractTitleFromFilename(filename);
+  // Use AI-extracted title, fallback to filename-derived title
+  const formTitle = aiFormTitle || extractTitleFromFilename(filename);
   const formDescription = errorPages > 0
     ? `Form analyzed with ${errorPages} page(s) that could not be processed`
-    : ``;
+    : (aiFormDescription || '');
   
   console.log(`[PageEnhancer] Complete: ${pagesWithFields.length - errorPages} pages processed, ${cachedPages} from cache, ${errorPages} errors`);
   

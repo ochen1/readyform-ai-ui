@@ -56,6 +56,10 @@ export interface PageEnhancementResult {
   pageNumber: number;
   fields: GeminiFieldEnhancement['fields'];
   sections: GeminiFieldEnhancement['sections'];
+  /** Form title extracted from this page (usually only meaningful on page 1) */
+  formTitle?: string;
+  /** Form description extracted from this page */
+  formDescription?: string;
 }
 
 /**

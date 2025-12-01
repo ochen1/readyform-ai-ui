@@ -109,8 +109,8 @@ Assign one of these semantic types to each field:
 Respond with a valid JSON object in this exact structure:
 
 {
-  "formTitle": "Human-readable form title based on the document",
-  "formDescription": "Brief description of the form's purpose",
+  "formTitle": "The official form title as shown on the document (e.g., 'Record of Employment', 'Primary Elevator Receipt - Form 6')",
+  "formDescription": "A brief, one-sentence description of what this form is used for",
   "sections": [
     {
       "id": "section_a",
@@ -179,7 +179,14 @@ Respond with a valid JSON object in this exact structure:
 
 5. **Required Fields**: Mark fields as required if they seem essential to the form's purpose.
 
-6. **Look at the PDF Image**: Use visual context from the PDF to:
+6. **Form Title**: Extract the OFFICIAL form title from the PDF document header:
+   - Look for the main heading at the top of the first page
+   - Include form numbers if present (e.g., "Form 6", "INS5432E")
+   - Use the exact official name, not a summary
+   - Examples: "Record of Employment", "Primary Elevator Receipt - Form 6", "Application for Employment Insurance Benefits"
+   - Do NOT just use the filename
+
+7. **Look at the PDF Image**: Use visual context from the PDF to:
    - Identify labels that may not be in the field names
    - Understand the form's overall purpose
    - Determine units from column headers or labels
@@ -815,6 +822,8 @@ export async function analyzeFormPageWithGemini(
       pageNumber: targetPage,
       fields: pageFields,
       sections: validated.sections || [],
+      formTitle: validated.formTitle,
+      formDescription: validated.formDescription,
     };
   } catch (parseError) {
     console.error(`[Gemini Page ${targetPage}] Failed to parse response:`, content);
