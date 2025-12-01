@@ -24,7 +24,7 @@ const baseInputClass = "flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outli
  */
 export function getFieldTypeIcon(type: FieldType): React.ReactNode {
   const iconProps = { size: 20, className: "text-slate-400" };
-  
+
   switch (type) {
     case 'date':
       return <Calendar {...iconProps} />;
@@ -105,7 +105,7 @@ export function NumberInput({ field, value, onChange, onFocus, disabled, classNa
  */
 export function WeightInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
   const unit = field.unit || 'kg';
-  
+
   return (
     <div className="flex-1 flex gap-2">
       <input
@@ -182,35 +182,35 @@ export function DateInput({ field, value, onChange, onFocus, disabled, className
   // Convert various date formats to yyyy-mm-dd for input
   const normalizeDate = (dateStr: string): string => {
     if (!dateStr) return '';
-    
+
     // If already in yyyy-mm-dd format
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
       return dateStr;
     }
-    
+
     // If in yyyymmdd format (common in forms)
     if (/^\d{8}$/.test(dateStr)) {
       return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`;
     }
-    
+
     // Try to parse as date
     const date = new Date(dateStr);
     if (!isNaN(date.getTime())) {
       return date.toISOString().split('T')[0];
     }
-    
+
     return dateStr;
   };
 
   // Format output value based on field format hint
   const formatOutput = (inputValue: string): string => {
     if (!inputValue) return '';
-    
+
     // If field expects yyyymmdd format
     if (field.format?.toLowerCase().includes('yyyymmdd')) {
       return inputValue.replace(/-/g, '');
     }
-    
+
     return inputValue;
   };
 
@@ -231,20 +231,15 @@ export function DateInput({ field, value, onChange, onFocus, disabled, className
  */
 export function ReferenceInput({ field: _field, value, onChange, onFocus, disabled, className }: InputProps) {
   return (
-    <div className="flex-1 flex gap-2">
-      <div className="flex items-center px-3 bg-slate-100 border-2 border-slate-200 rounded-xl text-slate-500 shrink-0">
-        <Hash size={20} />
-      </div>
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value.toUpperCase())}
-        onFocus={onFocus}
-        disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${className}`}
-        placeholder="Enter reference..."
-      />
-    </div>
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value.toUpperCase())}
+      onFocus={onFocus}
+      disabled={disabled}
+      className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${className}`}
+      placeholder="Enter reference..."
+    />
   );
 }
 
@@ -253,7 +248,7 @@ export function ReferenceInput({ field: _field, value, onChange, onFocus, disabl
  */
 export function SelectionInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
   const options = field.options || [];
-  
+
   return (
     <select
       value={value}
@@ -295,24 +290,24 @@ export function AddressInput({ field, value, onChange, onFocus, disabled, classN
 export function CalculatedInput({ field, value, onFocus: _onFocus, onChange: _onChange, disabled: _disabled, className: _className }: InputProps) {
   // Determine if this is a currency field
   const isCurrency = field.unit?.toLowerCase().includes('cad') || field.unit === '$';
-  
+
   // Format the display value based on type hints
   const formatValue = (val: string): string => {
     if (!val || val === '') return '—';
-    
+
     const numVal = parseFloat(val);
     if (isNaN(numVal)) return val;
-    
+
     // For currency, just format the number (no $ prefix since we show it separately)
     if (isCurrency) {
       return numVal.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    
+
     // Weight or general numbers
     if (Number.isInteger(numVal)) {
       return numVal.toLocaleString();
     }
-    
+
     return numVal.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
@@ -352,7 +347,7 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
       />
     );
   }
-  
+
   // Otherwise use text input
   return (
     <input
@@ -372,7 +367,7 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
  */
 export function BooleanInput({ field, value, onChange, onFocus, disabled, className: _className }: InputProps) {
   const isYes = value.toLowerCase() === 'yes' || value === 'true' || value === '1';
-  
+
   return (
     <div className="flex-1 flex items-center gap-4">
       <button
@@ -382,15 +377,13 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
           onChange(isYes ? 'No' : 'Yes');
         }}
         disabled={disabled}
-        className={`relative w-16 h-9 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-          isYes ? 'bg-emerald-500' : 'bg-slate-300'
-        } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        className={`relative w-16 h-9 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isYes ? 'bg-emerald-500' : 'bg-slate-300'
+          } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         aria-label={`${field.name}: ${isYes ? 'Yes' : 'No'}`}
       >
         <span
-          className={`absolute top-1 w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-200 ${
-            isYes ? 'translate-x-8' : 'translate-x-1'
-          }`}
+          className={`absolute top-1 w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-200 ${isYes ? 'translate-x-8' : 'translate-x-1'
+            }`}
         />
       </button>
       <span className={`text-xl font-medium ${isYes ? 'text-emerald-600' : 'text-slate-500'}`}>
@@ -405,7 +398,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
  */
 export function CheckboxInput({ field, value, onChange, onFocus, disabled, className: _className }: InputProps) {
   const isChecked = value.toLowerCase() === 'yes' || value === 'true' || value === '1' || value === 'checked';
-  
+
   return (
     <div className="flex-1 flex items-center gap-4">
       <button
@@ -415,11 +408,10 @@ export function CheckboxInput({ field, value, onChange, onFocus, disabled, class
           onChange(isChecked ? '' : 'checked');
         }}
         disabled={disabled}
-        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-          isChecked
+        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isChecked
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white border-slate-300 hover:border-blue-400'
-        } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         aria-label={field.name}
         aria-checked={isChecked}
         role="checkbox"
@@ -445,10 +437,10 @@ export function PhoneInput({ field, value, onChange, onFocus, disabled, classNam
   const formatPhone = (input: string): string => {
     // Remove all non-digits
     const digits = input.replace(/\D/g, '');
-    
+
     // Limit to 10 digits (North American)
     const limited = digits.slice(0, 10);
-    
+
     // Format based on length
     if (limited.length <= 3) {
       return limited;
@@ -491,14 +483,13 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
     if (!email) return true; // Empty is valid (not required)
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
-  
+
   const valid = isValidEmail(value);
 
   return (
     <div className="flex-1 flex gap-2">
-      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${
-        !valid ? 'bg-red-50 border-red-200 text-red-500' : 'bg-slate-100 border-slate-200 text-slate-500'
-      }`}>
+      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${!valid ? 'bg-red-50 border-red-200 text-red-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+        }`}>
         <Mail size={20} />
       </div>
       <input
@@ -507,9 +498,8 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${
-          !valid ? 'border-red-300 bg-red-50' : ''
-        } ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${!valid ? 'border-red-300 bg-red-50' : ''
+          } ${className}`}
         placeholder={`Enter ${field.name.toLowerCase()}...`}
       />
     </div>
@@ -524,10 +514,10 @@ export function PostalCodeInput({ field, value, onChange, onFocus, disabled, cla
   const formatPostalCode = (input: string): string => {
     // Remove all non-alphanumeric and convert to uppercase
     const cleaned = input.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-    
+
     // Limit to 6 characters
     const limited = cleaned.slice(0, 6);
-    
+
     // Add space after first 3 characters
     if (limited.length > 3) {
       return `${limited.slice(0, 3)} ${limited.slice(3)}`;
@@ -551,9 +541,8 @@ export function PostalCodeInput({ field, value, onChange, onFocus, disabled, cla
 
   return (
     <div className="flex-1 flex gap-2">
-      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${
-        value && !valid ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-slate-100 border-slate-200 text-slate-500'
-      }`}>
+      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${value && !valid ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+        }`}>
         <MapPinned size={20} />
       </div>
       <input
@@ -562,9 +551,8 @@ export function PostalCodeInput({ field, value, onChange, onFocus, disabled, cla
         onChange={handleChange}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${
-          value && !valid ? 'border-amber-300' : ''
-        } ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${value && !valid ? 'border-amber-300' : ''
+          } ${className}`}
         placeholder={field.format || "A1A 1A1"}
         maxLength={7}
       />
