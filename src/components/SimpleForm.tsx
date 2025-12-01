@@ -3,7 +3,7 @@ import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X } from 'lucide-react';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X, Eye } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
 import Logo from '../assets/logo.svg';
 import { ProcessingProgress } from './ProcessingProgress';
@@ -448,6 +448,29 @@ export function SimpleForm() {
     setShowPDFPreview(false);
   }, [pdfPreviewUrl]);
 
+  // Function to manually open split-screen PDF preview
+  const openSplitScreenPreview = useCallback(() => {
+    if (!state.pdfBytes) {
+      console.warn('[SimpleForm] Cannot show PDF preview: No PDF bytes available');
+      return;
+    }
+    
+    // Clean up any existing URL first
+    if (pdfPreviewUrl) {
+      URL.revokeObjectURL(pdfPreviewUrl);
+    }
+    
+    // Generate blob URL for the PDF
+    const blob = generatePDFBlob(state.pdfBytes);
+    const url = URL.createObjectURL(blob);
+    
+    // Set the preview URL and show split-screen mode
+    setPdfPreviewUrl(url);
+    setShowPDFPreview(true);
+    
+    console.log('[SimpleForm] Split-screen PDF preview opened manually');
+  }, [state.pdfBytes, pdfPreviewUrl]);
+
   // Log cache usage when enhancement completes
   useEffect(() => {
     if (!state.isEnhancing && state.enhancementProgress) {
@@ -863,6 +886,17 @@ export function SimpleForm() {
             {state.pdfLoaded ? 'Upload Different PDF' : 'Upload PDF'}
           </button>
 
+          {/* Preview Button (only when PDF loaded) - Opens split-screen view */}
+          {state.pdfLoaded && (
+            <button
+              onClick={openSplitScreenPreview}
+              className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-blue-300 bg-blue-50 text-blue-700 hover:border-blue-500 hover:bg-blue-100 transition-all text-base font-medium"
+            >
+              <Eye size={20} />
+              Preview Filled PDF
+            </button>
+          )}
+
           {/* Download Button (only when PDF loaded) */}
           {state.pdfLoaded && (
             <button
@@ -870,7 +904,7 @@ export function SimpleForm() {
               className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-emerald-300 bg-emerald-50 text-emerald-700 hover:border-emerald-500 hover:bg-emerald-100 transition-all text-base font-medium"
             >
               <Download size={20} />
-              Open Filled PDF
+              Open in New Tab
             </button>
           )}
         </div>
