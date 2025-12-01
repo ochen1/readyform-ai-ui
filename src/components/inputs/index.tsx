@@ -17,13 +17,13 @@ interface InputProps {
 /**
  * Base input styling classes
  */
-const baseInputClass = "w-full flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200";
+const baseInputClass = "w-full flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700";
 
 /**
  * Get icon component for field type
  */
 export function getFieldTypeIcon(type: FieldType): React.ReactNode {
-  const iconProps = { size: 20, className: "text-slate-400" };
+  const iconProps = { size: 20, className: "text-slate-700" };
 
   switch (type) {
     case 'date':
@@ -87,12 +87,12 @@ export function NumberInput({ field, value, onChange, onFocus, disabled, classNa
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${className}`}
         placeholder="0"
         step="any"
       />
       {field.unit && (
-        <div className="flex items-center px-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-600 font-medium shrink-0">
+        <div className="flex items-center px-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-900 font-medium shrink-0">
           {field.unit}
         </div>
       )}
@@ -114,7 +114,7 @@ export function WeightInput({ field, value, onChange, onFocus, disabled, classNa
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${className}`}
         placeholder="0"
         step="0.01"
         min="0"
@@ -141,7 +141,7 @@ export function CurrencyInput({ field: _field, value, onChange, onFocus, disable
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${className}`}
         placeholder="0.00"
         step="0.01"
         min="0"
@@ -162,7 +162,7 @@ export function PercentageInput({ field: _field, value, onChange, onFocus, disab
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${className}`}
         placeholder="0"
         step="0.1"
         min="0"
@@ -237,7 +237,7 @@ export function ReferenceInput({ field: _field, value, onChange, onFocus, disabl
       onChange={(e) => onChange(e.target.value.toUpperCase())}
       onFocus={onFocus}
       disabled={disabled}
-      className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${className}`}
+      className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 font-mono tracking-wider ${className}`}
       placeholder="Enter reference..."
     />
   );
@@ -318,7 +318,7 @@ export function CalculatedInput({ field, value, onFocus: _onFocus, onChange: _on
           $
         </div>
       )}
-      <div className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl transition-all duration-200 cursor-not-allowed bg-gradient-to-r from-blue-50 to-slate-50 border-blue-200 text-blue-900 font-semibold`}>
+      <div className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl transition-all duration-200 placeholder-slate-700 cursor-not-allowed bg-gradient-to-r from-blue-50 to-slate-50 border-blue-200 text-blue-900 font-semibold`}>
         {formatValue(value)}
       </div>
       {field.unit && !isCurrency && (
@@ -377,7 +377,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
           onChange(isYes ? 'No' : 'Yes');
         }}
         disabled={disabled}
-        className={`relative w-16 h-9 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isYes ? 'bg-emerald-500' : 'bg-slate-300'
+        className={`relative w-16 h-9 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isYes ? 'bg-emerald-500' : 'bg-slate-400'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         aria-label={`${field.name}: ${isYes ? 'Yes' : 'No'}`}
       >
@@ -386,7 +386,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
             }`}
         />
       </button>
-      <span className={`text-xl font-medium ${isYes ? 'text-emerald-600' : 'text-slate-500'}`}>
+      <span className={`text-xl font-medium ${isYes ? 'text-emerald-600' : 'text-slate-800'}`}>
         {isYes ? 'Yes' : 'No'}
       </span>
     </div>
@@ -408,9 +408,9 @@ export function CheckboxInput({ field, value, onChange, onFocus, disabled, class
           onChange(isChecked ? '' : 'checked');
         }}
         disabled={disabled}
-        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isChecked
-            ? 'bg-blue-600 border-blue-600 text-white'
-            : 'bg-white border-slate-300 hover:border-blue-400'
+        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isChecked
+          ? 'bg-blue-600 border-blue-600 text-white'
+          : 'bg-white border-slate-300 hover:border-blue-400'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         aria-label={field.name}
         aria-checked={isChecked}
@@ -422,7 +422,7 @@ export function CheckboxInput({ field, value, onChange, onFocus, disabled, class
           </svg>
         )}
       </button>
-      <span className={`text-lg ${isChecked ? 'text-slate-800' : 'text-slate-500'}`}>
+      <span className={`text-lg ${isChecked ? 'text-slate-900' : 'text-slate-800'}`}>
         {field.description || field.name}
       </span>
     </div>
@@ -458,7 +458,7 @@ export function PhoneInput({ field, value, onChange, onFocus, disabled, classNam
 
   return (
     <div className="flex-1 flex gap-2">
-      <div className="flex items-center px-3 bg-slate-100 border-2 border-slate-200 rounded-xl text-slate-500 shrink-0">
+      <div className="flex items-center px-3 bg-slate-100 border-2 border-slate-200 rounded-xl text-slate-800 shrink-0">
         <Phone size={20} />
       </div>
       <input
@@ -467,7 +467,7 @@ export function PhoneInput({ field, value, onChange, onFocus, disabled, classNam
         onChange={handleChange}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${className}`}
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${className}`}
         placeholder={field.format || "(999) 999-9999"}
       />
     </div>
@@ -488,7 +488,7 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
 
   return (
     <div className="flex-1 flex gap-2">
-      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${!valid ? 'bg-red-50 border-red-200 text-red-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${!valid ? 'bg-red-50 border-red-200 text-red-500' : 'bg-slate-100 border-slate-200 text-slate-800'
         }`}>
         <Mail size={20} />
       </div>
@@ -498,7 +498,7 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 ${!valid ? 'border-red-300 bg-red-50' : ''
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${!valid ? 'border-red-300 bg-red-50' : ''
           } ${className}`}
         placeholder={`Enter ${field.name.toLowerCase()}...`}
       />
@@ -541,7 +541,7 @@ export function PostalCodeInput({ field, value, onChange, onFocus, disabled, cla
 
   return (
     <div className="flex-1 flex gap-2">
-      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${value && !valid ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${value && !valid ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-slate-100 border-slate-200 text-slate-800'
         }`}>
         <MapPinned size={20} />
       </div>
@@ -551,7 +551,7 @@ export function PostalCodeInput({ field, value, onChange, onFocus, disabled, cla
         onChange={handleChange}
         onFocus={onFocus}
         disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 font-mono tracking-wider ${value && !valid ? 'border-amber-300' : ''
+        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 font-mono tracking-wider ${value && !valid ? 'border-amber-300' : ''
           } ${className}`}
         placeholder={field.format || "A1A 1A1"}
         maxLength={7}

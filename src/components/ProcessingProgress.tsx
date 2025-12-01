@@ -45,8 +45,8 @@ function getStatusIcon(status: PageProcessingStatus) {
     case 'pending':
     default:
       return {
-        icon: <Circle size={18} className="text-slate-300" />,
-        color: 'text-slate-400',
+        icon: <Circle size={18} className="text-slate-600" />,
+        color: 'text-slate-600',
         bgColor: 'bg-slate-50',
         label: 'Pending',
       };
@@ -77,12 +77,12 @@ function formatElapsedTime(startTime: number): string {
 export function ProcessingProgress({ progress, showWarning, pageCount }: ProcessingProgressProps) {
   const percentage = calculateProgress(progress);
   const elapsed = formatElapsedTime(progress.startTime);
-  
+
   // Count pages by status
   const processing = progress.pageStatuses.filter(p => p.status === 'processing').length;
   const pending = progress.pageStatuses.filter(p => p.status === 'pending').length;
   const cached = progress.pageStatuses.filter(p => p.status === 'completed' && p.fromCache).length;
-  
+
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
       {/* Warning Banner for Large Forms */}
@@ -100,14 +100,14 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
           </div>
         </div>
       )}
-      
+
       {/* Progress Header */}
       <div className="px-6 py-4 border-b border-slate-100">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-slate-800 text-lg">Analyzing Form Structure...</h3>
-          <span className="text-sm text-slate-500">{elapsed}</span>
+          <h3 className="font-semibold text-black text-lg">Analyzing Form Structure...</h3>
+          <span className="text-sm text-slate-800">{elapsed}</span>
         </div>
-        
+
         {/* Progress Bar */}
         <div className="relative h-3 bg-slate-100 rounded-full overflow-hidden">
           <div
@@ -115,17 +115,17 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
             style={{ width: `${percentage}%` }}
           />
         </div>
-        
+
         {/* Progress Stats */}
         <div className="flex items-center justify-between mt-3 text-sm">
-          <span className="text-slate-600">
+          <span className="text-slate-900">
             <strong>{progress.completedPages}</strong> of <strong>{progress.totalPages}</strong> pages complete
           </span>
           <span className="font-semibold text-blue-600">{percentage}%</span>
         </div>
-        
+
         {/* Status Summary */}
-        <div className="flex gap-4 mt-2 text-xs text-slate-500">
+        <div className="flex gap-4 mt-2 text-xs text-slate-800">
           {processing > 0 && (
             <span className="flex items-center gap-1">
               <Loader2 size={12} className="animate-spin" /> {processing} processing
@@ -148,13 +148,13 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
           )}
         </div>
       </div>
-      
+
       {/* Page List */}
       <div className="px-6 py-4 max-h-64 overflow-y-auto">
         <div className="space-y-2">
           {progress.pageStatuses.map((pageStatus) => {
             const { icon, color, bgColor, label } = getStatusIcon(pageStatus);
-            
+
             return (
               <div
                 key={pageStatus.pageNumber}
@@ -165,7 +165,7 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
                   <span className={`font-medium ${color}`}>
                     Page {pageStatus.pageNumber}
                   </span>
-                  <span className="text-slate-500 text-sm">
+                  <span className="text-slate-800 text-sm">
                     ({pageStatus.fieldCount} fields)
                   </span>
                 </div>
@@ -180,12 +180,12 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
           })}
         </div>
       </div>
-      
+
       {/* Error Details */}
       {progress.errorPages > 0 && (
         <div className="px-6 py-3 bg-red-50 border-t border-red-100">
           <p className="text-red-700 text-sm">
-            <strong>{progress.errorPages} page(s)</strong> could not be analyzed. 
+            <strong>{progress.errorPages} page(s)</strong> could not be analyzed.
             These pages will use basic field information.
           </p>
         </div>
@@ -200,7 +200,7 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
 export function CompactProgress({ progress }: { progress: EnhancementProgress }) {
   const percentage = calculateProgress(progress);
   const processing = progress.pageStatuses.filter(p => p.status === 'processing').length;
-  
+
   return (
     <div className="flex items-center gap-3">
       {processing > 0 ? (
@@ -208,7 +208,7 @@ export function CompactProgress({ progress }: { progress: EnhancementProgress })
       ) : progress.completedPages === progress.totalPages ? (
         <CheckCircle size={18} className="text-emerald-500" />
       ) : (
-        <Circle size={18} className="text-slate-400" />
+        <Circle size={18} className="text-slate-600" />
       )}
       <div className="flex-1">
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -218,7 +218,7 @@ export function CompactProgress({ progress }: { progress: EnhancementProgress })
           />
         </div>
       </div>
-      <span className="text-sm font-medium text-slate-600">{percentage}%</span>
+      <span className="text-sm font-medium text-slate-900">{percentage}%</span>
     </div>
   );
 }

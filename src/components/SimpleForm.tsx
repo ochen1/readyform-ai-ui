@@ -21,15 +21,15 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
   // Determine styling based on state
   let borderClass = 'border-slate-300 bg-white';
   let StatusIcon = Circle;
-  let iconColor = 'text-slate-400';
-  let labelColor = 'text-slate-600';
+  let iconColor = 'text-slate-700';
+  let labelColor = 'text-slate-900';
 
   const isDisabled = field.readonly || field.type === 'calculated';
 
   if (isDisabled) {
     borderClass = 'border-slate-200 bg-slate-50';
-    iconColor = 'text-slate-300';
-    labelColor = 'text-slate-400';
+    iconColor = 'text-slate-600';
+    labelColor = 'text-slate-600';
   } else if (isActive) {
     borderClass = 'border-orange-500 border-2 ring-4 ring-orange-100 bg-orange-50';
     StatusIcon = HelpCircle;
@@ -49,13 +49,13 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
       case 'currency': return 'bg-green-100 text-green-700';
       case 'date': return 'bg-blue-100 text-blue-700';
       case 'percentage': return 'bg-purple-100 text-purple-700';
-      case 'reference': return 'bg-slate-100 text-slate-700';
-      case 'calculated': return 'bg-gray-100 text-gray-600';
+      case 'reference': return 'bg-slate-100 text-slate-900';
+      case 'calculated': return 'bg-gray-100 text-black';
       case 'number': return 'bg-indigo-100 text-indigo-700';
       case 'address': return 'bg-cyan-100 text-cyan-700';
       case 'selection': return 'bg-pink-100 text-pink-700';
       case 'grade': return 'bg-orange-100 text-orange-700';
-      default: return 'bg-slate-100 text-slate-600';
+      default: return 'bg-slate-100 text-slate-900';
     }
   };
 
@@ -68,7 +68,7 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
         {/* Label Section */}
         <div className="w-56 text-right shrink-0 pt-4">
           <div className="flex items-center justify-end gap-2">
-            {TypeIcon && <span className="text-slate-400">{TypeIcon}</span>}
+            {TypeIcon && <span className="text-slate-700">{TypeIcon}</span>}
             <label className={`text-lg ${labelColor}`}>
               {field.name}
             </label>
@@ -105,12 +105,12 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
             <div className="absolute top-full left-0 mt-1 z-10 w-80 p-3 bg-slate-800 text-white text-sm rounded-lg shadow-lg border border-slate-600">
               <p>{field.description}</p>
               {field.calculationHint && (
-                <span className="block mt-1 text-slate-300 italic">
+                <span className="block mt-1 text-slate-200 italic">
                   Calculation: {field.calculationHint}
                 </span>
               )}
               {field.format && (
-                <span className="block mt-1 text-slate-300">
+                <span className="block mt-1 text-slate-200">
                   Format: {field.format}
                 </span>
               )}
@@ -146,7 +146,7 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: () =
             }`}
         />
       </div>
-      <span className="text-slate-700 text-lg">{label}</span>
+      <span className="text-black text-lg">{label}</span>
     </button>
   );
 }
@@ -200,13 +200,13 @@ function PDFUploader({ onUpload }: { onUpload: (file: File) => void }) {
       `}
     >
       <div className={`p-4 rounded-full ${isDragging ? 'bg-blue-100' : 'bg-slate-200'}`}>
-        <FileText size={48} className={isDragging ? 'text-blue-600' : 'text-slate-500'} />
+        <FileText size={48} className={isDragging ? 'text-blue-600' : 'text-slate-700'} />
       </div>
       <div className="text-center">
-        <p className="text-xl font-semibold text-slate-700">
+        <p className="text-xl font-semibold text-black">
           {isDragging ? 'Drop PDF here' : 'Upload a PDF Form'}
         </p>
-        <p className="text-slate-500 mt-1">
+        <p className="text-slate-700 mt-1">
           Drag and drop or click to select
         </p>
       </div>
@@ -227,7 +227,7 @@ function EmptyState({ onUpload }: { onUpload: (file: File) => void }) {
     <div className="flex-1 flex items-center justify-center p-10">
       <div className="max-w-lg w-full">
         <PDFUploader onUpload={onUpload} />
-        <p className="text-center text-slate-500 mt-6 text-lg">
+        <p className="text-center text-slate-700 mt-6 text-lg">
           Upload a fillable PDF form to get started
         </p>
       </div>
@@ -428,11 +428,11 @@ export function SimpleForm() {
                       <div key={section.id} id={`section-${section.id}`} className="scroll-mt-4">
                         {/* Section Header */}
                         <div className="mb-4 pb-3 border-b-2 border-slate-200">
-                          <h2 className="text-xl font-bold text-slate-800">
+                          <h2 className="text-xl font-bold text-black">
                             {section.title}
                           </h2>
                           {section.description && (
-                            <p className="text-slate-500 text-sm mt-1">{section.description}</p>
+                            <p className="text-slate-700 text-sm mt-1">{section.description}</p>
                           )}
                         </div>
 
@@ -506,7 +506,7 @@ export function SimpleForm() {
       <aside className="w-96 bg-white border-l-2 border-slate-200 flex flex-col shadow-lg">
         {/* Branding Header */}
         <div className="p-6 border-b border-slate-200 bg-slate-50">
-          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-black flex items-center gap-2">
             <Sparkles className="text-blue-600" />
             FormAI
           </h1>
@@ -515,16 +515,16 @@ export function SimpleForm() {
         {/* Form Details - Only show when PDF is loaded */}
         {state.pdfLoaded && (
           <div className="p-6 border-b border-slate-200 bg-slate-50/50">
-            <h2 className="text-lg font-bold text-slate-800 leading-tight">
+            <h2 className="text-lg font-bold text-black leading-tight">
               {state.metadata ? state.metadata.title : 'Untitled Form'}
             </h2>
 
             {state.metadata && (
               <div className="mt-2 space-y-1">
-                <p className="text-xs text-slate-500 font-medium truncate" title={state.metadata.sourceFileName}>
+                <p className="text-xs text-slate-700 font-medium truncate" title={state.metadata.sourceFileName}>
                   {state.metadata.sourceFileName}
                 </p>
-                <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+                <div className="flex flex-wrap gap-2 text-xs text-slate-700">
                   <span>{visibleFields.length} fields</span>
                   {state.isEnhancing && (
                     <span className="flex items-center gap-1 text-blue-600">
@@ -543,13 +543,13 @@ export function SimpleForm() {
             )}
 
             {state.metadata?.description && (
-              <p className="text-slate-500 text-xs mt-2 line-clamp-2" title={state.metadata.description}>
+              <p className="text-slate-700 text-xs mt-2 line-clamp-2" title={state.metadata.description}>
                 {state.metadata.description}
               </p>
             )}
 
             <div className="mt-4">
-              <div className="flex justify-between text-xs text-slate-600 mb-1">
+              <div className="flex justify-between text-xs text-slate-800 mb-1">
                 <span>Progress</span>
                 <span>{progressPercentage}%</span>
               </div>
@@ -565,14 +565,14 @@ export function SimpleForm() {
 
         {/* Voice Assistant Section */}
         <div className="p-6 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-700 mb-4">Voice Assistant</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">Voice Assistant</h2>
 
           {/* Voice Toggle Button */}
           <button
             onClick={isConnected ? endCall : startCall}
             disabled={!state.pdfLoaded}
             className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg ${!state.pdfLoaded
-              ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+              ? 'bg-slate-300 text-slate-600 cursor-not-allowed'
               : isConnected
                 ? 'bg-red-500 hover:bg-red-600 text-white'
                 : 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -592,7 +592,7 @@ export function SimpleForm() {
           </button>
 
           {!state.pdfLoaded && (
-            <p className="text-sm text-slate-500 mt-2 text-center">
+            <p className="text-sm text-slate-700 mt-2 text-center">
               Upload a PDF to enable voice assistant
             </p>
           )}
@@ -619,8 +619,8 @@ export function SimpleForm() {
                 </span>
               )}
               {(status === 'idle' || status === 'connecting') && (
-                <span className="text-slate-500 text-lg flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-slate-400" />
+                <span className="text-slate-700 text-lg flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-slate-600" />
                   Ready
                 </span>
               )}
@@ -633,7 +633,7 @@ export function SimpleForm() {
               onClick={toggleMic}
               className={`mt-3 w-full flex items-center justify-center gap-2 p-3 rounded-xl transition-colors ${isMicMuted
                 ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
                 }`}
               title={isMicMuted ? 'Unmute microphone' : 'Mute microphone'}
             >
@@ -645,7 +645,7 @@ export function SimpleForm() {
 
         {/* Accessibility Section */}
         <div className="p-6 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-700 mb-4">Accessibility</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">Accessibility</h2>
 
           {/* Dyslexia Font Toggle */}
           <Toggle
@@ -656,21 +656,21 @@ export function SimpleForm() {
 
           {/* Font Size Controls */}
           <div className="mt-4">
-            <label className="block text-slate-700 text-lg mb-2">Font Size</label>
+            <label className="block text-black text-lg mb-2">Font Size</label>
             <div className="flex items-center gap-2">
               <button
                 onClick={decreaseFontSize}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-colors"
+                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 hover:text-black transition-colors"
                 title="Decrease font size"
               >
                 <Minus size={20} />
               </button>
-              <span className="text-slate-700 font-medium min-w-[3rem] text-center">
+              <span className="text-black font-medium min-w-[3rem] text-center">
                 {Math.round(settings.fontSizeScale * 100)}%
               </span>
               <button
                 onClick={increaseFontSize}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-colors"
+                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 hover:text-black transition-colors"
                 title="Increase font size"
               >
                 <Plus size={20} />
@@ -681,7 +681,7 @@ export function SimpleForm() {
 
         {/* Actions Section */}
         <div className="p-6">
-          <h2 className="text-lg font-semibold text-slate-700 mb-4">Actions</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">Actions</h2>
 
           {/* PDF Upload - Hidden file input with button trigger */}
           <input
@@ -693,7 +693,7 @@ export function SimpleForm() {
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-all text-base font-medium"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 hover:border-blue-500 hover:text-blue-600 transition-all text-base font-medium"
           >
             <Upload size={20} />
             {state.pdfLoaded ? 'Upload Different PDF' : 'Upload PDF'}
@@ -715,9 +715,9 @@ export function SimpleForm() {
         <div className="flex-1" />
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-slate-200 text-center text-sm text-slate-500">
+        <div className="p-4 border-t border-slate-200 text-center text-sm text-slate-700">
           <p className="font-medium">FormAI - Voice-Assisted Form Filling</p>
-          <p className="text-xs mt-1 text-slate-400">v2.0</p>
+          <p className="text-xs mt-1 text-slate-600">v2.0</p>
         </div>
       </aside>
     </div>
