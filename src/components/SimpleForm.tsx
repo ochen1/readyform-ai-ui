@@ -5,6 +5,7 @@ import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
 import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
+import Logo from '../assets/logo.svg';
 import { ProcessingProgress } from './ProcessingProgress';
 
 interface FieldProps {
@@ -258,10 +259,10 @@ export function SimpleForm() {
 
   const handleFieldChange = useCallback((fieldId: string, value: string) => {
     setField(fieldId, value);
-    
+
     // Find the field to check its type
     const field = state.fields.find(f => f.id === fieldId);
-    
+
     // Mark field as complete when user manually enters data
     if (value && value.trim().length > 0) {
       // For checkboxes, only mark complete if checked (value is 'true')
@@ -467,7 +468,7 @@ export function SimpleForm() {
         {/* Branding Header */}
         <div className="p-6 border-b border-slate-200 bg-slate-50">
           <h1 className="text-2xl font-bold text-black flex items-center gap-2">
-            <Sparkles className="text-blue-600" />
+            <img src={Logo} alt="FormAI Logo" className="w-8 h-8" />
             ReadyFormAI
           </h1>
         </div>
@@ -737,7 +738,7 @@ export function SimpleForm() {
         {/* Spacer to push footer down */}
         <div className="flex-1" />
 
-        
+
       </aside>
     </div>
   );
