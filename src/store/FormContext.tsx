@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useReducer, useCallback, useMemo, useRef, useEffect } from 'react';
-import type { FormState, FormAction, FormField, PDFWriteContext } from './types';
+import type { FormState, FormAction, FormField, PDFWriteContext, PageProcessingStatus } from './types';
 import { formReducer, initialFormState } from './formReducer';
 import { parsePDF, updatePDFField, openPDFInNewTab, downloadPDF as downloadPDFFile } from '../services/pdfParser';
-import { enhanceFormFields, getVisibleFields, getEditableFields } from '../services/fieldEnhancer';
+import { getVisibleFields, getEditableFields } from '../services/fieldEnhancer';
+import { enhanceFormFieldsPageByPage, getInitialPageStatuses } from '../services/pageByPageEnhancer';
 import {
   buildDependencyGraph,
   getFieldsToRecalculate,
@@ -50,34 +51,57 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
 
   const loadPDF = useCallback(async (file: File) => {
     try {
-      // Step 1: Parse PDF and extract basic fields
-      const { fields: basicFields, metadata, writeContext, pdfBytes, pageImages } = await parsePDF(file);
+      // Step 1: Parse PDF and extract basic fields with page information
+      const { fields: basicFields, metadata, writeContext, pdfBytes, pageImages, pageCount, fieldsByPage } = await parsePDF(file);
       writeContextRef.current = writeContext;
       
       // Step 2: Load PDF with basic fields first (for immediate display)
       dispatch({
         type: 'LOAD_PDF',
-        payload: { fields: basicFields, metadata, writeContext, pdfBytes },
+        payload: { fields: basicFields, metadata, writeContext, pdfBytes, pageCount },
       });
       
-      // Step 3: Start enhancement process
-      dispatch({ type: 'START_ENHANCEMENT' });
+      // Step 3: Get initial page statuses
+      const initialStatuses = getInitialPageStatuses(fieldsByPage);
+      
+      // Step 4: Start enhancement process with page info
+      dispatch({
+        type: 'START_ENHANCEMENT',
+        totalPages: initialStatuses.length,
+        pageStatuses: initialStatuses,
+      });
       
       try {
-        // Step 4: Enhance fields with Gemini AI
-        // Pass page images and isXFA flag for XFA forms - helps Gemini understand field context
-        // For XFA forms, Gemini uses images instead of PDF since XFA PDFs aren't parseable
-        const { fields: enhancedFields, sections, formTitle, formDescription, fromCache } =
-          await enhanceFormFields(file.name, pdfBytes, basicFields, pageImages, writeContext.isXFA);
+        // Step 5: Enhance fields page-by-page in parallel
+        // Progress callback updates state in real-time
+        const progressCallback = (pageNumber: number, status: PageProcessingStatus) => {
+          dispatch({
+            type: 'UPDATE_PAGE_PROGRESS',
+            pageNumber,
+            status,
+          });
+        };
         
-        // Step 5: Update state with enhanced fields and sections
+        const { fields: enhancedFields, sections, formTitle, formDescription, cachedPages } =
+          await enhanceFormFieldsPageByPage(
+            file.name,
+            pdfBytes,
+            basicFields,
+            fieldsByPage,
+            pageImages,
+            pageCount,
+            writeContext.isXFA,
+            progressCallback
+          );
+        
+        // Step 6: Update state with enhanced fields and sections
         dispatch({
           type: 'COMPLETE_ENHANCEMENT',
           fields: enhancedFields,
           sections,
           title: formTitle,
           description: formDescription,
-          cached: fromCache,
+          cached: cachedPages > 0,
         });
       } catch (enhanceError) {
         console.error('Enhancement failed:', enhanceError);

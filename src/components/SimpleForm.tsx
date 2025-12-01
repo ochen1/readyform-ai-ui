@@ -2,9 +2,10 @@ import React, { useCallback, useRef, useMemo } from 'react';
 import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
-import type { FormField, FormSection } from '../store/types';
+import type { FormField } from '../store/types';
 import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
+import { ProcessingProgress } from './ProcessingProgress';
 
 interface FieldProps {
   field: FormField;
@@ -335,13 +336,24 @@ export function SimpleForm() {
             <EmptyState onUpload={handlePDFUpload} />
           ) : (
             <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
-              {/* Enhancement Loading Indicator */}
-              {state.isEnhancing && (
+              {/* Page-by-Page Enhancement Progress */}
+              {state.isEnhancing && state.enhancementProgress && (
+                <div className="mb-6">
+                  <ProcessingProgress
+                    progress={state.enhancementProgress}
+                    showWarning={state.pageCount > 4}
+                    pageCount={state.pageCount}
+                  />
+                </div>
+              )}
+
+              {/* Simple Loading Indicator (when no progress yet) */}
+              {state.isEnhancing && !state.enhancementProgress && (
                 <div className="mb-6 flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                   <Loader2 size={24} className="animate-spin text-blue-600" />
                   <div>
-                    <p className="font-medium text-blue-800">Analyzing form with AI...</p>
-                    <p className="text-sm text-blue-600">This will improve field labels and add helpful descriptions.</p>
+                    <p className="font-medium text-blue-800">Preparing to analyze form...</p>
+                    <p className="text-sm text-blue-600">Loading PDF and extracting fields.</p>
                   </div>
                 </div>
               )}
@@ -355,8 +367,47 @@ export function SimpleForm() {
                 </div>
               )}
 
-              {/* Enhancement Success */}
-              {state.enhancementCached && !state.isEnhancing && (
+              {/* Enhancement Success (with possible page errors) */}
+              {!state.isEnhancing && state.pdfLoaded && state.enhancementProgress && (
+                <>
+                  {/* Show page error summary if any pages failed */}
+                  {state.enhancementProgress.errorPages > 0 && (
+                    <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                      <p className="font-medium text-amber-800">
+                        {state.enhancementProgress.errorPages} page(s) could not be analyzed
+                      </p>
+                      <p className="text-sm text-amber-600 mt-1">
+                        These pages will use basic field names. Other pages were enhanced successfully.
+                      </p>
+                      <div className="mt-2 text-xs text-amber-700">
+                        <strong>Failed pages:</strong>{' '}
+                        {state.enhancementProgress.pageStatuses
+                          .filter(p => p.status === 'error')
+                          .map(p => `Page ${p.pageNumber}${p.error ? ` (${p.error})` : ''}`)
+                          .join(', ')}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Success message */}
+                  {state.enhancementProgress.errorPages === 0 && (
+                    <div className="mb-6 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                      <Sparkles size={20} className="text-emerald-600" />
+                      <p className="text-sm text-emerald-700">
+                        Form enhanced with AI • {visibleFields.length} fields identified • {state.fields.length - visibleFields.length} fields hidden
+                        {state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length > 0 && (
+                          <span className="text-emerald-600 ml-1">
+                            ({state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length} pages from cache)
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+              
+              {/* Simple success message when no progress tracking (legacy) */}
+              {state.enhancementCached && !state.isEnhancing && !state.enhancementProgress && (
                 <div className="mb-6 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
                   <Sparkles size={20} className="text-emerald-600" />
                   <p className="text-sm text-emerald-700">

@@ -16,8 +16,12 @@ export interface ParsedPDF {
   metadata: FormMetadata;
   writeContext: PDFWriteContext;
   pdfBytes: Uint8Array;
-  /** Rendered page images as base64 PNG (for Gemini vision on XFA forms) */
-  pageImages?: string[];
+  /** Rendered page images as base64 PNG (for Gemini vision) */
+  pageImages: string[];
+  /** Total number of pages in the PDF */
+  pageCount: number;
+  /** Fields grouped by page number */
+  fieldsByPage: Map<number, FormField[]>;
 }
 
 /**
@@ -186,12 +190,20 @@ async function renderPDFPagesAsImages(
 export async function parsePDF(file: File): Promise<ParsedPDF> {
   // Read file as ArrayBuffer
   const arrayBuffer = await file.arrayBuffer();
-  const pdfBytes = new Uint8Array(arrayBuffer);
+  
+  // IMPORTANT: Create a fresh copy of the bytes BEFORE passing to pdfjs-dist
+  // pdfjs-dist may internally transfer/detach the ArrayBuffer, making it unusable
+  // for later operations like hashing. We create a standalone copy here.
+  const pdfBytes = new Uint8Array(new ArrayBuffer(arrayBuffer.byteLength));
+  pdfBytes.set(new Uint8Array(arrayBuffer));
+  
+  // Create another copy for pdfjs-dist to consume (it may detach this one)
+  const pdfjsBytes = new Uint8Array(arrayBuffer);
   
   // Load PDF document with pdfjs-dist
   // Use password: '' to handle encrypted PDFs that have no password
   const loadingTask = pdfjsLib.getDocument({
-    data: pdfBytes,
+    data: pdfjsBytes,
     password: '', // Allow "encrypted" PDFs with empty password
     useSystemFonts: true,
   });
@@ -287,7 +299,7 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
         ? `Please provide the value for ${displayName}`
         : (anno.alternativeText || `Please provide the value for ${displayName}`);
       
-      // Create field entry
+      // Create field entry with page number
       fields.push({
         id: fieldName,
         originalName: fieldName,
@@ -298,6 +310,7 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
         required: false, // Could be enhanced with LLM
         readonly: isReadonly,
         ignore: false, // Will be set by LLM if field should be skipped
+        pageNumber: pageNum, // Track which page this field is on
       });
     }
   }
@@ -325,34 +338,46 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
     fieldCount: fields.length,
   };
   
-  // Create write context
+  // Create write context with a FRESH COPY of bytes
+  // This ensures the bytes are not detached by pdfjs-dist operations
   // For XFA forms, we can't write back with pdf-lib, so track that
+  const writeContextBytes = new ArrayBuffer(pdfBytes.byteLength);
+  new Uint8Array(writeContextBytes).set(pdfBytes);
+  
   const writeContext: PDFWriteContext = {
-    originalBytes: arrayBuffer,
+    originalBytes: writeContextBytes,
     isXFA,
     writableFieldIds: isXFA ? [] : fields.filter(f => !f.readonly).map(f => f.id),
   };
   
-  // For XFA forms or forms with poor field names, render pages as images for Gemini
-  // This helps Gemini understand the visual layout and field context
-  let pageImages: string[] | undefined;
+  // Always render ALL pages as images for Gemini visual analysis
+  // This enables page-by-page parallel processing with full context
+  let pageImages: string[] = [];
   
-  // Detect if we need visual analysis:
-  // 1. XFA forms (complex field names)
-  // 2. Fields with XFA-style names that weren't fully parsed
-  const hasComplexFieldNames = fields.some(f => isXFAFieldName(f.id));
-  
-  if (isXFA || hasComplexFieldNames) {
-    console.log('[PDF Parser] Rendering pages as images for Gemini visual analysis');
-    try {
-      pageImages = await renderPDFPagesAsImages(pdf, 3, 1.5);
-      console.log(`[PDF Parser] Rendered ${pageImages.length} page images`);
-    } catch (error) {
-      console.warn('[PDF Parser] Failed to render page images:', error);
-    }
+  console.log(`[PDF Parser] Rendering all ${numPages} pages as images for Gemini visual analysis`);
+  try {
+    // Render ALL pages, not just 3
+    pageImages = await renderPDFPagesAsImages(pdf, numPages, 1.5);
+    console.log(`[PDF Parser] Rendered ${pageImages.length} page images`);
+  } catch (error) {
+    console.warn('[PDF Parser] Failed to render page images:', error);
+    pageImages = [];
   }
   
-  console.log(`[PDF Parser] Parsed ${fields.length} fields from ${file.name}${isXFA ? ' (XFA form)' : ''}`);
+  // Group fields by page number for page-by-page processing
+  const fieldsByPage = new Map<number, FormField[]>();
+  for (const field of fields) {
+    const pageFields = fieldsByPage.get(field.pageNumber) || [];
+    pageFields.push(field);
+    fieldsByPage.set(field.pageNumber, pageFields);
+  }
+  
+  console.log(`[PDF Parser] Parsed ${fields.length} fields across ${numPages} pages from ${file.name}${isXFA ? ' (XFA form)' : ''}`);
+  
+  // Log fields per page
+  for (const [pageNum, pageFields] of fieldsByPage) {
+    console.log(`[PDF Parser] Page ${pageNum}: ${pageFields.length} fields`);
+  }
   
   return {
     fields,
@@ -360,6 +385,8 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
     writeContext,
     pdfBytes,
     pageImages,
+    pageCount: numPages,
+    fieldsByPage,
   };
 }
 

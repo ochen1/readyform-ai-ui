@@ -1,4 +1,4 @@
-import type { FormState, FormAction } from './types';
+import type { FormState, FormAction, PageProcessingStatus } from './types';
 
 /**
  * Initial form state - empty until PDF is loaded
@@ -9,6 +9,7 @@ export const initialFormState: FormState = {
   writeContext: null,
   pdfBytes: null,
   metadata: null,
+  pageCount: 0,
   
   // Fields and sections - empty until PDF loaded
   fields: [],
@@ -24,6 +25,7 @@ export const initialFormState: FormState = {
   isEnhancing: false,
   enhancementError: null,
   enhancementCached: false,
+  enhancementProgress: null,
 };
 
 /**
@@ -39,10 +41,12 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         pdfBytes: action.payload.pdfBytes,
         metadata: action.payload.metadata,
         fields: action.payload.fields,
+        pageCount: action.payload.pageCount,
         // Reset enhancement state for new PDF
         isEnhancing: false,
         enhancementError: null,
         enhancementCached: false,
+        enhancementProgress: null,
       };
 
     case 'SET_FIELD': {
@@ -114,7 +118,35 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         ...state,
         isEnhancing: true,
         enhancementError: null,
+        enhancementProgress: {
+          totalPages: action.totalPages,
+          completedPages: 0,
+          errorPages: 0,
+          pageStatuses: action.pageStatuses,
+          startTime: Date.now(),
+        },
       };
+
+    case 'UPDATE_PAGE_PROGRESS': {
+      if (!state.enhancementProgress) return state;
+      
+      const updatedStatuses = state.enhancementProgress.pageStatuses.map(
+        (ps: PageProcessingStatus) => ps.pageNumber === action.pageNumber ? action.status : ps
+      );
+      
+      const completedPages = updatedStatuses.filter((ps: PageProcessingStatus) => ps.status === 'completed').length;
+      const errorPages = updatedStatuses.filter((ps: PageProcessingStatus) => ps.status === 'error').length;
+      
+      return {
+        ...state,
+        enhancementProgress: {
+          ...state.enhancementProgress,
+          pageStatuses: updatedStatuses,
+          completedPages,
+          errorPages,
+        },
+      };
+    }
 
     case 'COMPLETE_ENHANCEMENT':
       return {
@@ -130,6 +162,10 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         } : null,
         enhancementCached: action.cached,
         enhancementError: null,
+        enhancementProgress: state.enhancementProgress ? {
+          ...state.enhancementProgress,
+          completedPages: state.enhancementProgress.totalPages,
+        } : null,
       };
 
     case 'ENHANCEMENT_ERROR':

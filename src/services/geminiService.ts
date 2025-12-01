@@ -1,6 +1,7 @@
 import type { GeminiFieldEnhancement, FieldType } from '../store/types';
+import type { PageEnhancementResult } from './enhancementCache';
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 /**
  * Comprehensive prompt for Gemini to analyze form fields
@@ -348,6 +349,7 @@ interface GeminiRequest {
   generationConfig: {
     responseMimeType: string;
     temperature?: number;
+    maxOutputTokens?: number;
   };
 }
 
@@ -575,7 +577,8 @@ export async function analyzeFormWithGemini(
     }],
     generationConfig: {
       responseMimeType: 'application/json',
-      temperature: 0.2, // Low temperature for more consistent output
+      temperature: 0, // Low temperature for more consistent output
+      maxOutputTokens: 65536, // Ensure we get complete responses for large forms
     }
   };
   
@@ -623,4 +626,198 @@ export async function analyzeFormWithGemini(
  */
 export function isGeminiConfigured(): boolean {
   return Boolean(import.meta.env.VITE_GEMINI_API_KEY);
+}
+
+// ============================================================================
+// PAGE-SPECIFIC ANALYSIS
+// ============================================================================
+
+/**
+ * Generate a page-specific prompt for Gemini
+ * The model sees the FULL PDF for context but only outputs fields for the target page
+ */
+function generatePageSpecificPrompt(
+  targetPage: number,
+  fieldIdsOnPage: string[],
+  totalPages: number
+): string {
+  const fieldList = fieldIdsOnPage.map(id => `- "${id}"`).join('\n');
+  
+  return `
+# Form Field Analysis for Voice Assistant - PAGE ${targetPage} ONLY
+
+You are analyzing a ${totalPages}-page PDF form. You can see the ENTIRE document for context, but you must ONLY output analysis for the fields that appear on PAGE ${targetPage}.
+
+## CRITICAL INSTRUCTIONS
+
+1. **Look at the ENTIRE PDF** to understand the form's structure, purpose, and section organization
+2. **BUT ONLY OUTPUT** JSON for the specific fields listed below (they are on page ${targetPage})
+3. If a section header appears on a previous page but the fields continue on this page, include that section in your output
+4. Do NOT include fields from other pages in your output
+
+## Field IDs on Page ${targetPage} (ONLY analyze these)
+
+${fieldList}
+
+${FORM_ANALYSIS_PROMPT}
+
+Remember: Your output MUST only include the ${fieldIdsOnPage.length} fields listed above. Do not include any fields from other pages.
+`.trim();
+}
+
+/**
+ * Analyze a specific page of a PDF form using Gemini Flash
+ * The model receives the full PDF for context but only outputs analysis for the target page
+ *
+ * @param pdfBytes - The raw PDF bytes (full document for context)
+ * @param pageImages - Rendered page images (all pages for context)
+ * @param targetPage - The specific page number to analyze (1-indexed)
+ * @param fieldIdsOnPage - List of field IDs that appear on this page
+ * @param totalPages - Total number of pages in the document
+ * @param isXFA - Whether this is an XFA form
+ * @returns Enhanced field metadata for the target page only
+ */
+export async function analyzeFormPageWithGemini(
+  pdfBytes: Uint8Array,
+  pageImages: string[],
+  targetPage: number,
+  fieldIdsOnPage: string[],
+  totalPages: number,
+  isXFA: boolean = false
+): Promise<PageEnhancementResult> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('VITE_GEMINI_API_KEY is not configured');
+  }
+  
+  // Build the page-specific prompt
+  const prompt = generatePageSpecificPrompt(targetPage, fieldIdsOnPage, totalPages);
+  
+  // Build the parts array
+  const parts: Array<{ text?: string; inline_data?: { mime_type: string; data: string } }> = [];
+  
+  // Decide whether to use images (for XFA) or PDF (for AcroForms)
+  const useImagesOnly = isXFA && pageImages.length > 0;
+  
+  if (useImagesOnly) {
+    // For XFA forms: Use rendered page images
+    console.log(`[Gemini Page ${targetPage}] XFA form - using ${pageImages.length} page images`);
+    
+    parts.push({ text: prompt });
+    
+    // Add all page images for context
+    for (let i = 0; i < pageImages.length; i++) {
+      parts.push({
+        inline_data: {
+          mime_type: 'image/png',
+          data: pageImages[i]
+        }
+      });
+    }
+  } else if (pageImages.length > 0) {
+    // For AcroForms with images: Use both PDF and images
+    console.log(`[Gemini Page ${targetPage}] Using PDF + ${pageImages.length} page images`);
+    
+    const base64PDF = uint8ArrayToBase64(pdfBytes);
+    
+    parts.push({ text: prompt });
+    
+    parts.push({
+      inline_data: {
+        mime_type: 'application/pdf',
+        data: base64PDF
+      }
+    });
+    
+    // Add page images for additional context
+    for (let i = 0; i < pageImages.length; i++) {
+      parts.push({
+        inline_data: {
+          mime_type: 'image/png',
+          data: pageImages[i]
+        }
+      });
+    }
+  } else {
+    // PDF only
+    console.log(`[Gemini Page ${targetPage}] Using PDF only`);
+    
+    const base64PDF = uint8ArrayToBase64(pdfBytes);
+    
+    parts.push({ text: prompt });
+    
+    parts.push({
+      inline_data: {
+        mime_type: 'application/pdf',
+        data: base64PDF
+      }
+    });
+  }
+  
+  // Construct the request
+  const request: GeminiRequest = {
+    contents: [{
+      parts
+    }],
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: 0,
+      maxOutputTokens: 65536, // Page-level responses are smaller
+    }
+  };
+  
+  // Make the API call
+  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request)
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[Gemini Page ${targetPage}] API error:`, errorText);
+    throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+  }
+  
+  const result: GeminiResponse = await response.json();
+  
+  // Check for API-level errors
+  if (result.error) {
+    throw new Error(`Gemini API error: ${result.error.message}`);
+  }
+  
+  // Extract the JSON content from the response
+  const content = result.candidates?.[0]?.content?.parts?.[0]?.text;
+  
+  if (!content) {
+    throw new Error(`No content in Gemini response for page ${targetPage}`);
+  }
+  
+  // Parse and validate the JSON response
+  try {
+    const parsed = JSON.parse(content);
+    const validated = validateAndCleanResponse(parsed);
+    
+    // Filter to only include fields that were requested for this page
+    const pageFields = validated.fields.filter(f => fieldIdsOnPage.includes(f.id));
+    
+    // Log if we got unexpected fields
+    if (validated.fields.length !== pageFields.length) {
+      console.warn(
+        `[Gemini Page ${targetPage}] Filtered ${validated.fields.length - pageFields.length} unexpected fields`
+      );
+    }
+    
+    return {
+      pageNumber: targetPage,
+      fields: pageFields,
+      sections: validated.sections || [],
+    };
+  } catch (parseError) {
+    console.error(`[Gemini Page ${targetPage}] Failed to parse response:`, content);
+    throw new Error(`Failed to parse Gemini response for page ${targetPage}`);
+  }
 }

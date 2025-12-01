@@ -47,6 +47,8 @@ export interface FormField {
   id: string;
   /** Raw name from PDF before enhancement */
   originalName: string;
+  /** Page number where this field appears (1-indexed) */
+  pageNumber: number;
   
   // LLM-enhanced metadata
   /** Human-friendly display name (may include units) */
@@ -118,6 +120,45 @@ export interface PDFWriteContext {
 }
 
 /**
+ * Status of processing a single page
+ */
+export type PageStatus = 'pending' | 'processing' | 'completed' | 'error';
+
+/**
+ * Processing status for a single page during enhancement
+ */
+export interface PageProcessingStatus {
+  /** Page number (1-indexed) */
+  pageNumber: number;
+  /** Current processing status */
+  status: PageStatus;
+  /** Number of fields on this page */
+  fieldCount: number;
+  /** Error message if status is 'error' */
+  error?: string;
+  /** Number of retry attempts made */
+  retryCount: number;
+  /** Whether result was loaded from cache */
+  fromCache: boolean;
+}
+
+/**
+ * Overall enhancement progress tracking
+ */
+export interface EnhancementProgress {
+  /** Total number of pages to process */
+  totalPages: number;
+  /** Number of pages completed successfully */
+  completedPages: number;
+  /** Number of pages that errored */
+  errorPages: number;
+  /** Per-page processing status */
+  pageStatuses: PageProcessingStatus[];
+  /** Timestamp when processing started */
+  startTime: number;
+}
+
+/**
  * Complete form state for arbitrary PDF forms
  */
 export interface FormState {
@@ -130,6 +171,8 @@ export interface FormState {
   pdfBytes: Uint8Array | null;
   /** Metadata about the loaded form */
   metadata: FormMetadata | null;
+  /** Total number of pages in the PDF */
+  pageCount: number;
   
   // Fields and sections
   /** Array of form fields extracted from PDF */
@@ -154,6 +197,8 @@ export interface FormState {
   enhancementError: string | null;
   /** Whether enhanced data was loaded from cache */
   enhancementCached: boolean;
+  /** Page-by-page processing progress */
+  enhancementProgress: EnhancementProgress | null;
 }
 
 /**
@@ -202,6 +247,7 @@ export type FormAction =
         metadata: FormMetadata;
         writeContext: PDFWriteContext;
         pdfBytes: Uint8Array;
+        pageCount: number;
       };
     }
   | { type: 'SET_FIELD'; fieldId: string; value: string }
@@ -213,7 +259,8 @@ export type FormAction =
   | { type: 'UPDATE_PDF_BYTES'; pdfBytes: Uint8Array }
   | { type: 'RESET_FORM' }
   // Enhancement actions
-  | { type: 'START_ENHANCEMENT' }
+  | { type: 'START_ENHANCEMENT'; totalPages: number; pageStatuses: PageProcessingStatus[] }
+  | { type: 'UPDATE_PAGE_PROGRESS'; pageNumber: number; status: PageProcessingStatus }
   | {
       type: 'COMPLETE_ENHANCEMENT';
       fields: FormField[];

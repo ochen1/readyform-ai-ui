@@ -322,6 +322,7 @@ export function isValidFormula(formula: string): boolean {
       readonly: false,
       ignore: false,
       value: '1',
+      pageNumber: 1, // Mock page number for validation
     }));
     
     const tokens = tokenize(formula, mockFields);

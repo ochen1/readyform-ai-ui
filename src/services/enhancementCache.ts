@@ -1,7 +1,8 @@
 import type { GeminiFieldEnhancement } from '../store/types';
 
 const CACHE_PREFIX = 'form-enhancement-';
-const CACHE_VERSION = 'v1';
+const PAGE_CACHE_PREFIX = 'form-page-';
+const CACHE_VERSION = 'v2'; // Updated for page-level caching
 
 /**
  * Generate a SHA-256 hash from PDF bytes for cache key
@@ -40,10 +41,28 @@ function getCacheKey(filename: string, hash: string): string {
 }
 
 /**
- * Cache entry structure for storage
+ * Cache entry structure for full form storage
  */
 interface CacheEntry {
   enhancement: GeminiFieldEnhancement;
+  timestamp: number;
+  version: string;
+}
+
+/**
+ * Page-level enhancement result for caching
+ */
+export interface PageEnhancementResult {
+  pageNumber: number;
+  fields: GeminiFieldEnhancement['fields'];
+  sections: GeminiFieldEnhancement['sections'];
+}
+
+/**
+ * Cache entry structure for page-level storage
+ */
+interface PageCacheEntry {
+  result: PageEnhancementResult;
   timestamp: number;
   version: string;
 }
@@ -186,7 +205,9 @@ export function clearOldCacheEntries(): void {
  */
 export function getCacheStats(): { count: number; totalSize: number } {
   try {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith(CACHE_PREFIX));
+    const keys = Object.keys(localStorage).filter(k =>
+      k.startsWith(CACHE_PREFIX) || k.startsWith(PAGE_CACHE_PREFIX)
+    );
     let totalSize = 0;
     
     for (const key of keys) {
@@ -202,5 +223,145 @@ export function getCacheStats(): { count: number; totalSize: number } {
     };
   } catch {
     return { count: 0, totalSize: 0 };
+  }
+}
+
+// ============================================================================
+// PAGE-LEVEL CACHING
+// ============================================================================
+
+/**
+ * Generate a cache key for a specific page
+ */
+function getPageCacheKey(filename: string, hash: string, pageNumber: number): string {
+  const sanitizedFilename = filename
+    .replace(/[^a-zA-Z0-9.-]/g, '_')
+    .slice(0, 50);
+  return `${PAGE_CACHE_PREFIX}${CACHE_VERSION}-${sanitizedFilename}-${hash}-p${pageNumber}`;
+}
+
+/**
+ * Get the PDF hash for page-level caching
+ * Exported so pageByPageEnhancer can compute it once and reuse
+ */
+export async function getPDFHash(pdfBytes: Uint8Array): Promise<string> {
+  return hashPDFBytes(pdfBytes);
+}
+
+/**
+ * Retrieve cached enhancement for a specific page
+ *
+ * @param filename - Original filename of the PDF
+ * @param pdfHash - Pre-computed hash of PDF bytes
+ * @param pageNumber - Page number (1-indexed)
+ * @returns Cached page enhancement or null if not found/expired
+ */
+export function getCachedPageEnhancement(
+  filename: string,
+  pdfHash: string,
+  pageNumber: number
+): PageEnhancementResult | null {
+  try {
+    const key = getPageCacheKey(filename, pdfHash, pageNumber);
+    const cached = localStorage.getItem(key);
+    
+    if (!cached) {
+      return null;
+    }
+    
+    const entry: PageCacheEntry = JSON.parse(cached);
+    
+    // Check if cache version matches
+    if (entry.version !== CACHE_VERSION) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    
+    // Check if cache has expired
+    if (Date.now() - entry.timestamp > MAX_CACHE_AGE) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    
+    console.log(`[Cache] Using cached enhancement for ${filename} page ${pageNumber}`);
+    return entry.result;
+  } catch (error) {
+    console.warn(`[Cache] Failed to retrieve cached page ${pageNumber}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Store page enhancement in cache
+ *
+ * @param filename - Original filename of the PDF
+ * @param pdfHash - Pre-computed hash of PDF bytes
+ * @param pageNumber - Page number (1-indexed)
+ * @param result - The page enhancement result to cache
+ */
+export function cachePageEnhancement(
+  filename: string,
+  pdfHash: string,
+  pageNumber: number,
+  result: PageEnhancementResult
+): void {
+  try {
+    const key = getPageCacheKey(filename, pdfHash, pageNumber);
+    
+    const entry: PageCacheEntry = {
+      result,
+      timestamp: Date.now(),
+      version: CACHE_VERSION,
+    };
+    
+    localStorage.setItem(key, JSON.stringify(entry));
+    console.log(`[Cache] Cached enhancement for ${filename} page ${pageNumber}`);
+  } catch (error) {
+    // LocalStorage might be full or disabled
+    console.warn(`[Cache] Failed to cache page ${pageNumber}:`, error);
+    
+    // Try to clear old entries and retry
+    try {
+      clearOldCacheEntries();
+      const key = getPageCacheKey(filename, pdfHash, pageNumber);
+      const entry: PageCacheEntry = {
+        result,
+        timestamp: Date.now(),
+        version: CACHE_VERSION,
+      };
+      localStorage.setItem(key, JSON.stringify(entry));
+    } catch {
+      // Give up silently - caching is not critical
+    }
+  }
+}
+
+/**
+ * Clear all page-level cache entries for a specific PDF
+ */
+export function clearPageCache(filename: string, pdfHash: string): void {
+  try {
+    const prefix = `${PAGE_CACHE_PREFIX}${CACHE_VERSION}-${filename.replace(/[^a-zA-Z0-9.-]/g, '_').slice(0, 50)}-${pdfHash}`;
+    const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix));
+    keys.forEach(k => localStorage.removeItem(k));
+    console.log(`[Cache] Cleared ${keys.length} page cache entries for ${filename}`);
+  } catch (error) {
+    console.warn('[Cache] Failed to clear page cache:', error);
+  }
+}
+
+/**
+ * Check how many pages are already cached for a PDF
+ */
+export function getCachedPageCount(filename: string, pdfHash: string): number {
+  try {
+    const sanitizedFilename = filename
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .slice(0, 50);
+    const prefix = `${PAGE_CACHE_PREFIX}${CACHE_VERSION}-${sanitizedFilename}-${pdfHash}`;
+    const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix));
+    return keys.length;
+  } catch {
+    return 0;
   }
 }
