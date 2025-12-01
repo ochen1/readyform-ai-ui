@@ -178,22 +178,135 @@ function mergePageResults(
 }
 
 /**
+ * Normalize a section title for comparison and deduplication
+ * Handles case variations like "SECTION B - INFO" vs "Section B - Info"
+ */
+function normalizeSectionKey(title: string): string {
+  // Trim and convert to lowercase
+  let normalized = title.trim().toLowerCase();
+  
+  // Extract the section identifier pattern (e.g., "section a", "part 1", "i.")
+  // Pattern matches: "section X", "part X", "X." where X is a letter or number
+  const sectionMatch = normalized.match(/^(section|part)\s+([a-z0-9]+)/i);
+  if (sectionMatch) {
+    return `${sectionMatch[1]}_${sectionMatch[2]}`;
+  }
+  
+  // Pattern for Roman numerals or letters with period: "I.", "A.", etc.
+  const romanMatch = normalized.match(/^([ivxlcdm]+|[a-z])\.\s*/i);
+  if (romanMatch) {
+    return `roman_${romanMatch[1]}`;
+  }
+  
+  // Fallback: use the full normalized title
+  return normalized;
+}
+
+/**
+ * Extract sort key from section title for proper ordering
+ * Returns a string that sorts sections in the correct order:
+ * - "Section A" before "Section B"
+ * - "Part 1" before "Part 2"
+ */
+function extractSectionSortKey(title: string): string {
+  const normalized = title.trim().toLowerCase();
+  
+  // Pattern: "Section A", "Section B", etc.
+  const sectionLetterMatch = normalized.match(/^section\s+([a-z])/i);
+  if (sectionLetterMatch) {
+    // Return letter for alphabetical sorting (a=0, b=1, etc.)
+    return `1_${sectionLetterMatch[1]}`;
+  }
+  
+  // Pattern: "Part 1", "Part 2", etc.
+  const partNumberMatch = normalized.match(/^part\s+(\d+)/i);
+  if (partNumberMatch) {
+    // Pad number for proper numeric sorting
+    return `2_${partNumberMatch[1].padStart(3, '0')}`;
+  }
+  
+  // Pattern: "Section 1", "Section 2", etc.
+  const sectionNumberMatch = normalized.match(/^section\s+(\d+)/i);
+  if (sectionNumberMatch) {
+    return `1_${sectionNumberMatch[1].padStart(3, '0')}`;
+  }
+  
+  // Pattern: Roman numerals "I.", "II.", "III.", etc.
+  const romanMatch = normalized.match(/^([ivxlcdm]+)\./i);
+  if (romanMatch) {
+    const romanValue = romanToNumber(romanMatch[1]);
+    return `3_${romanValue.toString().padStart(3, '0')}`;
+  }
+  
+  // Pattern: Single letter "A.", "B.", etc.
+  const letterMatch = normalized.match(/^([a-z])\./i);
+  if (letterMatch) {
+    return `4_${letterMatch[1]}`;
+  }
+  
+  // Fallback: use original order position
+  return `9_${normalized}`;
+}
+
+/**
+ * Convert Roman numeral to number for sorting
+ */
+function romanToNumber(roman: string): number {
+  const romanMap: Record<string, number> = {
+    'i': 1, 'v': 5, 'x': 10, 'l': 50, 'c': 100, 'd': 500, 'm': 1000
+  };
+  
+  let result = 0;
+  const lower = roman.toLowerCase();
+  
+  for (let i = 0; i < lower.length; i++) {
+    const current = romanMap[lower[i]] || 0;
+    const next = romanMap[lower[i + 1]] || 0;
+    
+    if (current < next) {
+      result -= current;
+    } else {
+      result += current;
+    }
+  }
+  
+  return result;
+}
+
+/**
  * Deduplicate and order sections from all pages
+ * Handles case variations and sorts by section identifier
  */
 function mergeSections(allSections: FormSection[][]): FormSection[] {
+  // Use normalized key for deduplication, but keep original section data
   const sectionMap = new Map<string, FormSection>();
   
   for (const pageSections of allSections) {
     for (const section of pageSections) {
+      // Generate a normalized key that handles case variations
+      const normalizedKey = normalizeSectionKey(section.title);
+      
       // Keep the first occurrence of each section (it should have the most context)
-      if (!sectionMap.has(section.id)) {
-        sectionMap.set(section.id, section);
+      if (!sectionMap.has(normalizedKey)) {
+        sectionMap.set(normalizedKey, section);
       }
     }
   }
   
-  // Sort by order
-  return Array.from(sectionMap.values()).sort((a, b) => a.order - b.order);
+  // Sort by extracted section identifier, then by order as fallback
+  return Array.from(sectionMap.values()).sort((a, b) => {
+    const keyA = extractSectionSortKey(a.title);
+    const keyB = extractSectionSortKey(b.title);
+    
+    // Primary sort: by extracted section key
+    const keyCompare = keyA.localeCompare(keyB);
+    if (keyCompare !== 0) {
+      return keyCompare;
+    }
+    
+    // Secondary sort: by order property
+    return a.order - b.order;
+  });
 }
 
 /**
