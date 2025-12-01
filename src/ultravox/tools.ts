@@ -43,16 +43,8 @@ export const staticTools: ToolDefinition[] = [
   },
   {
     temporaryTool: {
-      modelToolName: 'submitForm',
-      description: 'Submit/finalize the form. Use when user says they are done, finished, or wants to submit. This displays a split-screen view showing the ReadyFormAI interface alongside the filled PDF preview.',
-      dynamicParameters: [],
-      client: {}
-    }
-  },
-  {
-    temporaryTool: {
       modelToolName: 'hangUp',
-      description: 'End the call. ONLY use when: form is complete AND user confirms, OR user explicitly requests to end.',
+      description: 'End the call and show the completed PDF. Use when: user says they are done, finished, wants to submit, or explicitly requests to end the call. This displays a full-screen preview of the filled PDF.',
       dynamicParameters: [
         {
           name: 'reason',

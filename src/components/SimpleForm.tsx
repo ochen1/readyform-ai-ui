@@ -3,7 +3,7 @@ import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X, Eye } from 'lucide-react';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
 import Logo from '../assets/logo.svg';
 import { ProcessingProgress } from './ProcessingProgress';
@@ -242,7 +242,7 @@ function EmptyState({ onUpload }: { onUpload: (file: File) => void }) {
 }
 
 export function SimpleForm() {
-  const { state, dispatch, loadPDF, setField, openPDFPreview } = useFormContext();
+  const { state, dispatch, loadPDF, setField } = useFormContext();
   const { isConnected, notifyFieldFocus, status, startCall, endCall, isMicMuted, toggleMic } = useUltravox();
   const { settings, toggleDyslexiaFont, increaseFontSize, decreaseFontSize } = useAccessibility();
   const lastNotifiedFieldRef = useRef<string | null>(null);
@@ -312,8 +312,8 @@ export function SimpleForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Open the filled PDF in a new tab
-    openPDFPreview();
+    // Open the full-screen PDF preview modal
+    openPDFPreviewModal();
   };
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -448,8 +448,8 @@ export function SimpleForm() {
     setShowPDFPreview(false);
   }, [pdfPreviewUrl]);
 
-  // Function to manually open split-screen PDF preview
-  const openSplitScreenPreview = useCallback(() => {
+  // Function to open PDF preview modal (full-page)
+  const openPDFPreviewModal = useCallback(() => {
     if (!state.pdfBytes) {
       console.warn('[SimpleForm] Cannot show PDF preview: No PDF bytes available');
       return;
@@ -464,12 +464,27 @@ export function SimpleForm() {
     const blob = generatePDFBlob(state.pdfBytes);
     const url = URL.createObjectURL(blob);
     
-    // Set the preview URL and show split-screen mode
+    // Set the preview URL and show full-page modal
     setPdfPreviewUrl(url);
     setShowPDFPreview(true);
     
-    console.log('[SimpleForm] Split-screen PDF preview opened manually');
+    console.log('[SimpleForm] Full-page PDF preview modal opened');
   }, [state.pdfBytes, pdfPreviewUrl]);
+
+  // Function to open PDF in a new browser tab
+  const openPDFInNewTab = useCallback(() => {
+    if (!state.pdfBytes) {
+      console.warn('[SimpleForm] Cannot open PDF: No PDF bytes available');
+      return;
+    }
+    
+    const blob = generatePDFBlob(state.pdfBytes);
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    
+    // Clean up the URL after a short delay
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, [state.pdfBytes]);
 
   // Log cache usage when enhancement completes
   useEffect(() => {
@@ -524,9 +539,9 @@ export function SimpleForm() {
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100 flex">
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100 flex relative">
       {/* Main Form Area - Left Side */}
-      <div className={`flex flex-col min-w-0 transition-all duration-300 ${showPDFPreview ? 'flex-1' : 'flex-1'}`}>
+      <div className="flex-1 flex flex-col min-w-0">
 
 
         {/* Form Content */}
@@ -609,14 +624,14 @@ export function SimpleForm() {
                 </div>
               )}
 
-              {/* Submit/Download Button */}
+              {/* Preview Form Button */}
               <div className="mt-10 flex justify-center gap-4">
                 <button
                   type="submit"
                   className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
                 >
-                  <Download size={24} />
-                  Open Completed Form
+                  <FileText size={24} />
+                  Preview Form
                 </button>
               </div>
             </form>
@@ -886,25 +901,14 @@ export function SimpleForm() {
             {state.pdfLoaded ? 'Upload Different PDF' : 'Upload PDF'}
           </button>
 
-          {/* Preview Button (only when PDF loaded) - Opens split-screen view */}
+          {/* Preview Form Button (only when PDF loaded) */}
           {state.pdfLoaded && (
             <button
-              onClick={openSplitScreenPreview}
-              className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-blue-300 bg-blue-50 text-blue-700 hover:border-blue-500 hover:bg-blue-100 transition-all text-base font-medium"
-            >
-              <Eye size={20} />
-              Preview Filled PDF
-            </button>
-          )}
-
-          {/* Download Button (only when PDF loaded) */}
-          {state.pdfLoaded && (
-            <button
-              onClick={openPDFPreview}
+              onClick={openPDFPreviewModal}
               className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-emerald-300 bg-emerald-50 text-emerald-700 hover:border-emerald-500 hover:bg-emerald-100 transition-all text-base font-medium"
             >
-              <Download size={20} />
-              Open in New Tab
+              <FileText size={20} />
+              Preview Form
             </button>
           )}
         </div>
@@ -915,55 +919,57 @@ export function SimpleForm() {
 
       </aside>
 
-      {/* Split-Screen PDF Preview Panel - Only visible when form is submitted */}
+      {/* Full-Page PDF Preview Modal */}
       {showPDFPreview && pdfPreviewUrl && (
-        <div className="w-[50vw] flex flex-col bg-slate-100 border-l-2 border-slate-300 shadow-xl animate-in slide-in-from-right duration-300">
-          {/* PDF Preview Header */}
-          <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <FileText size={24} className="text-emerald-600" />
+        <div className="absolute inset-0 z-50 bg-black/50 flex items-center justify-center animate-in fade-in duration-200">
+          <div className="w-[90vw] h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-b border-slate-200">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                  <FileText size={24} className="text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-black">Completed Form Preview</h2>
+                  <p className="text-sm text-slate-600">
+                    {state.metadata?.sourceFileName || 'PDF Preview'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-black">Completed Form</h2>
-                <p className="text-sm text-slate-600">
-                  {state.metadata?.sourceFileName || 'PDF Preview'}
-                </p>
-              </div>
+              <button
+                onClick={closePDFPreview}
+                className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-200 transition-colors"
+                title="Close preview"
+              >
+                <X size={24} />
+              </button>
             </div>
-            <button
-              onClick={closePDFPreview}
-              className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-              title="Close preview"
-            >
-              <X size={24} />
-            </button>
-          </div>
-          
-          {/* PDF Iframe */}
-          <div className="flex-1 bg-slate-200">
-            <iframe
-              src={pdfPreviewUrl}
-              className="w-full h-full border-0"
-              title="Completed PDF Preview"
-            />
-          </div>
-          
-          {/* PDF Actions Footer */}
-          <div className="px-6 py-4 bg-white border-t border-slate-200 flex gap-3">
-            <button
-              onClick={openPDFPreview}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
-            >
-              <Download size={20} />
-              Open in New Tab
-            </button>
-            <button
-              onClick={closePDFPreview}
-              className="px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 font-medium transition-colors"
-            >
-              Close Preview
-            </button>
+            
+            {/* PDF Iframe */}
+            <div className="flex-1 bg-slate-200">
+              <iframe
+                src={pdfPreviewUrl}
+                className="w-full h-full border-0"
+                title="Completed PDF Preview"
+              />
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex gap-3 justify-end">
+              <button
+                onClick={closePDFPreview}
+                className="px-6 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-100 font-medium transition-colors"
+              >
+                Back to Form
+              </button>
+              <button
+                onClick={openPDFInNewTab}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+              >
+                <Download size={20} />
+                Open in New Tab
+              </button>
+            </div>
           </div>
         </div>
       )}

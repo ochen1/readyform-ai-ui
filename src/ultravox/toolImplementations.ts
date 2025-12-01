@@ -309,34 +309,22 @@ export function createToolImplementations(formContext: FormContextValue, endCall
     },
     
     /**
-     * Submit/finalize the form and show split-screen PDF preview
-     */
-    submitForm: () => {
-      console.log(`[Tool Call] submitForm()`);
-      
-      // Dispatch event to trigger split-screen PDF preview in SimpleForm
-      window.dispatchEvent(new CustomEvent('form:submit'));
-      
-      console.log(`[Tool Call] submitForm SUCCESS: Triggering split-screen PDF preview`);
-      
-      return JSON.stringify({
-        success: true,
-        message: 'Form submitted! Displaying the completed PDF alongside the form.'
-      });
-    },
-    
-    /**
-     * End the call
+     * End the call and show the completed PDF preview
      */
     hangUp: ({ reason }: { reason: string }) => {
       console.log(`[Tool Call] hangUp("${reason}")`);
       
-      const message = reason === 'completed'
-        ? 'Form complete! Thank you for using ReadyFormAI.'
-        : 'Call ended. Thank you for using ReadyFormAI.';
+      // Dispatch event to trigger full-screen PDF preview in SimpleForm
+      window.dispatchEvent(new CustomEvent('form:submit'));
       
-      // Small delay to allow final message to be spoken
+      const message = reason === 'completed'
+        ? 'Form complete! The PDF is now displayed. Thank you for using ReadyFormAI.'
+        : 'Call ended. The PDF is now displayed. Thank you for using ReadyFormAI.';
+      
+      // Small delay to allow final message to be spoken, then end call
       setTimeout(() => endCall(), 2000);
+      
+      console.log(`[Tool Call] hangUp SUCCESS: Showing PDF preview and ending call`);
       
       return JSON.stringify({ success: true, message });
     }

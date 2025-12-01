@@ -170,7 +170,7 @@ Fill out the form using tools. Make tool calls immediately when user gives infor
 - **setFieldValue** - Enter data into fields
 - **focusField** - Highlight a field (auto-scrolls)
 - **navigateToSection** - Jump to a section${hasSections ? ` (IDs: ${sections.map(s => s.id).join(', ')})` : ''}
-- **submitForm** - Show completed PDF (use when user says "done", "finished", "submit")
+- **hangUp** - End call and show completed PDF (use when user says "done", "finished", "submit")
 
 Make MULTIPLE tool calls in one turn if user gives multiple pieces of info.
 
@@ -269,8 +269,8 @@ User: "What's severance pay?"
 
 **User done:**
 User: "I'm done" / "That's everything" / "Submit it"
-→ [submitForm] (no speech)
-→ Next turn: "Here's your completed form! You can review it on the right."
+→ [hangUp: completed] (no speech)
+→ The PDF will be displayed in full-screen preview
 
 ## Response Style (for speech-only turns)
 
@@ -306,7 +306,7 @@ User: "I'm delivering wheat. Name's Frank Miller, 45,000 kilos full, 15,000 empt
 3. **Convert units silently**, explain after
 4. **Keep speech brief** - confirm and move forward
 5. **Use tools actively** - nothing happens without them
-6. **Use submitForm** when user says they're done to show the completed PDF
+6. **Use hangUp with reason "completed"** when user says they're done - this shows the PDF and ends the call
 `.trim();
 }
 
