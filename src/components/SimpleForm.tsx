@@ -739,11 +739,7 @@ export function SimpleForm() {
         {/* Spacer to push footer down */}
         <div className="flex-1" />
 
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-slate-200 text-center text-sm text-slate-700">
-          <p className="font-medium">FormAI - Voice-Assisted Form Filling</p>
-          <p className="text-xs mt-1 text-slate-600">v2.0</p>
-        </div>
+        
       </aside>
     </div>
   );
