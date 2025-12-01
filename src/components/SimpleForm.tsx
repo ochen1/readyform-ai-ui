@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useMemo, useEffect } from 'react';
+import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react';
 import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
@@ -12,12 +12,16 @@ interface FieldProps {
   field: FormField;
   isActive: boolean;
   isCompleted: boolean;
+  forceShowTooltip?: boolean; // Programmatically show tooltip via voice command
   onFocus: () => void;
   onChange: (value: string) => void;
 }
 
-function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }: FieldProps) {
+function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, onFocus, onChange }: FieldProps) {
   const [showTooltip, setShowTooltip] = React.useState(false);
+  
+  // Show tooltip when forced (via voice command)
+  const tooltipVisible = showTooltip || forceShowTooltip;
 
   // Determine styling based on state
   let borderClass = 'border-slate-300 bg-white';
@@ -102,8 +106,8 @@ function FormFieldComponent({ field, isActive, isCompleted, onFocus, onChange }:
             disabled={isDisabled}
             className={borderClass}
           />
-          {showTooltip && field.description && (
-            <div className="absolute top-full left-0 mt-1 z-10 w-80 p-3 bg-slate-800 text-white text-base rounded-lg shadow-lg border border-slate-600">
+          {tooltipVisible && field.description && (
+            <div className={`absolute top-full left-0 mt-1 z-10 w-80 p-3 text-white text-base rounded-lg shadow-lg border ${forceShowTooltip ? 'bg-blue-700 border-blue-500 ring-2 ring-blue-400 animate-pulse' : 'bg-slate-800 border-slate-600'}`}>
               <p>{field.description}</p>
               {field.calculationHint && (
                 <span className="block mt-1 text-slate-200 italic">
@@ -242,6 +246,9 @@ export function SimpleForm() {
   const { settings, toggleDyslexiaFont, increaseFontSize, decreaseFontSize } = useAccessibility();
   const lastNotifiedFieldRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // State for programmatic tooltip display (via showTooltip voice command)
+  const [tooltipFieldId, setTooltipFieldId] = useState<string | null>(null);
 
   const handleFieldFocus = useCallback((fieldId: string) => {
     dispatch({ type: 'SET_ACTIVE_FIELD', fieldId });
@@ -359,6 +366,39 @@ export function SimpleForm() {
     };
   }, []);
 
+  // Listen for showTooltip events from voice assistant
+  useEffect(() => {
+    let tooltipTimeoutId: ReturnType<typeof setTimeout> | null = null;
+    
+    const handleShowTooltip = (event: Event) => {
+      const customEvent = event as CustomEvent<{ fieldId: string; fieldName: string; content: string; duration: number }>;
+      const { fieldId, duration } = customEvent.detail;
+      
+      // Clear any existing timeout
+      if (tooltipTimeoutId) {
+        clearTimeout(tooltipTimeoutId);
+      }
+      
+      // Show the tooltip
+      setTooltipFieldId(fieldId);
+      
+      // Auto-hide after duration
+      tooltipTimeoutId = setTimeout(() => {
+        setTooltipFieldId(null);
+        tooltipTimeoutId = null;
+      }, duration);
+    };
+    
+    window.addEventListener('form:showTooltip', handleShowTooltip);
+    
+    return () => {
+      window.removeEventListener('form:showTooltip', handleShowTooltip);
+      if (tooltipTimeoutId) {
+        clearTimeout(tooltipTimeoutId);
+      }
+    };
+  }, []);
+
   // Log cache usage when enhancement completes
   useEffect(() => {
     if (!state.isEnhancing && state.enhancementProgress) {
@@ -453,6 +493,7 @@ export function SimpleForm() {
                               field={field}
                               isActive={state.activeFieldId === field.id}
                               isCompleted={state.completedFieldIds.includes(field.id)}
+                              forceShowTooltip={tooltipFieldId === field.id}
                               onFocus={() => handleFieldFocus(field.id)}
                               onChange={(value) => handleFieldChange(field.id, value)}
                             />
@@ -471,6 +512,7 @@ export function SimpleForm() {
                           field={field}
                           isActive={state.activeFieldId === field.id}
                           isCompleted={state.completedFieldIds.includes(field.id)}
+                          forceShowTooltip={tooltipFieldId === field.id}
                           onFocus={() => handleFieldFocus(field.id)}
                           onChange={(value) => handleFieldChange(field.id, value)}
                         />
@@ -487,6 +529,7 @@ export function SimpleForm() {
                       field={field}
                       isActive={state.activeFieldId === field.id}
                       isCompleted={state.completedFieldIds.includes(field.id)}
+                      forceShowTooltip={tooltipFieldId === field.id}
                       onFocus={() => handleFieldFocus(field.id)}
                       onChange={(value) => handleFieldChange(field.id, value)}
                     />

@@ -224,6 +224,55 @@ export function createToolImplementations(formContext: FormContextValue, endCall
     },
     
     /**
+     * Show tooltip popup for a specific field (RAG-style visual help)
+     */
+    showTooltip: ({ fieldName }: { fieldName: string }) => {
+      console.log(`[Tool Call] showTooltip("${fieldName}")`);
+      
+      const field = findFieldByName(fieldName);
+      
+      if (!field) {
+        console.warn(`[Tool Call] showTooltip FAILED: Field "${fieldName}" not found`);
+        return JSON.stringify({
+          success: false,
+          message: `Field "${fieldName}" not found in form.`
+        });
+      }
+      
+      // Build tooltip content from field metadata
+      const tooltipContent = {
+        fieldName: field.name,
+        description: field.description || `Enter the value for ${field.name}`,
+        calculationHint: field.calculationHint,
+        format: field.format,
+        unit: field.unit,
+        type: field.type,
+      };
+      
+      // Dispatch event to show tooltip on the field
+      window.dispatchEvent(new CustomEvent('form:showTooltip', {
+        detail: {
+          fieldId: field.id,
+          fieldName: field.name,
+          content: tooltipContent,
+          duration: 8000, // Show for 8 seconds
+        }
+      }));
+      
+      // Also focus the field so it scrolls into view
+      formContext.focusField(field.id);
+      
+      console.log(`[Tool Call] showTooltip SUCCESS: Displaying tooltip for "${field.name}"`);
+      
+      return JSON.stringify({
+        success: true,
+        fieldName: field.name,
+        description: tooltipContent.description,
+        message: tooltipContent.description
+      });
+    },
+    
+    /**
      * Navigate to a form section
      */
     navigateToSection: ({ sectionId }: { sectionId: string }) => {

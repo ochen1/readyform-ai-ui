@@ -13,6 +13,7 @@ declare global {
   interface WindowEventMap {
     'form:navigate': CustomEvent<{ section: string }>;
     'form:showHelp': CustomEvent<{ topic: string; helpText: string }>;
+    'form:showTooltip': CustomEvent<{ fieldId: string; fieldName: string; content: string; duration: number }>;
   }
 }
 

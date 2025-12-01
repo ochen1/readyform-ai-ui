@@ -212,6 +212,25 @@ export function generateFormTools(fields: FormField[], sectionIds: string[] = []
         ],
         client: {}
       }
+    },
+    {
+      temporaryTool: {
+        modelToolName: 'showTooltip',
+        description: 'Display the tooltip/description popup for a specific field. Use to visually explain a field to the user (RAG-style contextual help). The tooltip will appear next to the field with its description.',
+        dynamicParameters: [
+          {
+            name: 'fieldName',
+            location: 'PARAMETER_LOCATION_BODY',
+            schema: {
+              type: 'string',
+              description: 'Field to show tooltip for',
+              enum: allFieldNames
+            },
+            required: true
+          }
+        ],
+        client: {}
+      }
     }
   ];
 
