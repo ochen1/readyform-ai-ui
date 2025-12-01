@@ -1,7 +1,7 @@
 import type { GeminiFieldEnhancement, FieldType } from '../store/types';
 import type { PageEnhancementResult } from './enhancementCache';
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent';
 
 /**
  * Comprehensive prompt for Gemini to analyze form fields
