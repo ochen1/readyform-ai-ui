@@ -481,12 +481,6 @@ export function SimpleForm() {
                       Analyzing...
                     </span>
                   )}
-                  {state.enhancementCached && (
-                    <span className="flex items-center gap-1 text-emerald-600">
-                      <Sparkles size={12} />
-                      AI Enhanced
-                    </span>
-                  )}
                 </div>
               </div>
             )}
@@ -542,7 +536,7 @@ export function SimpleForm() {
                   <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
                     <Sparkles size={14} className="text-emerald-600 shrink-0" />
                     <span>
-                      {visibleFields.length} fields found
+                      AI Enhanced • {visibleFields.length} fields found
                       {state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length > 0 && (
                         <span className="text-emerald-600 ml-1">
                           ({state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length} cached)
