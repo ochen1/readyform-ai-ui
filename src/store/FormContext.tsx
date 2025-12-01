@@ -163,7 +163,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
           dispatch({ type: 'SET_FIELD', fieldId: calcField.id, value: newValue });
           
           // Update PDF (if write-back is supported)
-          if (writeContextRef.current && !writeContextRef.current.isXFA) {
+          if (writeContextRef.current) {
             try {
               const newBytes = await updatePDFField(writeContextRef.current, calcField.id, newValue);
               if (newBytes) {
@@ -194,7 +194,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_FIELD', fieldId, value });
     
     // Update PDF document for the primary field (if write-back is supported)
-    if (writeContextRef.current && !writeContextRef.current.isXFA) {
+    if (writeContextRef.current) {
       try {
         const newBytes = await updatePDFField(writeContextRef.current, fieldId, value);
         if (newBytes) {
@@ -234,7 +234,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
           }
           
           // Update PDF (if write-back is supported)
-          if (writeContextRef.current && !writeContextRef.current.isXFA) {
+          if (writeContextRef.current) {
             try {
               const newBytes = await updatePDFField(writeContextRef.current, calcFieldId, calculatedValue);
               if (newBytes) {

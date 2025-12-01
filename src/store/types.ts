@@ -45,6 +45,8 @@ export interface FormField {
   // Core identification
   /** Unique ID from PDF field name */
   id: string;
+  /** Annotation ID from PDF (needed for XFA updates) */
+  annotationId?: string;
   /** Raw name from PDF before enhancement */
   originalName: string;
   /** Page number where this field appears (1-indexed) */
@@ -113,10 +115,12 @@ export interface FormMetadata {
 export interface PDFWriteContext {
   /** Original file bytes for re-loading with pdf-lib */
   originalBytes: ArrayBuffer;
-  /** Whether this is an XFA form (write-back not supported) */
+  /** Whether this is an XFA form */
   isXFA: boolean;
   /** Field IDs that can be written back (AcroForm fields only) */
   writableFieldIds: string[];
+  /** PDF document proxy for XFA updates (optional) */
+  pdfDoc?: any;
 }
 
 /**

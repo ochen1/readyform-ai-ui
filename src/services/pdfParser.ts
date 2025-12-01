@@ -28,6 +28,7 @@ export interface ParsedPDF {
  * Internal representation of a PDF form field from pdfjs-dist
  */
 interface PDFJSAnnotation {
+  id?: string;
   fieldType?: string;
   fieldName?: string;
   fieldValue?: string | string[] | boolean;
@@ -302,6 +303,7 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
       // Create field entry with page number
       fields.push({
         id: fieldName,
+        annotationId: anno.id, // Capture annotation ID for XFA updates
         originalName: fieldName,
         name: displayName,
         value: currentValue,
@@ -347,7 +349,8 @@ export async function parsePDF(file: File): Promise<ParsedPDF> {
   const writeContext: PDFWriteContext = {
     originalBytes: writeContextBytes,
     isXFA,
-    writableFieldIds: isXFA ? [] : fields.filter(f => !f.readonly).map(f => f.id),
+    writableFieldIds: isXFA ? fields.filter(f => !f.readonly).map(f => f.id) : fields.filter(f => !f.readonly).map(f => f.id),
+    pdfDoc: isXFA ? pdf : undefined, // Store PDF document proxy for XFA updates
   };
   
   // Always render ALL pages as images for Gemini visual analysis
@@ -399,18 +402,116 @@ export async function updatePDFField(
   fieldId: string,
   value: string
 ): Promise<Uint8Array | null> {
-  // Can't update XFA forms
-  if (writeContext.isXFA) {
-    console.warn('[PDF Parser] Cannot update XFA form fields - XFA write-back not supported');
-    return null;
-  }
-  
   // Check if field is writable
   if (!writeContext.writableFieldIds.includes(fieldId)) {
     console.warn(`[PDF Parser] Field ${fieldId} is not writable`);
     return null;
   }
+
+  // Handle XFA forms using pdfjs-dist annotationStorage
+  if (writeContext.isXFA) {
+    if (!writeContext.pdfDoc) {
+      console.error('[PDF Parser] XFA update failed: PDF document proxy missing');
+      return null;
+    }
+
+    try {
+      // Find the field to get its annotation ID
+      // We need to find the annotation ID associated with this field ID
+      // Since we don't have direct access to fields here, we rely on the fact that
+      // for XFA, we need to use the annotation ID if available, or try to map it.
+      // However, the annotationStorage expects the annotation ID (key) and value.
+      
+      // In parsePDF, we stored the annotation ID in the field object.
+      // But here we only have fieldId. We might need to pass the annotationId or look it up.
+      // For now, let's assume fieldId IS the annotation ID or we can find it.
+      // Actually, for XFA in pdfjs-dist, the fieldId (fieldName) is often NOT the annotation ID.
+      // The annotation ID is usually a generated string like "123R".
+      
+      // To fix this properly, we should have passed the annotation ID.
+      // But since we can't easily change the signature without affecting other things,
+      // let's try to find the annotation ID from the PDF document if possible,
+      // or rely on the caller to have passed the annotation ID as fieldId if that was the design.
+      // BUT, we defined fieldId as the field name in parsePDF.
+      
+      // Let's look up the annotation ID from the field name by iterating pages again?
+      // That's too slow.
+      
+      // BETTER APPROACH: The caller (FormContext) has the field object with annotationId.
+      // We should update updatePDFField to accept an optional annotationId or the whole field object.
+      // But to avoid breaking changes, let's try to use the fieldId as the key first.
+      // If fieldId is the name, this might not work for XFA if pdfjs expects the ref ID.
+      
+      // Wait, the issue description says:
+      // pdf.annotationStorage.setValue(key, { value: '1234' });
+      // "key" is the annotation ID.
+      
+      // We need the annotation ID.
+      // Let's assume for XFA, the fieldId passed in MIGHT be the annotation ID if we changed how we call it,
+      // OR we need to find it.
+      
+      // Since we updated FormField to include annotationId, we should update the call site in FormContext
+      // to pass annotationId for XFA forms.
+      // But updatePDFField signature is (writeContext, fieldId, value).
+      // We can overload fieldId to be annotationId for XFA, OR add a param.
+      // Let's add an optional param to updatePDFField.
+      
+      // Actually, let's just use the fieldId param. In FormContext, we can pass annotationId if it's XFA.
+      // But wait, FormContext calls updatePDFField with fieldId (which is name).
+      
+      // Let's modify updatePDFField to take an options object or optional 4th param?
+      // Or better, let's just iterate the pages in the cached pdfDoc to find the annotation ID for the field name.
+      // It's a bit inefficient but safe.
+      // OR, since we have the pdfDoc in writeContext, maybe we can access the field map?
+      
+      // Let's try to find the annotation ID by iterating pages in the pdfDoc.
+      const pdf = writeContext.pdfDoc;
+      let annotationId = null;
+      
+      // Optimization: If fieldId looks like an annotation ID (e.g. "123R"), use it directly.
+      if (fieldId.endsWith('R') && /^\d+R$/.test(fieldId)) {
+        annotationId = fieldId;
+      } else {
+        // Search for the field by name to get its ID
+        // This is slow but necessary if we don't pass the ID
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const annotations = await page.getAnnotations();
+          const found = annotations.find((a: any) => a.fieldName === fieldId);
+          if (found) {
+            annotationId = found.id;
+            break;
+          }
+        }
+      }
+      
+      if (!annotationId) {
+        console.warn(`[PDF Parser] Could not find annotation ID for field ${fieldId}`);
+        return null;
+      }
+      
+      // Update annotation storage
+      // pdf.annotationStorage.setValue(key, { value: '1234' });
+      pdf.annotationStorage.setValue(annotationId, { value: value });
+      
+      // Save the document
+      // const data = await pdf.saveDocument();
+      const updatedBytes = await pdf.saveDocument();
+      
+      // Update original bytes
+      const newArrayBuffer = new ArrayBuffer(updatedBytes.byteLength);
+      new Uint8Array(newArrayBuffer).set(updatedBytes);
+      (writeContext as { originalBytes: ArrayBuffer }).originalBytes = newArrayBuffer;
+      
+      return updatedBytes;
+      
+    } catch (error) {
+      console.error('[PDF Parser] Failed to update XFA PDF:', error);
+      return null;
+    }
+  }
   
+  // AcroForm handling (existing code)
   try {
     // Dynamically import pdf-lib only when needed (for writing)
     const { PDFDocument, PDFTextField, PDFCheckBox, PDFDropdown, PDFRadioGroup } = await import('pdf-lib');
