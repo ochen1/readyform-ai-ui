@@ -325,7 +325,7 @@ export function SimpleForm() {
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex">
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100 flex">
       {/* Main Form Area - Left Side */}
       <div className="flex-1 flex flex-col min-w-0">
 
@@ -388,7 +388,7 @@ export function SimpleForm() {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Success message */}
                   {state.enhancementProgress.errorPages === 0 && (
                     <div className="mb-6 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
@@ -405,7 +405,7 @@ export function SimpleForm() {
                   )}
                 </>
               )}
-              
+
               {/* Simple success message when no progress tracking (legacy) */}
               {state.enhancementCached && !state.isEnhancing && !state.enhancementProgress && (
                 <div className="mb-6 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
@@ -572,10 +572,10 @@ export function SimpleForm() {
             onClick={isConnected ? endCall : startCall}
             disabled={!state.pdfLoaded}
             className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg ${!state.pdfLoaded
-                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                : isConnected
-                  ? 'bg-red-500 hover:bg-red-600 text-white'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+              : isConnected
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
               }`}
           >
             {isConnected ? (
@@ -632,8 +632,8 @@ export function SimpleForm() {
             <button
               onClick={toggleMic}
               className={`mt-3 w-full flex items-center justify-center gap-2 p-3 rounded-xl transition-colors ${isMicMuted
-                  ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               title={isMicMuted ? 'Unmute microphone' : 'Mute microphone'}
             >
