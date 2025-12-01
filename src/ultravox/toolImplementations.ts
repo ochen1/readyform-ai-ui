@@ -174,9 +174,9 @@ export function createToolImplementations(formContext: FormContextValue, endCall
      * End the call
      */
     hangUp: ({ reason }: { reason: string }) => {
-      const message = reason === 'completed' 
-        ? 'Form complete! Thank you for using FormAI.'
-        : 'Call ended. Thank you for using FormAI.';
+      const message = reason === 'completed'
+        ? 'Form complete! Thank you for using ReadyFormAI.'
+        : 'Call ended. Thank you for using ReadyFormAI.';
       
       // Small delay to allow final message to be spoken
       setTimeout(() => endCall(), 2000);

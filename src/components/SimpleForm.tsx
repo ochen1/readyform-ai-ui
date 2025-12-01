@@ -468,7 +468,7 @@ export function SimpleForm() {
         <div className="p-6 border-b border-slate-200 bg-slate-50">
           <h1 className="text-2xl font-bold text-black flex items-center gap-2">
             <Sparkles className="text-blue-600" />
-            FormAI
+            ReadyFormAI
           </h1>
         </div>
 

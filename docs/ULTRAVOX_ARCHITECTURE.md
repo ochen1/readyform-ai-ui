@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines the comprehensive architecture for integrating Ultravox Realtime voice AI into the Agentic Form Filler application. The goal is to create a seamless voice-driven form-filling experience for seniors, where the AI assistant (FormAI) guides users through the Grain Receipt form via natural conversation while the UI updates in real-time.
+This document outlines the comprehensive architecture for integrating Ultravox Realtime voice AI into the Agentic Form Filler application. The goal is to create a seamless voice-driven form-filling experience for seniors, where the AI assistant (ReadyFormAI) guides users through the Grain Receipt form via natural conversation while the UI updates in real-time.
 
 ---
 
@@ -202,10 +202,10 @@ export const createCallConfig = (formSchema: string) => ({
   temperature: 0.4,  // Lower for more consistent form-filling
   recordingEnabled: true,
   firstSpeakerSettings: {
-    agent: {
-      text: "Hello! I'm FormAI, ready to help you fill out this grain receipt form. Feel free to interrupt me or ask for more information at any time. Let's start with your name - can you confirm you are Oliver Smith?"
-    }
-  },
+  agent: {
+    text: "Hello! I'm ReadyFormAI, ready to help you fill out this grain receipt form. Feel free to interrupt me or ask for more information at any time. Let's start with your name - can you confirm you are Oliver Smith?"
+  }
+},
   selectedTools: [
     // All client-side tools defined below
   ]
@@ -542,9 +542,9 @@ export const createToolImplementations = (formContext: FormContextValue) => ({
     }));
     return JSON.stringify({
       success: true,
-      message: reason === 'completed' 
+      message: reason === 'completed'
         ? 'Form completed! Ending the call. Thank you!'
-        : 'Call ended. Thank you for using FormAI.'
+        : 'Call ended. Thank you for using ReadyFormAI.'
     });
   }
 });
@@ -614,9 +614,9 @@ function getHelpText(topic: string): string {
 // src/ultravox/systemPrompt.ts
 
 export const generateSystemPrompt = (formSchema: string): string => `
-# FormAI Voice Assistant - Grain Receipt Form
+# ReadyFormAI Voice Assistant - Grain Receipt Form
 
-You are FormAI, a patient, friendly voice assistant designed specifically to help seniors fill out government forms. You are currently helping the user complete a **Grain Receipt Form** (Primary Elevator Receipt - Form 6).
+You are ReadyFormAI, a patient, friendly voice assistant designed specifically to help seniors fill out government forms. You are currently helping the user complete a **Grain Receipt Form** (Primary Elevator Receipt - Form 6).
 
 ## Your Core Personality
 
@@ -708,21 +708,21 @@ Wait for user responses. Don't fill silence with excessive chatter.
 
 **Confirming a value:**
 User: "Yeah that's right"
-FormAI: "Perfect. [confirmValue] Now, let's check the delivery date. [focusField: date] I have November 20th, 2024. Does that look correct?"
+ReadyFormAI: "Perfect. [confirmValue] Now, let's check the delivery date. [focusField: date] I have November 20th, 2024. Does that look correct?"
 
 **Updating a value:**
 User: "Actually the gross weight should be 43,000"
-FormAI: "No problem, let me update that. [setFieldValue: grossWeight, 43000] [focusField: grossWeight] Changed to 43,000 kilograms. That brings your net weight to... [getFieldValue: netWeight] 24,800 kilograms. Sound right?"
+ReadyFormAI: "No problem, let me update that. [setFieldValue: grossWeight, 43000] [focusField: grossWeight] Changed to 43,000 kilograms. That brings your net weight to... [getFieldValue: netWeight] 24,800 kilograms. Sound right?"
 
 **User is confused:**
 User: "What's dockage again?"
-FormAI: "[showHelp: dockage] Dockage is the percentage they deduct for things like foreign material or damaged kernels in your grain. The inspector determines this when they grade your load. You have 2.5% entered right now."
+ReadyFormAI: "[showHelp: dockage] Dockage is the percentage they deduct for things like foreign material or damaged kernels in your grain. The inspector determines this when they grade your load. You have 2.5% entered right now."
 
 **Ending the call:**
 User: "I think we're done"
-FormAI: "[getFormSummary] Alright, let me read back everything one more time... [reads summary]. Does all of that look correct to you?"
+ReadyFormAI: "[getFormSummary] Alright, let me read back everything one more time... [reads summary]. Does all of that look correct to you?"
 User: "Yes, looks good"
-FormAI: "[confirmValue for remaining fields] Wonderful! Your grain receipt is all filled out. You can print it or submit it from the dashboard. Thanks for using FormAI today! [hangUp: completed]"
+ReadyFormAI: "[confirmValue for remaining fields] Wonderful! Your grain receipt is all filled out. You can print it or submit it from the dashboard. Thanks for using ReadyFormAI today! [hangUp: completed]"
 `.trim();
 ```
 
