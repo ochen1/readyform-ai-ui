@@ -310,6 +310,16 @@ export function SimpleForm() {
     }
   }, [handlePDFUpload]);
 
+  // Log cache usage when enhancement completes
+  React.useEffect(() => {
+    if (!state.isEnhancing && state.enhancementProgress) {
+      const cachedCount = state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length;
+      if (cachedCount > 0) {
+        console.log(`AI Enhancement: ${cachedCount} pages loaded from cache`);
+      }
+    }
+  }, [state.isEnhancing, state.enhancementProgress]);
+
   // Get visible (non-ignored) fields
   const visibleFields = state.fields.filter(f => !f.ignore);
 
@@ -537,11 +547,6 @@ export function SimpleForm() {
                     <Sparkles size={14} className="text-emerald-600 shrink-0" />
                     <span>
                       AI Enhanced • {visibleFields.length} fields found
-                      {state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length > 0 && (
-                        <span className="text-emerald-600 ml-1">
-                          ({state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length} cached)
-                        </span>
-                      )}
                     </span>
                   </div>
                 )}
