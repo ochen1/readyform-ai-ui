@@ -17,7 +17,7 @@ interface InputProps {
 /**
  * Base input styling classes
  */
-const baseInputClass = "flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200";
+const baseInputClass = "w-full flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200";
 
 /**
  * Get icon component for field type
