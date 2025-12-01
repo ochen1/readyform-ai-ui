@@ -3,10 +3,11 @@ import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles } from 'lucide-react';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
 import Logo from '../assets/logo.svg';
 import { ProcessingProgress } from './ProcessingProgress';
+import { generatePDFBlob } from '../services/pdfParser';
 
 interface FieldProps {
   field: FormField;
@@ -249,6 +250,10 @@ export function SimpleForm() {
   
   // State for programmatic tooltip display (via showTooltip voice command)
   const [tooltipFieldId, setTooltipFieldId] = useState<string | null>(null);
+  
+  // State for split-screen PDF preview mode
+  const [showPDFPreview, setShowPDFPreview] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
 
   const handleFieldFocus = useCallback((fieldId: string) => {
     dispatch({ type: 'SET_ACTIVE_FIELD', fieldId });
@@ -399,6 +404,50 @@ export function SimpleForm() {
     };
   }, []);
 
+  // Listen for form:submit events from voice assistant to trigger split-screen PDF preview
+  useEffect(() => {
+    const handleFormSubmit = () => {
+      if (!state.pdfBytes) {
+        console.warn('[SimpleForm] Cannot show PDF preview: No PDF bytes available');
+        return;
+      }
+      
+      // Generate blob URL for the PDF
+      const blob = generatePDFBlob(state.pdfBytes);
+      const url = URL.createObjectURL(blob);
+      
+      // Set the preview URL and show split-screen mode
+      setPdfPreviewUrl(url);
+      setShowPDFPreview(true);
+      
+      console.log('[SimpleForm] Split-screen PDF preview activated');
+    };
+    
+    window.addEventListener('form:submit', handleFormSubmit);
+    
+    return () => {
+      window.removeEventListener('form:submit', handleFormSubmit);
+    };
+  }, [state.pdfBytes]);
+
+  // Cleanup PDF preview URL when component unmounts or preview is closed
+  useEffect(() => {
+    return () => {
+      if (pdfPreviewUrl) {
+        URL.revokeObjectURL(pdfPreviewUrl);
+      }
+    };
+  }, [pdfPreviewUrl]);
+
+  // Function to close split-screen preview
+  const closePDFPreview = useCallback(() => {
+    if (pdfPreviewUrl) {
+      URL.revokeObjectURL(pdfPreviewUrl);
+    }
+    setPdfPreviewUrl(null);
+    setShowPDFPreview(false);
+  }, [pdfPreviewUrl]);
+
   // Log cache usage when enhancement completes
   useEffect(() => {
     if (!state.isEnhancing && state.enhancementProgress) {
@@ -454,7 +503,7 @@ export function SimpleForm() {
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100 flex">
       {/* Main Form Area - Left Side */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`flex flex-col min-w-0 transition-all duration-300 ${showPDFPreview ? 'flex-1' : 'flex-1'}`}>
 
 
         {/* Form Content */}
@@ -831,6 +880,59 @@ export function SimpleForm() {
 
 
       </aside>
+
+      {/* Split-Screen PDF Preview Panel - Only visible when form is submitted */}
+      {showPDFPreview && pdfPreviewUrl && (
+        <div className="w-[50vw] flex flex-col bg-slate-100 border-l-2 border-slate-300 shadow-xl animate-in slide-in-from-right duration-300">
+          {/* PDF Preview Header */}
+          <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 rounded-lg">
+                <FileText size={24} className="text-emerald-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-black">Completed Form</h2>
+                <p className="text-sm text-slate-600">
+                  {state.metadata?.sourceFileName || 'PDF Preview'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={closePDFPreview}
+              className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              title="Close preview"
+            >
+              <X size={24} />
+            </button>
+          </div>
+          
+          {/* PDF Iframe */}
+          <div className="flex-1 bg-slate-200">
+            <iframe
+              src={pdfPreviewUrl}
+              className="w-full h-full border-0"
+              title="Completed PDF Preview"
+            />
+          </div>
+          
+          {/* PDF Actions Footer */}
+          <div className="px-6 py-4 bg-white border-t border-slate-200 flex gap-3">
+            <button
+              onClick={openPDFPreview}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+            >
+              <Download size={20} />
+              Open in New Tab
+            </button>
+            <button
+              onClick={closePDFPreview}
+              className="px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 font-medium transition-colors"
+            >
+              Close Preview
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -309,6 +309,23 @@ export function createToolImplementations(formContext: FormContextValue, endCall
     },
     
     /**
+     * Submit/finalize the form and show split-screen PDF preview
+     */
+    submitForm: () => {
+      console.log(`[Tool Call] submitForm()`);
+      
+      // Dispatch event to trigger split-screen PDF preview in SimpleForm
+      window.dispatchEvent(new CustomEvent('form:submit'));
+      
+      console.log(`[Tool Call] submitForm SUCCESS: Triggering split-screen PDF preview`);
+      
+      return JSON.stringify({
+        success: true,
+        message: 'Form submitted! Displaying the completed PDF alongside the form.'
+      });
+    },
+    
+    /**
      * End the call
      */
     hangUp: ({ reason }: { reason: string }) => {
