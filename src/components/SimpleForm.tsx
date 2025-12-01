@@ -258,7 +258,35 @@ export function SimpleForm() {
 
   const handleFieldChange = useCallback((fieldId: string, value: string) => {
     setField(fieldId, value);
-  }, [setField]);
+    
+    // Find the field to check its type
+    const field = state.fields.find(f => f.id === fieldId);
+    
+    // Mark field as complete when user manually enters data
+    if (value && value.trim().length > 0) {
+      // For checkboxes, only mark complete if checked (value is 'true')
+      if (field?.type === 'checkbox') {
+        if (value === 'true' || value === 'checked') {
+          dispatch({ type: 'MARK_FIELD_COMPLETE', fieldId });
+        } else {
+          dispatch({ type: 'MARK_FIELD_INCOMPLETE', fieldId });
+        }
+      } else if (field?.type === 'text') {
+        // For text fields, mark complete if they have any value
+        if (value && value.trim().length > 0) {
+          dispatch({ type: 'MARK_FIELD_COMPLETE', fieldId });
+        } else {
+          dispatch({ type: 'MARK_FIELD_INCOMPLETE', fieldId });
+        }
+      } else {
+        // For other fields, mark complete if they have any value
+        dispatch({ type: 'MARK_FIELD_COMPLETE', fieldId });
+      }
+    } else {
+      // If value is empty, mark as incomplete
+      dispatch({ type: 'MARK_FIELD_INCOMPLETE', fieldId });
+    }
+  }, [setField, dispatch, state.fields]);
 
   const handlePDFUpload = useCallback(async (file: File) => {
     try {

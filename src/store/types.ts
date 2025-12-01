@@ -253,6 +253,7 @@ export type FormAction =
   | { type: 'SET_FIELD'; fieldId: string; value: string }
   | { type: 'SET_ACTIVE_FIELD'; fieldId: string | null }
   | { type: 'MARK_FIELD_COMPLETE'; fieldId: string }
+  | { type: 'MARK_FIELD_INCOMPLETE'; fieldId: string }
   | { type: 'SET_VALIDATION_ERROR'; fieldId: string; error: string }
   | { type: 'CLEAR_VALIDATION_ERROR'; fieldId: string }
   | { type: 'SET_VOICE_ACTIVE'; active: boolean }

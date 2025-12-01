@@ -80,6 +80,15 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         completedFieldIds: [...state.completedFieldIds, action.fieldId],
       };
 
+    case 'MARK_FIELD_INCOMPLETE':
+      if (!state.completedFieldIds.includes(action.fieldId)) {
+        return state;
+      }
+      return {
+        ...state,
+        completedFieldIds: state.completedFieldIds.filter(id => id !== action.fieldId),
+      };
+
     case 'SET_VALIDATION_ERROR':
       return {
         ...state,
