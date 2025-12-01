@@ -474,22 +474,16 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
   const valid = isValidEmail(value);
 
   return (
-    <div className="flex-1 flex gap-2">
-      <div className={`flex items-center px-3 border-2 rounded-xl shrink-0 ${!valid ? 'bg-red-50 border-red-200 text-red-500' : 'bg-slate-100 border-slate-200 text-slate-800'
-        }`}>
-        <Mail size={20} />
-      </div>
-      <input
-        type="email"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={onFocus}
-        disabled={disabled}
-        className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${!valid ? 'border-red-300 bg-red-50' : ''
-          } ${className}`}
-        placeholder={`Enter ${field.name.toLowerCase()}...`}
-      />
-    </div>
+    <input
+      type="email"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onFocus={onFocus}
+      disabled={disabled}
+      className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${!valid ? 'border-red-300 bg-red-50' : ''
+        } ${className}`}
+      placeholder={`Enter ${field.name.toLowerCase()}...`}
+    />
   );
 }
 
