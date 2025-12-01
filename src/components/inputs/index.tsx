@@ -382,7 +382,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
         aria-label={`${field.name}: ${isYes ? 'Yes' : 'No'}`}
       >
         <span
-          className={`absolute top-1 w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-200 ${isYes ? 'translate-x-8' : 'translate-x-1'
+          className={`absolute top-1 left-0 w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-200 ${isYes ? 'translate-x-8' : 'translate-x-1'
             }`}
         />
       </button>

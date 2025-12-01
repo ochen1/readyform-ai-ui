@@ -142,7 +142,7 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: () =
           }`}
       >
         <div
-          className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${checked ? 'translate-x-7' : 'translate-x-1'
+          className={`absolute top-1 left-0 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${checked ? 'translate-x-7' : 'translate-x-1'
             }`}
         />
       </div>

@@ -37,7 +37,18 @@ export function createToolImplementations(formContext: FormContextValue, endCall
         });
       }
 
-      formContext.setField(field.id, value);
+      // Handle boolean fields specifically for voice interaction
+      let processedValue = value;
+      if (field.type === 'boolean') {
+        const lowerValue = value.toLowerCase();
+        if (lowerValue === 'yes' || lowerValue === 'true' || lowerValue === 'on') {
+          processedValue = 'Yes';
+        } else if (lowerValue === 'no' || lowerValue === 'false' || lowerValue === 'off') {
+          processedValue = 'No';
+        }
+      }
+
+      formContext.setField(field.id, processedValue);
       formContext.focusField(field.id);
       
       // Clear focus after 3 seconds
@@ -45,9 +56,9 @@ export function createToolImplementations(formContext: FormContextValue, endCall
       
       return JSON.stringify({
         success: true,
-        message: `Set "${field.name}" to "${value}". Please confirm this with the user.`,
+        message: `Set "${field.name}" to "${processedValue}". Please confirm this with the user.`,
         fieldName: field.name,
-        newValue: value
+        newValue: processedValue
       });
     },
     
