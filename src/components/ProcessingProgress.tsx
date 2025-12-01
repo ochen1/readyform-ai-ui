@@ -104,7 +104,9 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
       {/* Progress Header */}
       <div className="px-6 py-4 border-b border-slate-100">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-black text-lg">Analyzing Form Structure...</h3>
+          <h3 className="font-semibold text-black text-lg">
+            {percentage === 100 ? 'Analysis Complete' : 'Analyzing Form Structure...'}
+          </h3>
           <span className="text-sm text-slate-800">{elapsed}</span>
         </div>
 

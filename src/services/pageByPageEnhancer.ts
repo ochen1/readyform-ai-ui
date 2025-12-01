@@ -327,7 +327,7 @@ export async function enhanceFormFieldsPageByPage(
   const formTitle = extractTitleFromFilename(filename);
   const formDescription = errorPages > 0
     ? `Form analyzed with ${errorPages} page(s) that could not be processed`
-    : `Form analyzed successfully (${cachedPages} pages from cache)`;
+    : ``;
   
   console.log(`[PageEnhancer] Complete: ${pagesWithFields.length - errorPages} pages processed, ${cachedPages} from cache, ${errorPages} errors`);
   

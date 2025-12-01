@@ -336,85 +336,7 @@ export function SimpleForm() {
             <EmptyState onUpload={handlePDFUpload} />
           ) : (
             <form onSubmit={handleSubmit} className="w-full bg-white rounded-2xl shadow-xl p-10 border border-slate-200">
-              {/* Page-by-Page Enhancement Progress */}
-              {state.isEnhancing && state.enhancementProgress && (
-                <div className="mb-6">
-                  <ProcessingProgress
-                    progress={state.enhancementProgress}
-                    showWarning={state.pageCount > 4}
-                    pageCount={state.pageCount}
-                  />
-                </div>
-              )}
 
-              {/* Simple Loading Indicator (when no progress yet) */}
-              {state.isEnhancing && !state.enhancementProgress && (
-                <div className="mb-6 flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                  <Loader2 size={24} className="animate-spin text-blue-600" />
-                  <div>
-                    <p className="font-medium text-blue-800">Preparing to analyze form...</p>
-                    <p className="text-sm text-blue-600">Loading PDF and extracting fields.</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Enhancement Error */}
-              {state.enhancementError && (
-                <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                  <p className="font-medium text-amber-800">AI enhancement unavailable</p>
-                  <p className="text-sm text-amber-600">{state.enhancementError}</p>
-                  <p className="text-sm text-amber-600 mt-1">Form is still usable with basic field names.</p>
-                </div>
-              )}
-
-              {/* Enhancement Success (with possible page errors) */}
-              {!state.isEnhancing && state.pdfLoaded && state.enhancementProgress && (
-                <>
-                  {/* Show page error summary if any pages failed */}
-                  {state.enhancementProgress.errorPages > 0 && (
-                    <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                      <p className="font-medium text-amber-800">
-                        {state.enhancementProgress.errorPages} page(s) could not be analyzed
-                      </p>
-                      <p className="text-sm text-amber-600 mt-1">
-                        These pages will use basic field names. Other pages were enhanced successfully.
-                      </p>
-                      <div className="mt-2 text-xs text-amber-700">
-                        <strong>Failed pages:</strong>{' '}
-                        {state.enhancementProgress.pageStatuses
-                          .filter(p => p.status === 'error')
-                          .map(p => `Page ${p.pageNumber}${p.error ? ` (${p.error})` : ''}`)
-                          .join(', ')}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Success message */}
-                  {state.enhancementProgress.errorPages === 0 && (
-                    <div className="mb-6 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                      <Sparkles size={20} className="text-emerald-600" />
-                      <p className="text-sm text-emerald-700">
-                        Form enhanced with AI • {visibleFields.length} fields identified • {state.fields.length - visibleFields.length} fields hidden
-                        {state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length > 0 && (
-                          <span className="text-emerald-600 ml-1">
-                            ({state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length} pages from cache)
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Simple success message when no progress tracking (legacy) */}
-              {state.enhancementCached && !state.isEnhancing && !state.enhancementProgress && (
-                <div className="mb-6 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                  <Sparkles size={20} className="text-emerald-600" />
-                  <p className="text-sm text-emerald-700">
-                    Form enhanced with AI • {visibleFields.length} fields identified • {state.fields.length - visibleFields.length} fields hidden
-                  </p>
-                </div>
-              )}
 
               {/* Dynamic Fields - Grouped by section if sections exist */}
               {hasSections ? (
@@ -546,6 +468,81 @@ export function SimpleForm() {
               <p className="text-slate-700 text-xs mt-2 line-clamp-2" title={state.metadata.description}>
                 {state.metadata.description}
               </p>
+            )}
+
+            {/* Page-by-Page Enhancement Progress */}
+            {state.isEnhancing && state.enhancementProgress && (
+              <div className="mt-4">
+                <ProcessingProgress
+                  progress={state.enhancementProgress}
+                  showWarning={false}
+                  pageCount={state.pageCount}
+                />
+              </div>
+            )}
+
+            {/* Simple Loading Indicator (when no progress yet) */}
+            {state.isEnhancing && !state.enhancementProgress && (
+              <div className="mt-4 flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                <Loader2 size={20} className="animate-spin text-blue-600" />
+                <div>
+                  <p className="font-medium text-blue-800 text-sm">Preparing to analyze...</p>
+                  <p className="text-xs text-blue-600">Loading PDF and extracting fields.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Enhancement Results */}
+            {!state.isEnhancing && state.enhancementProgress && (
+              <div className="mt-4 space-y-3">
+                {/* Error Summary */}
+                {state.enhancementProgress.errorPages > 0 && (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                    <p className="font-medium text-amber-800 text-sm">
+                      {state.enhancementProgress.errorPages} page(s) failed analysis
+                    </p>
+                    <div className="mt-1 text-xs text-amber-700">
+                      {state.enhancementProgress.pageStatuses
+                        .filter(p => p.status === 'error')
+                        .map(p => `Page ${p.pageNumber}`)
+                        .join(', ')}
+                    </div>
+                  </div>
+                )}
+
+                {/* Success Stats */}
+                {state.enhancementProgress.errorPages === 0 && (
+                  <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                    <Sparkles size={14} className="text-emerald-600 shrink-0" />
+                    <span>
+                      {visibleFields.length} fields found
+                      {state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length > 0 && (
+                        <span className="text-emerald-600 ml-1">
+                          ({state.enhancementProgress.pageStatuses.filter(p => p.fromCache).length} cached)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Global Enhancement Error */}
+            {state.enhancementError && (
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                <p className="font-medium text-amber-800 text-sm">AI enhancement failed</p>
+                <p className="text-xs text-amber-600 mt-1">{state.enhancementError}</p>
+              </div>
+            )}
+
+            {/* Legacy Success (Full Cache) */}
+            {state.enhancementCached && !state.isEnhancing && !state.enhancementProgress && (
+              <div className="mt-4 flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                <Sparkles size={14} className="text-emerald-600 shrink-0" />
+                <span>
+                  AI Enhanced • {visibleFields.length} fields
+                </span>
+              </div>
             )}
 
             <div className="mt-4">
