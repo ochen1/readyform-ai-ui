@@ -41,25 +41,51 @@ export const staticTools: ToolDefinition[] = [
       client: {}
     }
   },
-  {
-    temporaryTool: {
-      modelToolName: 'hangUp',
-      description: 'End the call and show the completed PDF. Use when: user says they are done, finished, wants to submit, or explicitly requests to end the call. This displays a full-screen preview of the filled PDF.',
-      dynamicParameters: [
-        {
-          name: 'reason',
-          location: 'PARAMETER_LOCATION_BODY',
-          schema: {
-            type: 'string',
-            description: 'Reason for ending',
-            enum: ['completed', 'user_requested']
-          },
-          required: true
-        }
-      ],
-      client: {}
+{
+      temporaryTool: {
+        modelToolName: 'hangUp',
+        description: 'End the call and show the completed PDF. Use when: user says they are done, finished, wants to submit, or explicitly requests to end the call. This displays a full-screen preview of the filled PDF.',
+        dynamicParameters: [
+          {
+            name: 'reason',
+            location: 'PARAMETER_LOCATION_BODY',
+            schema: {
+              type: 'string',
+              description: 'Reason for ending',
+              enum: ['completed', 'user_requested']
+            },
+            required: true
+          }
+        ],
+        client: {}
+      }
+    },
+    {
+      temporaryTool: {
+        modelToolName: 'getAutofillSuggestions',
+        description: 'Get autofill suggestions from the user\'s personal memory. Returns a list of fields that can be autofilled with stored personal information. Use when user asks to autofill, fill from memory, or wants to see what can be auto-filled.',
+        dynamicParameters: [],
+        client: {}
+      }
+    },
+    {
+      temporaryTool: {
+        modelToolName: 'applyAutofill',
+        description: 'Apply autofill to selected fields after user confirmation. The user must confirm before calling this tool. Use after getAutofillSuggestions when user explicitly approves autofilling.',
+        dynamicParameters: [
+          {
+            name: 'fieldNames',
+            location: 'PARAMETER_LOCATION_BODY',
+            schema: {
+              type: 'string',
+              description: 'Comma-separated list of field names to autofill, or "all" to fill all suggested fields'
+            },
+            required: true
+          }
+        ],
+        client: {}
+      }
     }
-  }
 ];
 
 /**

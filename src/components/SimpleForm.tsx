@@ -3,11 +3,14 @@ import { useFormContext } from '../store/FormContext';
 import { useUltravox } from '../ultravox/UltravoxProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X } from 'lucide-react';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X, User } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
 import Logo from '../assets/logo.svg';
 import { ProcessingProgress } from './ProcessingProgress';
 import { generatePDFBlob } from '../services/pdfParser';
+import { PersonalMemorySettings } from './PersonalMemorySettings';
+import { InlineAutofillSuggestion } from './InlineAutofillSuggestion';
+import { findMatchingMemoryEntry, detectPersonFromFieldName } from '../services/personalMemoryService';
 
 interface FieldProps {
   field: FormField;
@@ -18,8 +21,39 @@ interface FieldProps {
   onChange: (value: string) => void;
 }
 
+const dismissedSuggestionsRef = new Set<string>();
+
 function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, onFocus, onChange }: FieldProps) {
   const [showTooltip, setShowTooltip] = React.useState(false);
+  const [showAutofillSuggestion, setShowAutofillSuggestion] = useState(false);
+  
+  const memoryMatch = useMemo(() => {
+    if (field.value || field.readonly || field.ignore || dismissedSuggestionsRef.has(field.id)) {
+      return null;
+    }
+    const preferredPerson = detectPersonFromFieldName(field.name);
+    return findMatchingMemoryEntry(field.name, field.type, { preferredPerson });
+  }, [field]);
+  
+  const handleAcceptAutofill = useCallback(() => {
+    if (memoryMatch) {
+      onChange(memoryMatch.value);
+      setShowAutofillSuggestion(false);
+    }
+  }, [memoryMatch, onChange]);
+  
+  const handleDismissAutofill = useCallback(() => {
+    dismissedSuggestionsRef.add(field.id);
+    setShowAutofillSuggestion(false);
+  }, [field.id]);
+  
+  useEffect(() => {
+    if (memoryMatch && isActive && !field.value) {
+      setShowAutofillSuggestion(true);
+    } else {
+      setShowAutofillSuggestion(false);
+    }
+  }, [memoryMatch, isActive, field.value]);
   
   // Show tooltip when forced (via voice command)
   const tooltipVisible = showTooltip || forceShowTooltip;
@@ -107,6 +141,20 @@ function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, on
             disabled={isDisabled}
             className={borderClass}
           />
+          {showAutofillSuggestion && memoryMatch && (
+            <InlineAutofillSuggestion
+              match={{
+                fieldId: field.id,
+                fieldName: field.name,
+                currentValue: field.value,
+                suggestedValue: memoryMatch.value,
+                memoryEntry: memoryMatch,
+                confidence: memoryMatch.person === 'self' ? 0.95 : (memoryMatch.person ? 0.7 : 0.85),
+              }}
+              onAccept={handleAcceptAutofill}
+              onDismiss={handleDismissAutofill}
+            />
+          )}
           {tooltipVisible && field.description && (
             <div className={`absolute top-full left-0 mt-1 z-10 w-80 p-3 text-white text-base rounded-lg shadow-lg border ${forceShowTooltip ? 'bg-blue-700 border-blue-500 ring-2 ring-blue-400 animate-pulse' : 'bg-slate-800 border-slate-600'}`}>
               <p>{field.description}</p>
@@ -254,6 +302,9 @@ export function SimpleForm() {
   // State for split-screen PDF preview mode
   const [showPDFPreview, setShowPDFPreview] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+
+  // State for memory settings
+  const [showMemorySettings, setShowMemorySettings] = useState(false);
 
   const handleFieldFocus = useCallback((fieldId: string) => {
     dispatch({ type: 'SET_ACTIVE_FIELD', fieldId });
@@ -913,6 +964,21 @@ export function SimpleForm() {
           )}
         </div>
 
+        {/* Personal Memory Section */}
+        <div className="p-6 border-t border-slate-200">
+          <h2 className="text-lg font-semibold text-black mb-4">Personal Memory</h2>
+          <button
+            onClick={() => setShowMemorySettings(true)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 hover:border-indigo-400 hover:text-indigo-600 transition-all text-base font-medium"
+          >
+            <User size={20} />
+            Manage Saved Info
+          </button>
+          <p className="text-xs text-slate-500 mt-2 text-center">
+            Add your details to see autofill suggestions as you fill fields
+          </p>
+        </div>
+
         {/* Spacer to push footer down */}
         <div className="flex-1" />
 
@@ -972,6 +1038,14 @@ export function SimpleForm() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Personal Memory Settings Modal */}
+      {showMemorySettings && (
+        <PersonalMemorySettings
+          isOpen={showMemorySettings}
+          onClose={() => setShowMemorySettings(false)}
+        />
       )}
     </div>
   );

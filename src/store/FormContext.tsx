@@ -9,6 +9,9 @@ import {
   getFieldsToRecalculate,
   evaluateFormula
 } from '../services/calculationEngine';
+import { autoSaveToMemory } from '../services/personalMemoryService';
+
+const autoSaveDebounces = new Map<string, ReturnType<typeof setTimeout>>();
 
 export interface FormContextValue {
   state: FormState;
@@ -190,8 +193,33 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
   }, [state.isEnhancing, state.pdfLoaded, recalculateAllCalculatedFields]);
 
   const setField = useCallback(async (fieldId: string, value: string) => {
+    const field = state.fields.find(f => f.id === fieldId);
+    
     // Update the primary field
     dispatch({ type: 'SET_FIELD', fieldId, value });
+    
+    // Auto-save to personal memory if field has a value and is not read-only/calculated
+    if (value && field && !field.readonly && field.type !== 'calculated' && !field.ignore) {
+      // Debounce auto-save to avoid excessive localStorage writes
+      const existingTimeout = autoSaveDebounces.get(fieldId);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
+      }
+      
+      const timeoutId = setTimeout(() => {
+        // Re-find field to ensure we have current data
+        const currentField = state.fields.find(f => f.id === fieldId);
+        if (currentField && currentField.value === value) {
+          const result = autoSaveToMemory(currentField.name, value);
+          if (result.validationWarning) {
+            console.warn(`[PersonalMemory] Validation warning for ${currentField.name}: ${result.validationWarning}`);
+          }
+        }
+        autoSaveDebounces.delete(fieldId);
+      }, 1000);
+      
+      autoSaveDebounces.set(fieldId, timeoutId);
+    }
     
     // Update PDF document for the primary field (if write-back is supported)
     if (writeContextRef.current) {

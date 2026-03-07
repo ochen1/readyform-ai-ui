@@ -236,8 +236,19 @@ export interface GeminiFieldEnhancement {
     required: boolean;
     readonly: boolean;
     ignore: boolean;
+    /** Memory type if this field should be remembered (e.g., 'firstName', 'postalCode', 'sin') */
+    memoryType?: string;
+    /** Person this field belongs to: 'self', 'spouse', 'child', 'parent', 'other' */
+    memoryPerson?: 'self' | 'spouse' | 'child' | 'parent' | 'other';
   }>;
   ignoredFields: string[];
+  /** Fields identified as containing personal information that should be remembered */
+  memoryFields?: Array<{
+    fieldId: string;
+    memoryType: string;
+    person?: 'self' | 'spouse' | 'child' | 'parent' | 'other';
+    confidence: number;
+  }>;
 }
 
 /**
@@ -275,3 +286,91 @@ export type FormAction =
       cached: boolean;
     }
   | { type: 'ENHANCEMENT_ERROR'; error: string };
+
+/**
+ * Personal memory field types for autofill
+ * Each type maps to specific form field patterns
+ */
+export type PersonalMemoryFieldType =
+  | 'firstName'
+  | 'lastName'
+  | 'fullName'
+  | 'email'
+  | 'phone'
+  | 'telephoneNumber'
+  | 'address'
+  | 'addressLine1'
+  | 'addressLine2'
+  | 'city'
+  | 'province'
+  | 'provinceOrTerritory'
+  | 'postalCode'
+  | 'country'
+  | 'companyName'
+  | 'jobTitle'
+  | 'dateOfBirth'
+  | 'signature'
+  | 'sin'
+  | 'spouseFirstName'
+  | 'spouseLastName'
+  | 'spousePhone'
+  | 'spousePostalCode'
+  | 'custom';
+
+/**
+ * A single personal memory entry
+ */
+export interface PersonalMemoryEntry {
+  /** Unique identifier */
+  id: string;
+  /** Type of data this represents */
+  type: PersonalMemoryFieldType;
+  /** Human-readable label for display */
+  label: string;
+  /** The stored value */
+  value: string;
+  /** Timestamp when this was last updated */
+  updatedAt: number;
+  /** Optional: field name patterns this should match (for custom types) */
+  matchPatterns?: string[];
+  /** Optional: person this data belongs to (e.g., 'self', 'spouse', 'child') */
+  person?: 'self' | 'spouse' | 'child' | 'parent' | 'other';
+  /** Optional: notes about this entry */
+  notes?: string;
+  /** Optional: custom label to distinguish multiple entries of same type (e.g., 'Home', 'Work', 'Mobile') */
+  variantLabel?: string;
+  /** Usage count for smart prioritization */
+  usageCount?: number;
+  /** Last used timestamp for smart prioritization */
+  lastUsedAt?: number;
+}
+
+/**
+ * Personal memory storage structure
+ */
+export interface PersonalMemory {
+  /** Version for migration purposes */
+  version: string;
+  /** Array of stored memory entries */
+  entries: PersonalMemoryEntry[];
+  /** Timestamp of last update */
+  lastUpdated: number;
+}
+
+/**
+ * A match result for autofill suggestions
+ */
+export interface AutofillMatch {
+  /** The form field that could be autofilled */
+  fieldId: string;
+  /** The field name for display */
+  fieldName: string;
+  /** The current field value (empty if not set) */
+  currentValue: string;
+  /** The suggested value from memory */
+  suggestedValue: string;
+  /** The memory entry that matched */
+  memoryEntry: PersonalMemoryEntry;
+  /** Match confidence (0-1) */
+  confidence: number;
+}
