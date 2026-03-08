@@ -191,8 +191,11 @@ async function inflate(data) {
   const writer = ds.writable.getWriter();
   const reader = ds.readable.getReader();
 
-  await writer.write(data);
-  await writer.close();
+  // Fire-and-forget: don't await writes — awaiting would deadlock because the
+  // readable side hasn't started draining yet. Capture rejections instead.
+  let writeError = null;
+  writer.write(data).catch((e) => { writeError = e; });
+  writer.close().catch(() => {});
 
   const chunks = [];
   let totalLen = 0;
@@ -206,6 +209,8 @@ async function inflate(data) {
     }
     chunks.push(value);
   }
+
+  if (writeError) throw writeError;
 
   const result = new Uint8Array(totalLen);
   let offset = 0;
