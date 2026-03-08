@@ -1,0 +1,3 @@
+[submodule "server"]
+	path = server
+	url = https://git.mami2.moe/akemi/modal-pipecat-e2e.git

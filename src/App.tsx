@@ -1,5 +1,5 @@
 import { FormProvider } from "./store/FormContext";
-import { UltravoxProvider } from "./ultravox/UltravoxProvider";
+import { PipecatProvider } from "./pipecat/PipecatProvider";
 import { AccessibilityProvider } from "./store/AccessibilityContext";
 import { SimpleForm } from "./components/SimpleForm";
 
@@ -7,9 +7,9 @@ function App() {
   return (
     <AccessibilityProvider>
       <FormProvider>
-        <UltravoxProvider>
+        <PipecatProvider>
           <SimpleForm />
-        </UltravoxProvider>
+        </PipecatProvider>
       </FormProvider>
     </AccessibilityProvider>
   );
