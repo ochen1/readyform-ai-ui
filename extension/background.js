@@ -137,6 +137,16 @@ async function sendPDFToTab(tabId, arrayBuffer, fileName) {
   }
 }
 
+// --- PDF Form Detection ---
+
+function isFillablePDF(arrayBuffer) {
+  // Scan raw PDF bytes for /AcroForm (standard form fields) or /XFA (XML forms)
+  // These markers are always present in the document catalog of fillable PDFs
+  const bytes = new Uint8Array(arrayBuffer);
+  const text = new TextDecoder('latin1').decode(bytes);
+  return text.includes('/AcroForm');
+}
+
 // --- Core PDF Handling ---
 
 async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
@@ -146,32 +156,40 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
   currentState = { status: 'loading', pdfName, pdfUrl };
 
   try {
-    // Fetch PDF and navigate tab in parallel (they are independent)
-    const [arrayBuffer, tab] = await Promise.all([
-      fetch(pdfUrl).then((r) => {
-        if (!r.ok) throw new Error(`Failed to fetch PDF: ${r.status}`);
-        return r.arrayBuffer();
-      }),
-      getOrOpenReadyFormTab(sourceTabId),
-    ]);
+    // 1. Fetch the PDF first to check if it's fillable
+    const response = await fetch(pdfUrl);
+    if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`);
+    const arrayBuffer = await response.arrayBuffer();
+
+    // 2. Check if this PDF has form fields — if not, let the default viewer handle it
+    if (!isFillablePDF(arrayBuffer)) {
+      console.log('[ReadyFormAI] PDF has no form fields, skipping:', pdfName);
+      currentState = { status: 'idle', pdfName: null, pdfUrl: null };
+      return;
+    }
+
+    console.log('[ReadyFormAI] Fillable PDF detected, opening in ReadyFormAI:', pdfName);
+
+    // 3. Navigate the source tab to ReadyFormAI
+    const tab = await getOrOpenReadyFormTab(sourceTabId);
     readyformTabId = tab.id;
 
-    // Wait for the tab to finish loading
+    // 4. Wait for the tab to finish loading
     await waitForTabLoad(tab.id);
 
-    // Small delay to ensure React app is mounted
+    // 5. Small delay to ensure React app is mounted
     await new Promise((r) => setTimeout(r, 500));
 
-    // Inject the bridge script
+    // 6. Inject the bridge script
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ['bridge.js'],
     });
 
-    // Small delay for bridge to initialize
+    // 7. Small delay for bridge to initialize
     await new Promise((r) => setTimeout(r, 100));
 
-    // Send PDF data to the bridge script
+    // 8. Send PDF data to the bridge script
     await sendPDFToTab(tab.id, arrayBuffer, pdfName);
 
     currentState = { status: 'processing', pdfName, pdfUrl: null };
