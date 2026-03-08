@@ -20,11 +20,12 @@ function getPDFNameFromUrl(url) {
 }
 
 function uint8ArrayToBase64(uint8Array) {
-  let binary = '';
-  for (let i = 0; i < uint8Array.length; i++) {
-    binary += String.fromCharCode(uint8Array[i]);
+  const BATCH = 8192;
+  const parts = [];
+  for (let i = 0; i < uint8Array.length; i += BATCH) {
+    parts.push(String.fromCharCode.apply(null, uint8Array.subarray(i, i + BATCH)));
   }
-  return btoa(binary);
+  return btoa(parts.join(''));
 }
 
 async function getReadyFormUrl() {
@@ -146,21 +147,26 @@ async function isFillablePDF(arrayBuffer) {
   if (text.includes('/AcroForm')) return true;
 
   // Many PDFs store the catalog in compressed object streams (/ObjStm + /FlateDecode).
-  // Decompress each stream and check for /AcroForm inside.
+  // Decompress streams and check for /AcroForm inside. Cap at 20 streams to avoid
+  // excessive work on non-fillable PDFs.
+  const MAX_STREAMS = 20;
+  let streamsChecked = 0;
   let pos = 0;
-  while (pos < bytes.length - 20) {
-    const idx = text.indexOf('stream', pos);
+  while (pos < bytes.length - 20 && streamsChecked < MAX_STREAMS) {
+    const idx = text.indexOf('\nstream', pos);
     if (idx === -1) break;
 
-    let dataStart = idx + 6;
+    // Skip past the newline that matched, then past "stream"
+    let dataStart = idx + 7; // length of "\nstream"
     if (bytes[dataStart] === 0x0d && bytes[dataStart + 1] === 0x0a) dataStart += 2;
     else if (bytes[dataStart] === 0x0a) dataStart += 1;
-    else { pos = idx + 6; continue; }
+    else { pos = idx + 7; continue; }
 
-    const endIdx = text.indexOf('endstream', dataStart);
+    const endIdx = text.indexOf('\nendstream', dataStart);
     if (endIdx === -1) break;
 
     const streamData = bytes.slice(dataStart, endIdx);
+    streamsChecked++;
 
     try {
       const decompressed = await inflate(streamData);
@@ -170,29 +176,37 @@ async function isFillablePDF(arrayBuffer) {
       // Not a flate stream or corrupt — skip
     }
 
-    pos = endIdx + 9;
+    pos = endIdx + 10; // length of "\nendstream"
   }
 
   return false;
 }
 
 // Decompress deflate data using the DecompressionStream API (available in service workers)
+// Caps output at MAX_DECOMPRESSED_SIZE to guard against zip bombs.
+const MAX_DECOMPRESSED_SIZE = 10 * 1024 * 1024; // 10 MB
+
 async function inflate(data) {
   const ds = new DecompressionStream('deflate');
   const writer = ds.writable.getWriter();
   const reader = ds.readable.getReader();
 
-  writer.write(data);
-  writer.close();
+  await writer.write(data);
+  await writer.close();
 
   const chunks = [];
+  let totalLen = 0;
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
+    totalLen += value.length;
+    if (totalLen > MAX_DECOMPRESSED_SIZE) {
+      await reader.cancel();
+      throw new Error('Decompressed stream exceeds size limit');
+    }
     chunks.push(value);
   }
 
-  const totalLen = chunks.reduce((s, c) => s + c.length, 0);
   const result = new Uint8Array(totalLen);
   let offset = 0;
   for (const chunk of chunks) {
@@ -204,9 +218,10 @@ async function inflate(data) {
 
 // --- Core PDF Handling ---
 
+// Returns true if the PDF was fillable and handled, false otherwise
 async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
   // Prevent duplicate handling of the same PDF
-  if (currentState.status === 'loading' && currentState.pdfUrl === pdfUrl) return;
+  if (currentState.status === 'loading' && currentState.pdfUrl === pdfUrl) return false;
 
   currentState = { status: 'loading', pdfName, pdfUrl };
 
@@ -220,7 +235,7 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
     if (!(await isFillablePDF(arrayBuffer))) {
       console.log('[ReadyFormAI] PDF has no form fields, skipping:', pdfName);
       currentState = { status: 'idle', pdfName: null, pdfUrl: null };
-      return;
+      return false;
     }
 
     console.log('[ReadyFormAI] Fillable PDF detected, opening in ReadyFormAI:', pdfName);
@@ -248,9 +263,11 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
     await sendPDFToTab(tab.id, arrayBuffer, pdfName);
 
     currentState = { status: 'processing', pdfName, pdfUrl: null };
+    return true;
   } catch (error) {
     console.error('[ReadyFormAI] Failed to handle PDF:', error);
     currentState = { status: 'error', pdfName, pdfUrl: null, error: error.message };
+    return false;
   }
 }
 
@@ -288,6 +305,55 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   return true;
+});
+
+// --- Download Interception ---
+// Catches PDFs that download immediately (Content-Disposition: attachment)
+// instead of navigating to a PDF page where the content script would detect them.
+
+// Track download IDs we re-triggered so we don't intercept them again
+const retriggeredDownloads = new Set();
+
+chrome.downloads.onCreated.addListener((downloadItem) => {
+  // Skip downloads we re-triggered ourselves
+  if (retriggeredDownloads.has(downloadItem.url)) return;
+
+  // Check if this is a PDF download
+  const isPDF =
+    (downloadItem.mime && downloadItem.mime === 'application/pdf') ||
+    (downloadItem.filename && downloadItem.filename.toLowerCase().endsWith('.pdf')) ||
+    (downloadItem.url && downloadItem.url.toLowerCase().split('?')[0].endsWith('.pdf'));
+
+  if (!isPDF) return;
+
+  const pdfUrl = downloadItem.finalUrl || downloadItem.url;
+  const pdfName = getPDFNameFromUrl(downloadItem.filename || pdfUrl);
+
+  console.log('[ReadyFormAI] Intercepted PDF download:', pdfName);
+
+  // Cancel the download immediately
+  chrome.downloads.cancel(downloadItem.id);
+
+  // Try to handle it as a fillable PDF
+  handleOpenPDF(pdfUrl, pdfName, null).then((handled) => {
+    if (!handled) {
+      // Not a fillable PDF — re-trigger the original download
+      console.log('[ReadyFormAI] Not fillable, re-triggering download:', pdfName);
+      retriggeredDownloads.add(pdfUrl);
+      chrome.downloads.download({ url: pdfUrl }, () => {
+        // Clean up the tracking set after a short delay
+        setTimeout(() => retriggeredDownloads.delete(pdfUrl), 5000);
+      });
+    }
+  });
+});
+
+// Clean up canceled downloads from the download bar
+chrome.downloads.onChanged.addListener((delta) => {
+  if (delta.state && delta.state.current === 'interrupted') {
+    // Remove canceled downloads from the bar so they don't clutter the UI
+    chrome.downloads.erase({ id: delta.id });
+  }
 });
 
 // --- Tab Cleanup ---
