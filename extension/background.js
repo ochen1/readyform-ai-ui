@@ -139,12 +139,67 @@ async function sendPDFToTab(tabId, arrayBuffer, fileName) {
 
 // --- PDF Form Detection ---
 
-function isFillablePDF(arrayBuffer) {
-  // Scan raw PDF bytes for /AcroForm (standard form fields) or /XFA (XML forms)
-  // These markers are always present in the document catalog of fillable PDFs
+async function isFillablePDF(arrayBuffer) {
+  // Check for /AcroForm in raw bytes first (uncompressed PDFs)
   const bytes = new Uint8Array(arrayBuffer);
   const text = new TextDecoder('latin1').decode(bytes);
-  return text.includes('/AcroForm');
+  if (text.includes('/AcroForm')) return true;
+
+  // Many PDFs store the catalog in compressed object streams (/ObjStm + /FlateDecode).
+  // Decompress each stream and check for /AcroForm inside.
+  let pos = 0;
+  while (pos < bytes.length - 20) {
+    const idx = text.indexOf('stream', pos);
+    if (idx === -1) break;
+
+    let dataStart = idx + 6;
+    if (bytes[dataStart] === 0x0d && bytes[dataStart + 1] === 0x0a) dataStart += 2;
+    else if (bytes[dataStart] === 0x0a) dataStart += 1;
+    else { pos = idx + 6; continue; }
+
+    const endIdx = text.indexOf('endstream', dataStart);
+    if (endIdx === -1) break;
+
+    const streamData = bytes.slice(dataStart, endIdx);
+
+    try {
+      const decompressed = await inflate(streamData);
+      const decompText = new TextDecoder('latin1').decode(decompressed);
+      if (decompText.includes('/AcroForm')) return true;
+    } catch {
+      // Not a flate stream or corrupt — skip
+    }
+
+    pos = endIdx + 9;
+  }
+
+  return false;
+}
+
+// Decompress deflate data using the DecompressionStream API (available in service workers)
+async function inflate(data) {
+  const ds = new DecompressionStream('deflate');
+  const writer = ds.writable.getWriter();
+  const reader = ds.readable.getReader();
+
+  writer.write(data);
+  writer.close();
+
+  const chunks = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+
+  const totalLen = chunks.reduce((s, c) => s + c.length, 0);
+  const result = new Uint8Array(totalLen);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return result;
 }
 
 // --- Core PDF Handling ---
@@ -162,7 +217,7 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
     const arrayBuffer = await response.arrayBuffer();
 
     // 2. Check if this PDF has form fields — if not, let the default viewer handle it
-    if (!isFillablePDF(arrayBuffer)) {
+    if (!(await isFillablePDF(arrayBuffer))) {
       console.log('[ReadyFormAI] PDF has no form fields, skipping:', pdfName);
       currentState = { status: 'idle', pdfName: null, pdfUrl: null };
       return;
