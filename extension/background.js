@@ -187,7 +187,16 @@ async function isFillablePDF(arrayBuffer) {
 const MAX_DECOMPRESSED_SIZE = 10 * 1024 * 1024; // 10 MB
 
 async function inflate(data) {
-  const ds = new DecompressionStream('deflate');
+  // Try zlib-wrapped deflate first (spec-compliant PDFs), then raw deflate
+  try {
+    return await inflateWithMode(data, 'deflate');
+  } catch {
+    return await inflateWithMode(data, 'deflate-raw');
+  }
+}
+
+async function inflateWithMode(data, mode) {
+  const ds = new DecompressionStream(mode);
   const writer = ds.writable.getWriter();
   const reader = ds.readable.getReader();
 
@@ -315,14 +324,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // --- Download Interception ---
 // Catches PDFs that download immediately (Content-Disposition: attachment)
 // instead of navigating to a PDF page where the content script would detect them.
+// Uses pause/resume to preserve auth cookies and avoid re-triggering issues.
 
-// Track download IDs we re-triggered so we don't intercept them again
-const retriggeredDownloads = new Set();
+// Track download IDs we cancelled so we only erase our own from the download bar
+const cancelledDownloadIds = new Set();
 
 chrome.downloads.onCreated.addListener((downloadItem) => {
-  // Skip downloads we re-triggered ourselves
-  if (retriggeredDownloads.has(downloadItem.url)) return;
-
   // Check if this is a PDF download
   const isPDF =
     (downloadItem.mime && downloadItem.mime === 'application/pdf') ||
@@ -332,33 +339,44 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
   if (!isPDF) return;
 
   const pdfUrl = downloadItem.finalUrl || downloadItem.url;
-  const pdfName = getPDFNameFromUrl(downloadItem.filename || pdfUrl);
+  const urlDerivedName = getPDFNameFromUrl(pdfUrl);
+  const pdfName = urlDerivedName !== 'document.pdf'
+    ? urlDerivedName
+    : (downloadItem.filename
+        ? downloadItem.filename.split(/[/\\]/).pop() || 'document.pdf'
+        : 'document.pdf');
 
   console.log('[ReadyFormAI] Intercepted PDF download:', pdfName);
 
-  // Cancel the download immediately
-  chrome.downloads.cancel(downloadItem.id);
+  // Pause the download while we check if the PDF is fillable
+  chrome.downloads.pause(downloadItem.id, () => {
+    const pauseError = chrome.runtime.lastError;
 
-  // Try to handle it as a fillable PDF
-  handleOpenPDF(pdfUrl, pdfName, null).then((handled) => {
-    if (!handled) {
-      // Not a fillable PDF — re-trigger the original download
-      console.log('[ReadyFormAI] Not fillable, re-triggering download:', pdfName);
-      retriggeredDownloads.add(pdfUrl);
-      chrome.downloads.download({ url: pdfUrl }, () => {
-        // Clean up the tracking set after a short delay
-        setTimeout(() => retriggeredDownloads.delete(pdfUrl), 5000);
+    handleOpenPDF(pdfUrl, pdfName, null)
+      .then((handled) => {
+        if (handled) {
+          // Fillable PDF — cancel the original download and clean up
+          console.log('[ReadyFormAI] Handled as fillable PDF, cancelling download:', pdfName);
+          cancelledDownloadIds.add(downloadItem.id);
+          chrome.downloads.cancel(downloadItem.id, () => {
+            chrome.downloads.erase({ id: downloadItem.id });
+            cancelledDownloadIds.delete(downloadItem.id);
+          });
+        } else {
+          // Not fillable — resume the original download
+          console.log('[ReadyFormAI] Not fillable, resuming download:', pdfName);
+          if (!pauseError) {
+            chrome.downloads.resume(downloadItem.id);
+          }
+        }
+      })
+      .catch(() => {
+        // On any failure, resume the original download
+        if (!pauseError) {
+          chrome.downloads.resume(downloadItem.id);
+        }
       });
-    }
   });
-});
-
-// Clean up canceled downloads from the download bar
-chrome.downloads.onChanged.addListener((delta) => {
-  if (delta.state && delta.state.current === 'interrupted') {
-    // Remove canceled downloads from the bar so they don't clutter the UI
-    chrome.downloads.erase({ id: delta.id });
-  }
 });
 
 // --- Tab Cleanup ---
