@@ -72,7 +72,7 @@ export function TextInput({ field, value, onChange, onFocus, disabled, className
       onFocus={onFocus}
       disabled={disabled}
       className={`${baseInputClass} ${className}`}
-      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
+      placeholder={t('inputs.enterField', { field: (field.localizedName || field.name).toLowerCase() })}
     />
   );
 }
@@ -256,7 +256,7 @@ export function SelectionInput({ field, value, onChange, onFocus, disabled, clas
       disabled={disabled}
       className={`${baseInputClass} ${className} cursor-pointer`}
     >
-      <option value="">{t('inputs.selectField', { field: field.name })}</option>
+      <option value="">{t('inputs.selectField', { field: field.localizedName || field.name })}</option>
       {options.map((option) => (
         <option key={option} value={option}>
           {option}
@@ -279,7 +279,7 @@ export function AddressInput({ field, value, onChange, onFocus, disabled, classN
       disabled={disabled}
       rows={3}
       className={`${baseInputClass} ${className} resize-none`}
-      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
+      placeholder={t('inputs.enterField', { field: (field.localizedName || field.name).toLowerCase() })}
     />
   );
 }
@@ -353,7 +353,7 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
       onFocus={onFocus}
       disabled={disabled}
       className={`${baseInputClass} ${className} font-medium`}
-      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
+      placeholder={t('inputs.enterField', { field: (field.localizedName || field.name).toLowerCase() })}
     />
   );
 }
@@ -376,7 +376,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
         disabled={disabled}
         className={`relative w-16 h-9 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isYes ? 'bg-emerald-500' : 'bg-slate-400'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-        aria-label={`${field.name}: ${isYes ? 'Yes' : 'No'}`}
+        aria-label={`${field.localizedName || field.name}: ${isYes ? t('inputs.yes') : t('inputs.no')}`}
       >
         <span
           className={`absolute top-1 left-0 w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-200 ${isYes ? 'translate-x-8' : 'translate-x-1'
@@ -409,7 +409,7 @@ export function CheckboxInput({ field, value, onChange, onFocus, disabled, class
           ? 'bg-blue-600 border-blue-600 text-white'
           : 'bg-white border-slate-300 hover:border-blue-400'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-        aria-label={field.name}
+        aria-label={field.localizedName || field.name}
         aria-checked={isChecked}
         role="checkbox"
       >
@@ -420,7 +420,7 @@ export function CheckboxInput({ field, value, onChange, onFocus, disabled, class
         )}
       </button>
       <span className={`text-lg ${isChecked ? 'text-slate-900' : 'text-slate-800'}`}>
-        {field.description || field.name}
+        {field.description || field.localizedName || field.name}
       </span>
     </div>
   );
@@ -490,7 +490,7 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
       disabled={disabled}
       className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${!valid ? 'border-red-300 bg-red-50' : ''
         } ${className}`}
-      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
+      placeholder={t('inputs.enterField', { field: (field.localizedName || field.name).toLowerCase() })}
     />
   );
 }

@@ -122,7 +122,8 @@ Respond with a valid JSON object in this exact structure:
   "fields": [
     {
       "id": "exact_field_id_from_input",
-      "displayName": "Human-Friendly Name (NO units - units go in 'unit' field)",
+      "displayName": "Human-Friendly Name in English (NO units - units go in 'unit' field)",
+      "localizedName": "Translated display name in the user's language (null if English or language not specified)",
       "type": "one of the types above",
       "description": "Voice prompt description for the user. Be clear and include format hints.",
       "sectionId": "section_a (reference to a section id, or null if ungrouped)",
@@ -186,7 +187,14 @@ Respond with a valid JSON object in this exact structure:
    - Examples: "Record of Employment", "Primary Elevator Receipt - Form 6", "Application for Employment Insurance Benefits"
    - Do NOT just use the filename
 
-7. **Look at the PDF Image**: Use visual context from the PDF to:
+7. **Localization**: If a target language is specified in the page-specific instructions:
+   - Provide a "localizedName" for each field: a natural, human-friendly translation of the displayName
+   - Translate the "description" (voice prompt) into the target language as well
+   - Translate section titles and descriptions into the target language
+   - Keep "displayName" in English always (it's the canonical name)
+   - If the target language is English or not specified, set "localizedName" to null
+
+8. **Look at the PDF Image**: Use visual context from the PDF to:
    - Identify labels that may not be in the field names
    - Understand the form's overall purpose
    - Determine units from column headers or labels
@@ -646,10 +654,15 @@ export function isGeminiConfigured(): boolean {
 function generatePageSpecificPrompt(
   targetPage: number,
   fieldIdsOnPage: string[],
-  totalPages: number
+  totalPages: number,
+  language?: string
 ): string {
   const fieldList = fieldIdsOnPage.map(id => `- "${id}"`).join('\n');
-  
+
+  const languageInstruction = language && language !== 'en'
+    ? `\n## LOCALIZATION REQUIREMENT\n\nThe user's interface language is **${language}**. You MUST:\n- Provide a "localizedName" for each field: translate the displayName into ${language}\n- Translate the "description" (voice prompt) into ${language}\n- Translate section titles and descriptions into ${language}\n- Keep "displayName" in English always\n`
+    : '';
+
   return `
 # Form Field Analysis for Voice Assistant - PAGE ${targetPage} ONLY
 
@@ -661,7 +674,7 @@ You are analyzing a ${totalPages}-page PDF form. You can see the ENTIRE document
 2. **BUT ONLY OUTPUT** JSON for the specific fields listed below (they are on page ${targetPage})
 3. If a section header appears on a previous page but the fields continue on this page, include that section in your output
 4. Do NOT include fields from other pages in your output
-
+${languageInstruction}
 ## Field IDs on Page ${targetPage} (ONLY analyze these)
 
 ${fieldList}
@@ -690,7 +703,8 @@ export async function analyzeFormPageWithGemini(
   targetPage: number,
   fieldIdsOnPage: string[],
   totalPages: number,
-  isXFA: boolean = false
+  isXFA: boolean = false,
+  language?: string
 ): Promise<PageEnhancementResult> {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
@@ -699,7 +713,7 @@ export async function analyzeFormPageWithGemini(
   }
   
   // Build the page-specific prompt
-  const prompt = generatePageSpecificPrompt(targetPage, fieldIdsOnPage, totalPages);
+  const prompt = generatePageSpecificPrompt(targetPage, fieldIdsOnPage, totalPages, language);
   
   // Build the parts array
   const parts: Array<{ text?: string; inline_data?: { mime_type: string; data: string } }> = [];

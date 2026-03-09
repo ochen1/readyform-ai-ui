@@ -55,6 +55,8 @@ export interface FormField {
   // LLM-enhanced metadata
   /** Human-friendly display name (may include units) */
   name: string;
+  /** Localized display name in the user's language (from Gemini translation) */
+  localizedName?: string;
   /** Semantic type for context-aware prompting */
   type: FieldType;
   /** Description for voice assistant to read to user */
@@ -221,6 +223,8 @@ export interface GeminiFieldEnhancement {
   fields: Array<{
     id: string;
     displayName: string;
+    /** Translated display name in the user's language */
+    localizedName?: string;
     type: FieldType;
     description: string;
     /** Section ID this field belongs to */

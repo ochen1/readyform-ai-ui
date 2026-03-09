@@ -82,7 +82,7 @@ function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, on
           <div className="flex items-center justify-end gap-2">
             {TypeIcon && <span className="text-slate-700 mr-auto">{TypeIcon}</span>}
             <label className={`text-lg ${labelColor}`}>
-              {field.name}
+              {field.localizedName || field.name}
             </label>
           </div>
           <div className="flex items-center justify-end gap-1 mt-1">
@@ -724,7 +724,7 @@ export function SimpleForm() {
                     <div className="mt-1 text-sm text-amber-700">
                       {state.enhancementProgress.pageStatuses
                         .filter(p => p.status === 'error')
-                        .map(p => `Page ${p.pageNumber}`)
+                        .map(p => t('enhancement.pageNumber', { number: p.pageNumber }))
                         .join(', ')}
                     </div>
                   </div>
