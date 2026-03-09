@@ -56,7 +56,6 @@ async function processPage(
   filename: string,
   pdfHash: string,
   onProgress: ProgressCallback,
-  language?: string
 ): Promise<PageEnhancementResult | null> {
   // Check cache first
   const cached = getCachedPageEnhancement(filename, pdfHash, pageNumber);
@@ -93,7 +92,6 @@ async function processPage(
         fieldIdsOnPage,
         totalPages,
         isXFA,
-        language
       );
 
       // Cache the successful result
@@ -161,7 +159,7 @@ function mergePageResults(
         
         // Apply enhanced metadata
         name: enhanced.displayName || field.name,
-        localizedName: enhanced.localizedName || undefined,
+        localizedNames: enhanced.localizedNames || undefined,
         type: enhanced.type || 'text',
         description: enhanced.description || field.description,
         sectionId: enhanced.sectionId,
@@ -351,7 +349,6 @@ export async function enhanceFormFieldsPageByPage(
   pageCount: number,
   isXFA: boolean,
   onProgress: ProgressCallback,
-  language?: string
 ): Promise<PageByPageEnhancementResult> {
   // Check if Gemini API is configured
   if (!isGeminiConfigured()) {
@@ -407,7 +404,6 @@ export async function enhanceFormFieldsPageByPage(
       filename,
       pdfHash,
       onProgress,
-      language
     );
   });
 

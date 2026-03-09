@@ -25,6 +25,7 @@ interface FieldProps {
 
 function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, onFocus, onChange }: FieldProps) {
   const { t } = useTranslation();
+  const { language: langState } = useLanguageContext();
   const [showTooltip, setShowTooltip] = React.useState(false);
   
   // Show tooltip when forced (via voice command)
@@ -82,7 +83,7 @@ function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, on
           <div className="flex items-center justify-end gap-2">
             {TypeIcon && <span className="text-slate-700 mr-auto">{TypeIcon}</span>}
             <label className={`text-lg ${labelColor}`}>
-              {field.localizedName || field.name}
+              {field.localizedNames?.[langState.currentLanguage] || field.name}
             </label>
           </div>
           <div className="flex items-center justify-end gap-1 mt-1">

@@ -4,7 +4,6 @@ import { formReducer, initialFormState } from './formReducer';
 import { parsePDF, updatePDFField, openPDFInNewTab, downloadPDF as downloadPDFFile } from '../services/pdfParser';
 import { getVisibleFields, getEditableFields } from '../services/fieldEnhancer';
 import { enhanceFormFieldsPageByPage, getInitialPageStatuses } from '../services/pageByPageEnhancer';
-import { getCurrentLanguage } from '../services/formatConversion';
 import {
   buildDependencyGraph,
   getFieldsToRecalculate,
@@ -83,7 +82,6 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
           });
         };
         
-        const currentLanguage = getCurrentLanguage();
         const { fields: enhancedFields, sections, formTitle, formDescription, cachedPages } =
           await enhanceFormFieldsPageByPage(
             file.name,
@@ -94,7 +92,6 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
             pageCount,
             writeContext.isXFA,
             progressCallback,
-            currentLanguage
           );
         
         // Step 6: Update state with enhanced fields and sections
