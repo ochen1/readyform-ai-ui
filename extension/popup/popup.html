@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <img src="../icons/icon48.png" alt="" class="popup-logo">
+      <div>
+        <h1>ReadyFormAI</h1>
+        <p class="subtitle">Voice-Assisted Form Filling</p>
+      </div>
+    </header>
+
+    <div id="status-section" class="section hidden">
+      <div class="status-badge" id="status-badge">
+        <span class="status-dot"></span>
+        <span id="status-text"></span>
+      </div>
+      <p id="status-detail" class="status-detail"></p>
+    </div>
+
+    <div class="section">
+      <button id="launch-btn" class="primary-btn">
+        Open ReadyFormAI
+      </button>
+    </div>
+
+    <div id="pdf-section" class="section hidden">
+      <button id="open-pdf-btn" class="secondary-btn">
+        Send This PDF to ReadyFormAI
+      </button>
+    </div>
+
+    <footer class="popup-footer">
+      <div id="settings-view" class="hidden">
+        <label class="settings-label">
+          ReadyFormAI URL
+          <input type="text" id="url-input" class="settings-input" placeholder="http://localhost:5173">
+        </label>
+        <button id="save-settings-btn" class="small-btn">Save</button>
+      </div>
+      <a href="#" id="settings-link">Settings</a>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
