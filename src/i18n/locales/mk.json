@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Напредок",
+    "backToForm": "Назад кон формуларот",
+    "openInNewTab": "Отвори во ново јазиче",
+    "closePreview": "Затвори преглед"
+  },
+  "upload": {
+    "title": "Прикачи PDF формулар",
+    "dropHere": "Пуштете PDF тука",
+    "dragAndDrop": "Повлечете и пуштете или кликнете за избор",
+    "getStarted": "Прикачете PDF формулар за пополнување за да започнете",
+    "button": "Прикачи PDF",
+    "buttonChange": "Прикачи друг PDF"
+  },
+  "voice": {
+    "title": "Гласовен асистент",
+    "start": "Стартувај гласовен асистент",
+    "end": "Заврши повик",
+    "needPdf": "Прикачете PDF за да го овозможите гласовниот асистент",
+    "thinking": "Размислува...",
+    "speaking": "Зборува...",
+    "listening": "Слуша...",
+    "ready": "Подготвен",
+    "mute": "Исклучи звук",
+    "unmute": "Вклучи звук",
+    "muteMic": "Исклучи микрофон",
+    "unmuteMic": "Вклучи микрофон"
+  },
+  "accessibility": {
+    "title": "Пристапност",
+    "dyslexiaFont": "Фонт прилагоден за дислексија",
+    "fontSize": "Големина на фонт",
+    "decreaseFont": "Намали големина на фонт",
+    "increaseFont": "Зголеми големина на фонт"
+  },
+  "language": {
+    "title": "Јазик",
+    "label": "Јазик на интерфејсот",
+    "g7Group": "G7 јазици",
+    "euGroup": "EU јазици",
+    "otherGroup": "Други јазици"
+  },
+  "form": {
+    "preview": "Преглед на формулар",
+    "completedPreview": "Преглед на пополнет формулар",
+    "untitled": "Формулар без наслов",
+    "actions": "Дејства",
+    "calculation": "Пресметка: {{hint}}",
+    "format": "Формат: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Анализирање...",
+    "preparing": "Подготовка за анализа...",
+    "loading": "Вчитување PDF и извлекување полиња.",
+    "enhanced": "Подобрено со AI",
+    "failed": "AI подобрувањето не успеа",
+    "fieldsFound": "Пронајдени {{count}} полиња",
+    "fields": "{{count}} полиња",
+    "pagesFailed": "{{count}} страница(и) не успеаа да се анализираат",
+    "statusCached": "Кеширано",
+    "statusComplete": "Завршено",
+    "statusProcessing": "Обработка",
+    "statusError": "Грешка",
+    "statusPending": "Во чекање",
+    "largeFormTitle": "Откриен е голем формулар",
+    "largeFormMessage": "Овој формулар има <strong>{{count}} страници</strong> и ќе биде потребно време за анализа. Можете да започнете со пополнување на видливите полиња додека ги подобруваме со AI.",
+    "analysisComplete": "Анализата е завршена",
+    "analyzingStructure": "Анализирање на структурата на формуларот...",
+    "pagesComplete": "<strong>{{completed}}</strong> од <strong>{{total}}</strong> страници завршени",
+    "processingCount": "{{count}} се обработуваат",
+    "pendingCount": "{{count}} во чекање",
+    "fromCacheCount": "{{count}} од кеш",
+    "failedCount": "{{count}} неуспешни",
+    "pageNumber": "Страница {{number}}",
+    "fieldCount": "({{count}} полиња)",
+    "retried": "(повторен обид)",
+    "errorDetail": "<strong>{{count}} страница(и)</strong> не можеа да се анализираат. Овие страници ќе користат основни информации за полињата."
+  },
+  "inputs": {
+    "enterField": "Внесете {{field}}...",
+    "selectField": "Изберете {{field}}...",
+    "enterReference": "Внесете референца...",
+    "yes": "Да",
+    "no": "Не"
+  }
+}

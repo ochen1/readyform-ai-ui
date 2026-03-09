@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Progres",
+    "backToForm": "Înapoi la formular",
+    "openInNewTab": "Deschide într-o filă nouă",
+    "closePreview": "Închide previzualizarea"
+  },
+  "upload": {
+    "title": "Încărcați un formular PDF",
+    "dropHere": "Plasați PDF-ul aici",
+    "dragAndDrop": "Trageți și plasați sau faceți clic pentru a selecta",
+    "getStarted": "Încărcați un formular PDF completabil pentru a începe",
+    "button": "Încarcă PDF",
+    "buttonChange": "Încarcă alt PDF"
+  },
+  "voice": {
+    "title": "Asistent vocal",
+    "start": "Pornește asistentul vocal",
+    "end": "Închide apelul",
+    "needPdf": "Încărcați un PDF pentru a activa asistentul vocal",
+    "thinking": "Se gândește...",
+    "speaking": "Vorbește...",
+    "listening": "Ascultă...",
+    "ready": "Pregătit",
+    "mute": "Dezactivează sunetul",
+    "unmute": "Activează sunetul",
+    "muteMic": "Dezactivează microfonul",
+    "unmuteMic": "Activează microfonul"
+  },
+  "accessibility": {
+    "title": "Accesibilitate",
+    "dyslexiaFont": "Font adaptat pentru dislexie",
+    "fontSize": "Dimensiune font",
+    "decreaseFont": "Micșorează fontul",
+    "increaseFont": "Mărește fontul"
+  },
+  "language": {
+    "title": "Limbă",
+    "label": "Limba interfeței",
+    "g7Group": "Limbi G7",
+    "euGroup": "Limbi UE",
+    "otherGroup": "Alte limbi"
+  },
+  "form": {
+    "preview": "Previzualizare formular",
+    "completedPreview": "Previzualizare formular completat",
+    "untitled": "Formular fără titlu",
+    "actions": "Acțiuni",
+    "calculation": "Calcul: {{hint}}",
+    "format": "Format: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Se analizează...",
+    "preparing": "Se pregătește pentru analiză...",
+    "loading": "Se încarcă PDF-ul și se extrag câmpurile.",
+    "enhanced": "Îmbunătățit cu IA",
+    "failed": "Îmbunătățirea cu IA a eșuat",
+    "fieldsFound": "{{count}} câmpuri găsite",
+    "fields": "{{count}} câmpuri",
+    "pagesFailed": "Analiza a {{count}} pagină/pagini a eșuat",
+    "statusCached": "Din cache",
+    "statusComplete": "Finalizat",
+    "statusProcessing": "Se procesează",
+    "statusError": "Eroare",
+    "statusPending": "În așteptare",
+    "largeFormTitle": "Formular mare detectat",
+    "largeFormMessage": "Acest formular are <strong>{{count}} pagini</strong> și va dura un moment pentru analiză. Puteți începe să completați câmpurile vizibile în timp ce le îmbunătățim cu IA.",
+    "analysisComplete": "Analiză finalizată",
+    "analyzingStructure": "Se analizează structura formularului...",
+    "pagesComplete": "<strong>{{completed}}</strong> din <strong>{{total}}</strong> pagini finalizate",
+    "processingCount": "{{count}} în procesare",
+    "pendingCount": "{{count}} în așteptare",
+    "fromCacheCount": "{{count}} din cache",
+    "failedCount": "{{count}} eșuate",
+    "pageNumber": "Pagina {{number}}",
+    "fieldCount": "({{count}} câmpuri)",
+    "retried": "(reîncercat)",
+    "errorDetail": "<strong>{{count}} pagină/pagini</strong> nu au putut fi analizate. Aceste pagini vor folosi informații de bază despre câmpuri."
+  },
+  "inputs": {
+    "enterField": "Introduceți {{field}}...",
+    "selectField": "Selectați {{field}}...",
+    "enterReference": "Introduceți referința...",
+    "yes": "Da",
+    "no": "Nu"
+  }
+}

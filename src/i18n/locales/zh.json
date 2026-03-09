@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "进度",
+    "backToForm": "返回表单",
+    "openInNewTab": "在新标签页中打开",
+    "closePreview": "关闭预览"
+  },
+  "upload": {
+    "title": "上传 PDF 表单",
+    "dropHere": "将 PDF 拖放到此处",
+    "dragAndDrop": "拖放或点击选择",
+    "getStarted": "上传可填写的 PDF 表单以开始",
+    "button": "上传 PDF",
+    "buttonChange": "上传其他 PDF"
+  },
+  "voice": {
+    "title": "语音助手",
+    "start": "启动语音助手",
+    "end": "结束通话",
+    "needPdf": "上传 PDF 以启用语音助手",
+    "thinking": "思考中...",
+    "speaking": "说话中...",
+    "listening": "聆听中...",
+    "ready": "就绪",
+    "mute": "静音",
+    "unmute": "取消静音",
+    "muteMic": "关闭麦克风",
+    "unmuteMic": "打开麦克风"
+  },
+  "accessibility": {
+    "title": "无障碍",
+    "dyslexiaFont": "阅读障碍友好字体",
+    "fontSize": "字体大小",
+    "decreaseFont": "减小字体大小",
+    "increaseFont": "增大字体大小"
+  },
+  "language": {
+    "title": "语言",
+    "label": "界面语言",
+    "g7Group": "G7 语言",
+    "euGroup": "欧盟语言",
+    "otherGroup": "其他语言"
+  },
+  "form": {
+    "preview": "表单预览",
+    "completedPreview": "已填写表单预览",
+    "untitled": "无标题表单",
+    "actions": "操作",
+    "calculation": "计算：{{hint}}",
+    "format": "格式：{{format}}"
+  },
+  "enhancement": {
+    "analyzing": "分析中...",
+    "preparing": "准备分析...",
+    "loading": "正在加载 PDF 并提取字段。",
+    "enhanced": "AI 增强",
+    "failed": "AI 增强失败",
+    "fieldsFound": "找到 {{count}} 个字段",
+    "fields": "{{count}} 个字段",
+    "pagesFailed": "{{count}} 页分析失败",
+    "statusCached": "已缓存",
+    "statusComplete": "已完成",
+    "statusProcessing": "处理中",
+    "statusError": "错误",
+    "statusPending": "等待中",
+    "largeFormTitle": "检测到大型表单",
+    "largeFormMessage": "此表单有 <strong>{{count}} 页</strong>，分析需要一些时间。您可以在我们使用 AI 增强的同时开始填写可见字段。",
+    "analysisComplete": "分析完成",
+    "analyzingStructure": "正在分析表单结构...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> 页已完成",
+    "processingCount": "{{count}} 个处理中",
+    "pendingCount": "{{count}} 个等待中",
+    "fromCacheCount": "{{count}} 个来自缓存",
+    "failedCount": "{{count}} 个失败",
+    "pageNumber": "第 {{number}} 页",
+    "fieldCount": "（{{count}} 个字段）",
+    "retried": "（已重试）",
+    "errorDetail": "<strong>{{count}} 页</strong>无法分析。这些页面将使用基本字段信息。"
+  },
+  "inputs": {
+    "enterField": "输入 {{field}}...",
+    "selectField": "选择 {{field}}...",
+    "enterReference": "输入参考...",
+    "yes": "是",
+    "no": "否"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Fortschritt",
+    "backToForm": "Zurück zum Formular",
+    "openInNewTab": "In neuem Tab öffnen",
+    "closePreview": "Vorschau schließen"
+  },
+  "upload": {
+    "title": "PDF-Formular hochladen",
+    "dropHere": "PDF hier ablegen",
+    "dragAndDrop": "Ziehen und ablegen oder klicken zum Auswählen",
+    "getStarted": "Laden Sie ein ausfüllbares PDF-Formular hoch, um zu beginnen",
+    "button": "PDF hochladen",
+    "buttonChange": "Anderes PDF hochladen"
+  },
+  "voice": {
+    "title": "Sprachassistent",
+    "start": "Sprachassistent starten",
+    "end": "Anruf beenden",
+    "needPdf": "Laden Sie ein PDF hoch, um den Sprachassistenten zu aktivieren",
+    "thinking": "Denkt nach...",
+    "speaking": "Spricht...",
+    "listening": "Hört zu...",
+    "ready": "Bereit",
+    "mute": "Stummschalten",
+    "unmute": "Stummschaltung aufheben",
+    "muteMic": "Mikrofon stummschalten",
+    "unmuteMic": "Mikrofon aktivieren"
+  },
+  "accessibility": {
+    "title": "Barrierefreiheit",
+    "dyslexiaFont": "Legasthenie-freundliche Schrift",
+    "fontSize": "Schriftgröße",
+    "decreaseFont": "Schriftgröße verringern",
+    "increaseFont": "Schriftgröße vergrößern"
+  },
+  "language": {
+    "title": "Sprache",
+    "label": "Oberflächensprache",
+    "g7Group": "G7-Sprachen",
+    "euGroup": "EU-Sprachen",
+    "otherGroup": "Andere Sprachen"
+  },
+  "form": {
+    "preview": "Formular-Vorschau",
+    "completedPreview": "Vorschau des ausgefüllten Formulars",
+    "untitled": "Unbenanntes Formular",
+    "actions": "Aktionen",
+    "calculation": "Berechnung: {{hint}}",
+    "format": "Format: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyse...",
+    "preparing": "Analyse wird vorbereitet...",
+    "loading": "PDF wird geladen und Felder werden extrahiert.",
+    "enhanced": "KI-verbessert",
+    "failed": "KI-Verbesserung fehlgeschlagen",
+    "fieldsFound": "{{count}} Felder gefunden",
+    "fields": "{{count}} Felder",
+    "pagesFailed": "{{count}} Seite(n) konnten nicht analysiert werden",
+    "statusCached": "Zwischengespeichert",
+    "statusComplete": "Abgeschlossen",
+    "statusProcessing": "Verarbeitung",
+    "statusError": "Fehler",
+    "statusPending": "Ausstehend",
+    "largeFormTitle": "Großes Formular erkannt",
+    "largeFormMessage": "Dieses Formular hat <strong>{{count}} Seiten</strong> und die Analyse wird einen Moment dauern. Sie können bereits sichtbare Felder ausfüllen, während wir sie mit KI verbessern.",
+    "analysisComplete": "Analyse abgeschlossen",
+    "analyzingStructure": "Formularstruktur wird analysiert...",
+    "pagesComplete": "<strong>{{completed}}</strong> von <strong>{{total}}</strong> Seiten abgeschlossen",
+    "processingCount": "{{count}} in Bearbeitung",
+    "pendingCount": "{{count}} ausstehend",
+    "fromCacheCount": "{{count}} aus Cache",
+    "failedCount": "{{count}} fehlgeschlagen",
+    "pageNumber": "Seite {{number}}",
+    "fieldCount": "({{count}} Felder)",
+    "retried": "(erneut versucht)",
+    "errorDetail": "<strong>{{count}} Seite(n)</strong> konnten nicht analysiert werden. Diese Seiten verwenden grundlegende Feldinformationen."
+  },
+  "inputs": {
+    "enterField": "{{field}} eingeben...",
+    "selectField": "{{field}} auswählen...",
+    "enterReference": "Referenz eingeben...",
+    "yes": "Ja",
+    "no": "Nein"
+  }
+}

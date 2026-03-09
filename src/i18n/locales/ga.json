@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Dul chun cinn",
+    "backToForm": "Ar ais go dtí an fhoirm",
+    "openInNewTab": "Oscail i gcluaisín nua",
+    "closePreview": "Dún an réamhamharc"
+  },
+  "upload": {
+    "title": "Uaslódáil foirm PDF",
+    "dropHere": "Scaoil PDF anseo",
+    "dragAndDrop": "Tarraing agus scaoil nó cliceáil chun roghnú",
+    "getStarted": "Uaslódáil foirm PDF inomlánaithe chun tosú",
+    "button": "Uaslódáil PDF",
+    "buttonChange": "Uaslódáil PDF difriúil"
+  },
+  "voice": {
+    "title": "Cúntóir gutha",
+    "start": "Tosaigh an cúntóir gutha",
+    "end": "Cuir deireadh leis an nglao",
+    "needPdf": "Uaslódáil PDF chun an cúntóir gutha a ghníomhachtú",
+    "thinking": "Ag smaoineamh...",
+    "speaking": "Ag caint...",
+    "listening": "Ag éisteacht...",
+    "ready": "Réidh",
+    "mute": "Balbhaigh",
+    "unmute": "Díbhalbhaigh",
+    "muteMic": "Balbhaigh an micreafón",
+    "unmuteMic": "Díbhalbhaigh an micreafón"
+  },
+  "accessibility": {
+    "title": "Inrochtaineacht",
+    "dyslexiaFont": "Cló cairdiúil do dhaoine le disléicse",
+    "fontSize": "Méid an chló",
+    "decreaseFont": "Laghdaigh méid an chló",
+    "increaseFont": "Méadaigh méid an chló"
+  },
+  "language": {
+    "title": "Teanga",
+    "label": "Teanga an chomhéadain",
+    "g7Group": "Teangacha G7",
+    "euGroup": "Teangacha an AE",
+    "otherGroup": "Teangacha eile"
+  },
+  "form": {
+    "preview": "Réamhamharc ar an bhfoirm",
+    "completedPreview": "Réamhamharc ar an bhfoirm chomhlánaithe",
+    "untitled": "Foirm gan teideal",
+    "actions": "Gníomhartha",
+    "calculation": "Ríomh: {{hint}}",
+    "format": "Formáid: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Ag anailísiú...",
+    "preparing": "Ag ullmhú le haghaidh anailíse...",
+    "loading": "PDF á lódáil agus réimsí á bhaint amach.",
+    "enhanced": "Feabhsaithe le HI",
+    "failed": "Theip ar fheabhsú HI",
+    "fieldsFound": "{{count}} réimse aimsithe",
+    "fields": "{{count}} réimse",
+    "pagesFailed": "Theip ar anailís {{count}} leathanach",
+    "statusCached": "I dtaisce",
+    "statusComplete": "Críochnaithe",
+    "statusProcessing": "Á phróiseáil",
+    "statusError": "Earráid",
+    "statusPending": "Ar feitheamh",
+    "largeFormTitle": "Foirm mhór aimsithe",
+    "largeFormMessage": "Tá <strong>{{count}} leathanach</strong> san fhoirm seo agus tógfaidh sé nóiméad í a anailísiú. Is féidir leat tosú ag líonadh na réimsí infheicthe fad is atá muid á bhfeabhsú le HI.",
+    "analysisComplete": "Anailís críochnaithe",
+    "analyzingStructure": "Struchtúr na foirme á anailísiú...",
+    "pagesComplete": "<strong>{{completed}}</strong> as <strong>{{total}}</strong> leathanach críochnaithe",
+    "processingCount": "{{count}} á phróiseáil",
+    "pendingCount": "{{count}} ar feitheamh",
+    "fromCacheCount": "{{count}} ón taisce",
+    "failedCount": "{{count}} theip orthu",
+    "pageNumber": "Leathanach {{number}}",
+    "fieldCount": "({{count}} réimse)",
+    "retried": "(triailte arís)",
+    "errorDetail": "Níorbh fhéidir <strong>{{count}} leathanach</strong> a anailísiú. Úsáidfidh na leathanaigh seo buneolas réimsí."
+  },
+  "inputs": {
+    "enterField": "Iontráil {{field}}...",
+    "selectField": "Roghnaigh {{field}}...",
+    "enterReference": "Iontráil tagairt...",
+    "yes": "Tá",
+    "no": "Níl"
+  }
+}

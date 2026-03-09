@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "پیشرفت",
+    "backToForm": "فارم پر واپس جائیں",
+    "openInNewTab": "نئے ٹیب میں کھولیں",
+    "closePreview": "پیش نظارہ بند کریں"
+  },
+  "upload": {
+    "title": "PDF فارم اپ لوڈ کریں",
+    "dropHere": "PDF یہاں چھوڑیں",
+    "dragAndDrop": "گھسیٹ کر چھوڑیں یا منتخب کرنے کے لیے کلک کریں",
+    "getStarted": "شروع کرنے کے لیے قابل پُر PDF فارم اپ لوڈ کریں",
+    "button": "PDF اپ لوڈ کریں",
+    "buttonChange": "مختلف PDF اپ لوڈ کریں"
+  },
+  "voice": {
+    "title": "وائس اسسٹنٹ",
+    "start": "وائس اسسٹنٹ شروع کریں",
+    "end": "کال ختم کریں",
+    "needPdf": "وائس اسسٹنٹ فعال کرنے کے لیے PDF اپ لوڈ کریں",
+    "thinking": "سوچ رہا ہے...",
+    "speaking": "بول رہا ہے...",
+    "listening": "سن رہا ہے...",
+    "ready": "تیار",
+    "mute": "خاموش کریں",
+    "unmute": "آواز چالو کریں",
+    "muteMic": "مائیکروفون خاموش کریں",
+    "unmuteMic": "مائیکروفون چالو کریں"
+  },
+  "accessibility": {
+    "title": "رسائی",
+    "dyslexiaFont": "ڈسلیکسیا کے لیے موزوں فونٹ",
+    "fontSize": "فونٹ کا سائز",
+    "decreaseFont": "فونٹ کا سائز کم کریں",
+    "increaseFont": "فونٹ کا سائز بڑھائیں"
+  },
+  "language": {
+    "title": "زبان",
+    "label": "انٹرفیس کی زبان",
+    "g7Group": "G7 زبانیں",
+    "euGroup": "EU زبانیں",
+    "otherGroup": "دیگر زبانیں"
+  },
+  "form": {
+    "preview": "فارم کا پیش نظارہ",
+    "completedPreview": "مکمل فارم کا پیش نظارہ",
+    "untitled": "بے عنوان فارم",
+    "actions": "اقدامات",
+    "calculation": "حساب: {{hint}}",
+    "format": "فارمیٹ: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "تجزیہ ہو رہا ہے...",
+    "preparing": "تجزیے کی تیاری ہو رہی ہے...",
+    "loading": "PDF لوڈ ہو رہا ہے اور فیلڈز نکالے جا رہے ہیں۔",
+    "enhanced": "AI سے بہتر بنایا گیا",
+    "failed": "AI بہتری ناکام رہی",
+    "fieldsFound": "{{count}} فیلڈز ملے",
+    "fields": "{{count}} فیلڈز",
+    "pagesFailed": "{{count}} صفحے (صفحات) کا تجزیہ ناکام رہا",
+    "statusCached": "کیش شدہ",
+    "statusComplete": "مکمل",
+    "statusProcessing": "پراسیسنگ",
+    "statusError": "خرابی",
+    "statusPending": "زیر التوا",
+    "largeFormTitle": "بڑا فارم دریافت ہوا",
+    "largeFormMessage": "اس فارم میں <strong>{{count}} صفحات</strong> ہیں اور تجزیے میں کچھ وقت لگے گا۔ آپ AI سے بہتری کے دوران نظر آنے والے فیلڈز بھرنا شروع کر سکتے ہیں۔",
+    "analysisComplete": "تجزیہ مکمل",
+    "analyzingStructure": "فارم کی ساخت کا تجزیہ ہو رہا ہے...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> صفحات مکمل",
+    "processingCount": "{{count}} پراسیسنگ میں",
+    "pendingCount": "{{count}} زیر التوا",
+    "fromCacheCount": "{{count}} کیش سے",
+    "failedCount": "{{count}} ناکام",
+    "pageNumber": "صفحہ {{number}}",
+    "fieldCount": "({{count}} فیلڈز)",
+    "retried": "(دوبارہ کوشش کی گئی)",
+    "errorDetail": "<strong>{{count}} صفحے (صفحات)</strong> کا تجزیہ نہیں ہو سکا۔ یہ صفحات بنیادی فیلڈ معلومات استعمال کریں گے۔"
+  },
+  "inputs": {
+    "enterField": "{{field}} درج کریں...",
+    "selectField": "{{field}} منتخب کریں...",
+    "enterReference": "حوالہ درج کریں...",
+    "yes": "ہاں",
+    "no": "نہیں"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "प्रगति",
+    "backToForm": "फ़ॉर्म पर वापस जाएँ",
+    "openInNewTab": "नए टैब में खोलें",
+    "closePreview": "पूर्वावलोकन बंद करें"
+  },
+  "upload": {
+    "title": "PDF फ़ॉर्म अपलोड करें",
+    "dropHere": "PDF यहाँ छोड़ें",
+    "dragAndDrop": "खींचें और छोड़ें या चुनने के लिए क्लिक करें",
+    "getStarted": "शुरू करने के लिए भरने योग्य PDF फ़ॉर्म अपलोड करें",
+    "button": "PDF अपलोड करें",
+    "buttonChange": "अलग PDF अपलोड करें"
+  },
+  "voice": {
+    "title": "वॉइस सहायक",
+    "start": "वॉइस सहायक शुरू करें",
+    "end": "कॉल समाप्त करें",
+    "needPdf": "वॉइस सहायक सक्रिय करने के लिए PDF अपलोड करें",
+    "thinking": "सोच रहा है...",
+    "speaking": "बोल रहा है...",
+    "listening": "सुन रहा है...",
+    "ready": "तैयार",
+    "mute": "म्यूट करें",
+    "unmute": "अनम्यूट करें",
+    "muteMic": "माइक्रोफ़ोन म्यूट करें",
+    "unmuteMic": "माइक्रोफ़ोन अनम्यूट करें"
+  },
+  "accessibility": {
+    "title": "सुगम्यता",
+    "dyslexiaFont": "डिस्लेक्सिया-अनुकूल फ़ॉन्ट",
+    "fontSize": "फ़ॉन्ट आकार",
+    "decreaseFont": "फ़ॉन्ट आकार घटाएँ",
+    "increaseFont": "फ़ॉन्ट आकार बढ़ाएँ"
+  },
+  "language": {
+    "title": "भाषा",
+    "label": "इंटरफ़ेस भाषा",
+    "g7Group": "G7 भाषाएँ",
+    "euGroup": "EU भाषाएँ",
+    "otherGroup": "अन्य भाषाएँ"
+  },
+  "form": {
+    "preview": "फ़ॉर्म पूर्वावलोकन",
+    "completedPreview": "पूर्ण फ़ॉर्म पूर्वावलोकन",
+    "untitled": "शीर्षकहीन फ़ॉर्म",
+    "actions": "कार्रवाइयाँ",
+    "calculation": "गणना: {{hint}}",
+    "format": "प्रारूप: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "विश्लेषण हो रहा है...",
+    "preparing": "विश्लेषण की तैयारी हो रही है...",
+    "loading": "PDF लोड हो रहा है और फ़ील्ड निकाले जा रहे हैं।",
+    "enhanced": "AI द्वारा बेहतर",
+    "failed": "AI सुधार विफल रहा",
+    "fieldsFound": "{{count}} फ़ील्ड मिले",
+    "fields": "{{count}} फ़ील्ड",
+    "pagesFailed": "{{count}} पृष्ठ(ओं) का विश्लेषण विफल रहा",
+    "statusCached": "कैश्ड",
+    "statusComplete": "पूर्ण",
+    "statusProcessing": "प्रोसेसिंग",
+    "statusError": "त्रुटि",
+    "statusPending": "लंबित",
+    "largeFormTitle": "बड़ा फ़ॉर्म पहचाना गया",
+    "largeFormMessage": "इस फ़ॉर्म में <strong>{{count}} पृष्ठ</strong> हैं और विश्लेषण में कुछ समय लगेगा। AI से सुधार के दौरान आप दिखाई देने वाले फ़ील्ड भरना शुरू कर सकते हैं।",
+    "analysisComplete": "विश्लेषण पूर्ण",
+    "analyzingStructure": "फ़ॉर्म संरचना का विश्लेषण हो रहा है...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> पृष्ठ पूर्ण",
+    "processingCount": "{{count}} प्रोसेसिंग",
+    "pendingCount": "{{count}} लंबित",
+    "fromCacheCount": "{{count}} कैश से",
+    "failedCount": "{{count}} विफल",
+    "pageNumber": "पृष्ठ {{number}}",
+    "fieldCount": "({{count}} फ़ील्ड)",
+    "retried": "(पुनः प्रयास किया गया)",
+    "errorDetail": "<strong>{{count}} पृष्ठ(ओं)</strong> का विश्लेषण नहीं हो सका। ये पृष्ठ बुनियादी फ़ील्ड जानकारी का उपयोग करेंगे।"
+  },
+  "inputs": {
+    "enterField": "{{field}} दर्ज करें...",
+    "selectField": "{{field}} चुनें...",
+    "enterReference": "संदर्भ दर्ज करें...",
+    "yes": "हाँ",
+    "no": "नहीं"
+  }
+}

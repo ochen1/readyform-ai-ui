@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Progress",
+    "backToForm": "Atpakaļ uz veidlapu",
+    "openInNewTab": "Atvērt jaunā cilnē",
+    "closePreview": "Aizvērt priekšskatījumu"
+  },
+  "upload": {
+    "title": "Augšupielādēt PDF veidlapu",
+    "dropHere": "Nometiet PDF šeit",
+    "dragAndDrop": "Velciet un nometiet vai noklikšķiniet, lai izvēlētos",
+    "getStarted": "Augšupielādējiet aizpildāmu PDF veidlapu, lai sāktu",
+    "button": "Augšupielādēt PDF",
+    "buttonChange": "Augšupielādēt citu PDF"
+  },
+  "voice": {
+    "title": "Balss asistents",
+    "start": "Palaist balss asistentu",
+    "end": "Beigt zvanu",
+    "needPdf": "Augšupielādējiet PDF, lai aktivizētu balss asistentu",
+    "thinking": "Domā...",
+    "speaking": "Runā...",
+    "listening": "Klausās...",
+    "ready": "Gatavs",
+    "mute": "Izslēgt skaņu",
+    "unmute": "Ieslēgt skaņu",
+    "muteMic": "Izslēgt mikrofonu",
+    "unmuteMic": "Ieslēgt mikrofonu"
+  },
+  "accessibility": {
+    "title": "Pieejamība",
+    "dyslexiaFont": "Disleksijai draudzīgs fonts",
+    "fontSize": "Fonta lielums",
+    "decreaseFont": "Samazināt fonta lielumu",
+    "increaseFont": "Palielināt fonta lielumu"
+  },
+  "language": {
+    "title": "Valoda",
+    "label": "Saskarnes valoda",
+    "g7Group": "G7 valodas",
+    "euGroup": "ES valodas",
+    "otherGroup": "Citas valodas"
+  },
+  "form": {
+    "preview": "Veidlapas priekšskatījums",
+    "completedPreview": "Aizpildītās veidlapas priekšskatījums",
+    "untitled": "Veidlapa bez nosaukuma",
+    "actions": "Darbības",
+    "calculation": "Aprēķins: {{hint}}",
+    "format": "Formāts: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analizē...",
+    "preparing": "Sagatavo analīzei...",
+    "loading": "Ielādē PDF un izgūst laukus.",
+    "enhanced": "Uzlabots ar MI",
+    "failed": "MI uzlabošana neizdevās",
+    "fieldsFound": "Atrasti {{count}} lauki",
+    "fields": "{{count}} lauki",
+    "pagesFailed": "{{count}} lapas(-u) analīze neizdevās",
+    "statusCached": "No kešatmiņas",
+    "statusComplete": "Pabeigts",
+    "statusProcessing": "Apstrādā",
+    "statusError": "Kļūda",
+    "statusPending": "Gaida",
+    "largeFormTitle": "Konstatēta liela veidlapa",
+    "largeFormMessage": "Šajā veidlapā ir <strong>{{count}} lapas</strong>, un analīze prasīs brīdi. Varat sākt aizpildīt redzamos laukus, kamēr mēs tos uzlabojam ar MI.",
+    "analysisComplete": "Analīze pabeigta",
+    "analyzingStructure": "Analizē veidlapas struktūru...",
+    "pagesComplete": "<strong>{{completed}}</strong> no <strong>{{total}}</strong> lapām pabeigtas",
+    "processingCount": "{{count}} apstrādē",
+    "pendingCount": "{{count}} gaida",
+    "fromCacheCount": "{{count}} no kešatmiņas",
+    "failedCount": "{{count}} neizdevās",
+    "pageNumber": "Lapa {{number}}",
+    "fieldCount": "({{count}} lauki)",
+    "retried": "(mēģināts atkārtoti)",
+    "errorDetail": "<strong>{{count}} lapu(-as)</strong> nevarēja analizēt. Šīs lapas izmantos pamata lauku informāciju."
+  },
+  "inputs": {
+    "enterField": "Ievadiet {{field}}...",
+    "selectField": "Izvēlieties {{field}}...",
+    "enterReference": "Ievadiet atsauci...",
+    "yes": "Jā",
+    "no": "Nē"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Priebeh",
+    "backToForm": "Späť na formulár",
+    "openInNewTab": "Otvoriť v novej karte",
+    "closePreview": "Zavrieť náhľad"
+  },
+  "upload": {
+    "title": "Nahrať PDF formulár",
+    "dropHere": "Presuňte PDF sem",
+    "dragAndDrop": "Presuňte alebo kliknite na výber",
+    "getStarted": "Nahrajte vyplniteľný PDF formulár a začnite",
+    "button": "Nahrať PDF",
+    "buttonChange": "Nahrať iný PDF"
+  },
+  "voice": {
+    "title": "Hlasový asistent",
+    "start": "Spustiť hlasového asistenta",
+    "end": "Ukončiť hovor",
+    "needPdf": "Nahrajte PDF na aktiváciu hlasového asistenta",
+    "thinking": "Premýšľa...",
+    "speaking": "Hovorí...",
+    "listening": "Počúva...",
+    "ready": "Pripravený",
+    "mute": "Stlmiť",
+    "unmute": "Zapnúť zvuk",
+    "muteMic": "Stlmiť mikrofón",
+    "unmuteMic": "Zapnúť mikrofón"
+  },
+  "accessibility": {
+    "title": "Prístupnosť",
+    "dyslexiaFont": "Písmo pre dyslektikov",
+    "fontSize": "Veľkosť písma",
+    "decreaseFont": "Zmenšiť písmo",
+    "increaseFont": "Zväčšiť písmo"
+  },
+  "language": {
+    "title": "Jazyk",
+    "label": "Jazyk rozhrania",
+    "g7Group": "Jazyky G7",
+    "euGroup": "Jazyky EÚ",
+    "otherGroup": "Ostatné jazyky"
+  },
+  "form": {
+    "preview": "Náhľad formulára",
+    "completedPreview": "Náhľad vyplneného formulára",
+    "untitled": "Formulár bez názvu",
+    "actions": "Akcie",
+    "calculation": "Výpočet: {{hint}}",
+    "format": "Formát: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyzovanie...",
+    "preparing": "Príprava na analýzu...",
+    "loading": "Načítanie PDF a extrakcia polí.",
+    "enhanced": "Vylepšené AI",
+    "failed": "Vylepšenie AI zlyhalo",
+    "fieldsFound": "Nájdených {{count}} polí",
+    "fields": "{{count}} polí",
+    "pagesFailed": "Analýza {{count}} stránok zlyhala",
+    "statusCached": "Z vyrovnávacej pamäte",
+    "statusComplete": "Dokončené",
+    "statusProcessing": "Spracovanie",
+    "statusError": "Chyba",
+    "statusPending": "Čaká",
+    "largeFormTitle": "Zistený veľký formulár",
+    "largeFormMessage": "Tento formulár má <strong>{{count}} strán</strong> a analýza chvíľu potrvá. Môžete začať vypĺňať viditeľné polia, kým ich vylepšujeme pomocou AI.",
+    "analysisComplete": "Analýza dokončená",
+    "analyzingStructure": "Analyzovanie štruktúry formulára...",
+    "pagesComplete": "<strong>{{completed}}</strong> z <strong>{{total}}</strong> strán dokončených",
+    "processingCount": "{{count}} sa spracováva",
+    "pendingCount": "{{count}} čaká",
+    "fromCacheCount": "{{count}} z vyrovnávacej pamäte",
+    "failedCount": "{{count}} zlyhalo",
+    "pageNumber": "Stránka {{number}}",
+    "fieldCount": "({{count}} polí)",
+    "retried": "(opakované)",
+    "errorDetail": "<strong>{{count}} strán</strong> nebolo možné analyzovať. Tieto stránky budú používať základné informácie o poliach."
+  },
+  "inputs": {
+    "enterField": "Zadajte {{field}}...",
+    "selectField": "Vyberte {{field}}...",
+    "enterReference": "Zadajte referenciu...",
+    "yes": "Áno",
+    "no": "Nie"
+  }
+}

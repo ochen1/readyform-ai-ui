@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Edenemine",
+    "backToForm": "Tagasi vormi juurde",
+    "openInNewTab": "Ava uuel vahelehel",
+    "closePreview": "Sulge eelvaade"
+  },
+  "upload": {
+    "title": "Laadi üles PDF-vorm",
+    "dropHere": "Kukuta PDF siia",
+    "dragAndDrop": "Lohista ja kukuta või klõpsa valimiseks",
+    "getStarted": "Alustamiseks laadige üles täidetav PDF-vorm",
+    "button": "Laadi PDF üles",
+    "buttonChange": "Laadi üles teine PDF"
+  },
+  "voice": {
+    "title": "Häälassistent",
+    "start": "Käivita häälassistent",
+    "end": "Lõpeta kõne",
+    "needPdf": "Laadige üles PDF, et aktiveerida häälassistent",
+    "thinking": "Mõtleb...",
+    "speaking": "Räägib...",
+    "listening": "Kuulab...",
+    "ready": "Valmis",
+    "mute": "Vaigista",
+    "unmute": "Lülita heli sisse",
+    "muteMic": "Vaigista mikrofon",
+    "unmuteMic": "Lülita mikrofon sisse"
+  },
+  "accessibility": {
+    "title": "Ligipääsetavus",
+    "dyslexiaFont": "Düsleksiasõbralik font",
+    "fontSize": "Fondi suurus",
+    "decreaseFont": "Vähenda fondi suurust",
+    "increaseFont": "Suurenda fondi suurust"
+  },
+  "language": {
+    "title": "Keel",
+    "label": "Liidese keel",
+    "g7Group": "G7 keeled",
+    "euGroup": "EL keeled",
+    "otherGroup": "Muud keeled"
+  },
+  "form": {
+    "preview": "Vormi eelvaade",
+    "completedPreview": "Täidetud vormi eelvaade",
+    "untitled": "Pealkirjata vorm",
+    "actions": "Toimingud",
+    "calculation": "Arvutus: {{hint}}",
+    "format": "Vorming: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analüüsimine...",
+    "preparing": "Analüüsiks valmistumine...",
+    "loading": "PDF-i laadimine ja väljade eraldamine.",
+    "enhanced": "AI-ga täiustatud",
+    "failed": "AI täiustamine ebaõnnestus",
+    "fieldsFound": "Leitud {{count}} välja",
+    "fields": "{{count}} välja",
+    "pagesFailed": "{{count}} lehekülg(e) analüüs ebaõnnestus",
+    "statusCached": "Vahemälust",
+    "statusComplete": "Valmis",
+    "statusProcessing": "Töötlemine",
+    "statusError": "Viga",
+    "statusPending": "Ootel",
+    "largeFormTitle": "Tuvastati suur vorm",
+    "largeFormMessage": "Sellel vormil on <strong>{{count}} lehekülge</strong> ja selle analüüsimine võtab hetke aega. Saate alustada nähtavate väljade täitmist, samal ajal kui me neid AI-ga täiustame.",
+    "analysisComplete": "Analüüs valmis",
+    "analyzingStructure": "Vormi struktuuri analüüsimine...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> lehekülge valmis",
+    "processingCount": "{{count}} töötlemisel",
+    "pendingCount": "{{count}} ootel",
+    "fromCacheCount": "{{count}} vahemälust",
+    "failedCount": "{{count}} ebaõnnestunud",
+    "pageNumber": "Lehekülg {{number}}",
+    "fieldCount": "({{count}} välja)",
+    "retried": "(uuesti proovitud)",
+    "errorDetail": "<strong>{{count}} lehekülg(e)</strong> ei õnnestunud analüüsida. Need leheküljed kasutavad põhilist väljainfot."
+  },
+  "inputs": {
+    "enterField": "Sisesta {{field}}...",
+    "selectField": "Vali {{field}}...",
+    "enterReference": "Sisesta viide...",
+    "yes": "Jah",
+    "no": "Ei"
+  }
+}

@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { UltravoxSession } from 'ultravox-client';
 import { useFormContext } from '../store/FormContext';
+import { useLanguageContext } from '../store/LanguageContext';
 import { generateSystemPrompt } from './systemPrompt';
 import { generateFormTools } from './tools';
 import { createToolImplementations } from './toolImplementations';
+import { VOICE_CONFIGS, buildElevenLabsVoiceConfig } from '../i18n/voiceConfig';
 
 // Define our own status type that matches the SDK's possible values
 type SessionStatus = 'disconnected' | 'disconnecting' | 'connecting' | 'idle' | 'listening' | 'thinking' | 'speaking';
@@ -31,8 +33,9 @@ const UltravoxContext = createContext<UltravoxContextValue | null>(null);
 
 export function UltravoxProvider({ children }: { children: React.ReactNode }) {
   const formContext = useFormContext();
+  const { language, startDetecting, resetLanguage } = useLanguageContext();
   const sessionRef = useRef<UltravoxSession | null>(null);
-  
+
   const [status, setStatus] = useState<SessionStatus>('disconnected');
   const [transcripts, setTranscripts] = useState<TranscriptItem[]>([]);
   const [isMicMuted, setIsMicMuted] = useState(false);
@@ -44,8 +47,10 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
       setStatus('disconnected');
       setTranscripts([]);
       formContext.dispatch({ type: 'SET_VOICE_ACTIVE', active: false });
+      // Reset detection state but keep the current language for UI
+      resetLanguage();
     }
-  }, [formContext]);
+  }, [formContext, resetLanguage]);
 
   const startCall = useCallback(async () => {
     if (sessionRef.current) {
@@ -64,25 +69,46 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Mark that we're starting language detection
+    startDetecting();
+
     // Generate dynamic tools based on loaded fields and sections
     const sectionIds = formContext.state.sections.map(s => s.id);
     const dynamicTools = generateFormTools(formContext.state.fields, sectionIds);
 
-    // Generate system prompt with current form state (including sections)
+    // Determine current language state for prompt generation
+    // If language is locked from a previous call, use it; otherwise pass null for multilingual greeting
+    const currentLang = language.isLocked ? language.currentLanguage : null;
+
+    // Generate system prompt with current form state and language context
     const systemPrompt = generateSystemPrompt(
       formContext.state.metadata,
       formContext.state.fields,
-      formContext.state.sections
+      formContext.state.sections,
+      currentLang
     );
 
-    // Create the call via Ultravox API
-    const callConfig = {
+    // Build call configuration with multilingual voice support
+    const callConfig: Record<string, unknown> = {
       systemPrompt,
-      voice: 'Mark',
       temperature: 0,
       firstSpeaker: 'FIRST_SPEAKER_AGENT',
-      selectedTools: dynamicTools
+      selectedTools: dynamicTools,
     };
+
+    // Configure ElevenLabs multilingual voice if API key is available
+    const elevenLabsKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
+    if (elevenLabsKey) {
+      callConfig.externalVoice = buildElevenLabsVoiceConfig(elevenLabsKey);
+    } else {
+      // Fallback to Ultravox built-in voice
+      callConfig.voice = 'Mark';
+    }
+
+    // Set language hint if language is already known
+    if (language.currentLanguage && language.isLocked) {
+      callConfig.languageHint = VOICE_CONFIGS[language.currentLanguage].bcp47;
+    }
 
     try {
       const response = await fetch('https://api.ultravox.ai/api/calls', {
@@ -116,7 +142,7 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
 
       // Track logged transcripts to avoid duplicates
       const loggedTranscriptTexts = new Set<string>();
-      
+
       session.addEventListener('transcripts', () => {
         const newTranscripts = session.transcripts.map(t => ({
           text: t.text,
@@ -124,9 +150,9 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
           speaker: t.speaker as 'user' | 'agent',
           medium: t.medium as 'voice' | 'text'
         }));
-        
+
         setTranscripts(newTranscripts);
-        
+
         // Log ALL final transcripts to console for debugging
         // Use a Set to track what we've already logged to avoid duplicates
         for (const transcript of newTranscripts) {
@@ -149,11 +175,11 @@ export function UltravoxProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Failed to start call:', error);
     }
-  }, [formContext, endCall]);
+  }, [formContext, endCall, language, startDetecting]);
 
   const toggleMic = useCallback(() => {
     if (!sessionRef.current) return;
-    
+
     if (isMicMuted) {
       sessionRef.current.unmuteMic();
       setIsMicMuted(false);

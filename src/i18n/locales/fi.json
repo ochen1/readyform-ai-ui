@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Edistyminen",
+    "backToForm": "Takaisin lomakkeeseen",
+    "openInNewTab": "Avaa uudessa välilehdessä",
+    "closePreview": "Sulje esikatselu"
+  },
+  "upload": {
+    "title": "Lataa PDF-lomake",
+    "dropHere": "Pudota PDF tähän",
+    "dragAndDrop": "Vedä ja pudota tai napsauta valitaksesi",
+    "getStarted": "Lataa täytettävä PDF-lomake aloittaaksesi",
+    "button": "Lataa PDF",
+    "buttonChange": "Lataa toinen PDF"
+  },
+  "voice": {
+    "title": "Ääniavustaja",
+    "start": "Käynnistä ääniavustaja",
+    "end": "Lopeta puhelu",
+    "needPdf": "Lataa PDF aktivoidaksesi ääniavustajan",
+    "thinking": "Ajattelee...",
+    "speaking": "Puhuu...",
+    "listening": "Kuuntelee...",
+    "ready": "Valmis",
+    "mute": "Mykistä",
+    "unmute": "Poista mykistys",
+    "muteMic": "Mykistä mikrofoni",
+    "unmuteMic": "Poista mikrofonin mykistys"
+  },
+  "accessibility": {
+    "title": "Esteettömyys",
+    "dyslexiaFont": "Lukihäiriöystävällinen fontti",
+    "fontSize": "Fonttikoko",
+    "decreaseFont": "Pienennä fonttikokoa",
+    "increaseFont": "Suurenna fonttikokoa"
+  },
+  "language": {
+    "title": "Kieli",
+    "label": "Käyttöliittymän kieli",
+    "g7Group": "G7-kielet",
+    "euGroup": "EU-kielet",
+    "otherGroup": "Muut kielet"
+  },
+  "form": {
+    "preview": "Lomakkeen esikatselu",
+    "completedPreview": "Täytetyn lomakkeen esikatselu",
+    "untitled": "Nimetön lomake",
+    "actions": "Toiminnot",
+    "calculation": "Laskenta: {{hint}}",
+    "format": "Muoto: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analysoidaan...",
+    "preparing": "Valmistellaan analyysiä...",
+    "loading": "Ladataan PDF:ää ja poimitaan kenttiä.",
+    "enhanced": "AI-parannettu",
+    "failed": "AI-parannus epäonnistui",
+    "fieldsFound": "{{count}} kenttää löydetty",
+    "fields": "{{count}} kenttää",
+    "pagesFailed": "{{count}} sivun analyysi epäonnistui",
+    "statusCached": "Välimuistista",
+    "statusComplete": "Valmis",
+    "statusProcessing": "Käsitellään",
+    "statusError": "Virhe",
+    "statusPending": "Odottaa",
+    "largeFormTitle": "Suuri lomake havaittu",
+    "largeFormMessage": "Tässä lomakkeessa on <strong>{{count}} sivua</strong> ja sen analysointi kestää hetken. Voit alkaa täyttää näkyviä kenttiä, kun parannamme niitä tekoälyllä.",
+    "analysisComplete": "Analyysi valmis",
+    "analyzingStructure": "Analysoidaan lomakkeen rakennetta...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> sivua valmis",
+    "processingCount": "{{count}} käsittelyssä",
+    "pendingCount": "{{count}} odottaa",
+    "fromCacheCount": "{{count}} välimuistista",
+    "failedCount": "{{count}} epäonnistui",
+    "pageNumber": "Sivu {{number}}",
+    "fieldCount": "({{count}} kenttää)",
+    "retried": "(yritetty uudelleen)",
+    "errorDetail": "<strong>{{count}} sivua</strong> ei voitu analysoida. Nämä sivut käyttävät peruskenttatietoja."
+  },
+  "inputs": {
+    "enterField": "Syötä {{field}}...",
+    "selectField": "Valitse {{field}}...",
+    "enterReference": "Syötä viite...",
+    "yes": "Kyllä",
+    "no": "Ei"
+  }
+}

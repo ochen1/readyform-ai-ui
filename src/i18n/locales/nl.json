@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Voortgang",
+    "backToForm": "Terug naar formulier",
+    "openInNewTab": "Openen in nieuw tabblad",
+    "closePreview": "Voorbeeld sluiten"
+  },
+  "upload": {
+    "title": "Upload een PDF-formulier",
+    "dropHere": "Sleep PDF hierheen",
+    "dragAndDrop": "Sleep en laat los of klik om te selecteren",
+    "getStarted": "Upload een invulbaar PDF-formulier om te beginnen",
+    "button": "PDF uploaden",
+    "buttonChange": "Ander PDF uploaden"
+  },
+  "voice": {
+    "title": "Spraakassistent",
+    "start": "Start spraakassistent",
+    "end": "Gesprek beëindigen",
+    "needPdf": "Upload een PDF om de spraakassistent te activeren",
+    "thinking": "Aan het denken...",
+    "speaking": "Aan het spreken...",
+    "listening": "Aan het luisteren...",
+    "ready": "Gereed",
+    "mute": "Dempen",
+    "unmute": "Dempen opheffen",
+    "muteMic": "Microfoon dempen",
+    "unmuteMic": "Microfoon dempen opheffen"
+  },
+  "accessibility": {
+    "title": "Toegankelijkheid",
+    "dyslexiaFont": "Dyslexievriendelijk lettertype",
+    "fontSize": "Lettergrootte",
+    "decreaseFont": "Lettergrootte verkleinen",
+    "increaseFont": "Lettergrootte vergroten"
+  },
+  "language": {
+    "title": "Taal",
+    "label": "Interfacetaal",
+    "g7Group": "G7-talen",
+    "euGroup": "EU-talen",
+    "otherGroup": "Andere talen"
+  },
+  "form": {
+    "preview": "Formuliervoorbeeld",
+    "completedPreview": "Voorbeeld ingevuld formulier",
+    "untitled": "Naamloos formulier",
+    "actions": "Acties",
+    "calculation": "Berekening: {{hint}}",
+    "format": "Formaat: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyseren...",
+    "preparing": "Voorbereiden op analyse...",
+    "loading": "PDF laden en velden extraheren.",
+    "enhanced": "AI-verbeterd",
+    "failed": "AI-verbetering mislukt",
+    "fieldsFound": "{{count}} velden gevonden",
+    "fields": "{{count}} velden",
+    "pagesFailed": "Analyse van {{count}} pagina('s) mislukt",
+    "statusCached": "Gecachet",
+    "statusComplete": "Voltooid",
+    "statusProcessing": "Verwerken",
+    "statusError": "Fout",
+    "statusPending": "In afwachting",
+    "largeFormTitle": "Groot formulier gedetecteerd",
+    "largeFormMessage": "Dit formulier heeft <strong>{{count}} pagina's</strong> en de analyse duurt even. U kunt beginnen met het invullen van zichtbare velden terwijl we ze verbeteren met AI.",
+    "analysisComplete": "Analyse voltooid",
+    "analyzingStructure": "Formulierstructuur analyseren...",
+    "pagesComplete": "<strong>{{completed}}</strong> van <strong>{{total}}</strong> pagina's voltooid",
+    "processingCount": "{{count}} in verwerking",
+    "pendingCount": "{{count}} in afwachting",
+    "fromCacheCount": "{{count}} uit cache",
+    "failedCount": "{{count}} mislukt",
+    "pageNumber": "Pagina {{number}}",
+    "fieldCount": "({{count}} velden)",
+    "retried": "(opnieuw geprobeerd)",
+    "errorDetail": "<strong>{{count}} pagina('s)</strong> konden niet worden geanalyseerd. Deze pagina's gebruiken basisveldinformatie."
+  },
+  "inputs": {
+    "enterField": "Voer {{field}} in...",
+    "selectField": "Selecteer {{field}}...",
+    "enterReference": "Voer referentie in...",
+    "yes": "Ja",
+    "no": "Nee"
+  }
+}

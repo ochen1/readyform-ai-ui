@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "முன்னேற்றம்",
+    "backToForm": "படிவத்திற்குத் திரும்பு",
+    "openInNewTab": "புதிய தாவலில் திற",
+    "closePreview": "முன்னோட்டத்தை மூடு"
+  },
+  "upload": {
+    "title": "PDF படிவத்தைப் பதிவேற்றவும்",
+    "dropHere": "PDF-ஐ இங்கே விடவும்",
+    "dragAndDrop": "இழுத்து விடவும் அல்லது தேர்ந்தெடுக்க கிளிக் செய்யவும்",
+    "getStarted": "தொடங்க நிரப்பக்கூடிய PDF படிவத்தைப் பதிவேற்றவும்",
+    "button": "PDF பதிவேற்றவும்",
+    "buttonChange": "வேறு PDF பதிவேற்றவும்"
+  },
+  "voice": {
+    "title": "குரல் உதவியாளர்",
+    "start": "குரல் உதவியாளரைத் தொடங்கு",
+    "end": "அழைப்பை முடி",
+    "needPdf": "குரல் உதவியாளரை இயக்க PDF பதிவேற்றவும்",
+    "thinking": "சிந்திக்கிறது...",
+    "speaking": "பேசுகிறது...",
+    "listening": "கேட்கிறது...",
+    "ready": "தயார்",
+    "mute": "ஒலியடக்கு",
+    "unmute": "ஒலியை இயக்கு",
+    "muteMic": "மைக்ரோஃபோனை ஒலியடக்கு",
+    "unmuteMic": "மைக்ரோஃபோனை இயக்கு"
+  },
+  "accessibility": {
+    "title": "அணுகல்தன்மை",
+    "dyslexiaFont": "டிஸ்லெக்சியா-நட்பு எழுத்துரு",
+    "fontSize": "எழுத்துரு அளவு",
+    "decreaseFont": "எழுத்துரு அளவைக் குறை",
+    "increaseFont": "எழுத்துரு அளவை அதிகரி"
+  },
+  "language": {
+    "title": "மொழி",
+    "label": "இடைமுக மொழி",
+    "g7Group": "G7 மொழிகள்",
+    "euGroup": "EU மொழிகள்",
+    "otherGroup": "பிற மொழிகள்"
+  },
+  "form": {
+    "preview": "படிவத்தை முன்னோட்டமிடு",
+    "completedPreview": "நிரப்பப்பட்ட படிவ முன்னோட்டம்",
+    "untitled": "தலைப்பில்லாத படிவம்",
+    "actions": "செயல்கள்",
+    "calculation": "கணக்கீடு: {{hint}}",
+    "format": "வடிவம்: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "பகுப்பாய்வு செய்கிறது...",
+    "preparing": "பகுப்பாய்வுக்குத் தயாராகிறது...",
+    "loading": "PDF ஏற்றப்படுகிறது மற்றும் புலங்கள் பிரித்தெடுக்கப்படுகின்றன.",
+    "enhanced": "AI மேம்படுத்தப்பட்டது",
+    "failed": "AI மேம்படுத்தல் தோல்வியடைந்தது",
+    "fieldsFound": "{{count}} புலங்கள் கண்டறியப்பட்டன",
+    "fields": "{{count}} புலங்கள்",
+    "pagesFailed": "{{count}} பக்க(ங்கள்) பகுப்பாய்வு தோல்வியடைந்தன",
+    "statusCached": "தற்காலிகமாக சேமிக்கப்பட்டது",
+    "statusComplete": "முடிந்தது",
+    "statusProcessing": "செயலாக்கப்படுகிறது",
+    "statusError": "பிழை",
+    "statusPending": "நிலுவையில்",
+    "largeFormTitle": "பெரிய படிவம் கண்டறியப்பட்டது",
+    "largeFormMessage": "இந்தப் படிவத்தில் <strong>{{count}} பக்கங்கள்</strong> உள்ளன, பகுப்பாய்வுக்கு சிறிது நேரம் ஆகும். AI மூலம் மேம்படுத்தும் போது நீங்கள் தெரியும் புலங்களை நிரப்பத் தொடங்கலாம்.",
+    "analysisComplete": "பகுப்பாய்வு முடிந்தது",
+    "analyzingStructure": "படிவ கட்டமைப்பைப் பகுப்பாய்வு செய்கிறது...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> பக்கங்கள் முடிந்தன",
+    "processingCount": "{{count}} செயலாக்கப்படுகிறது",
+    "pendingCount": "{{count}} நிலுவையில்",
+    "fromCacheCount": "{{count}} தற்காலிக சேமிப்பிலிருந்து",
+    "failedCount": "{{count}} தோல்வியடைந்தன",
+    "pageNumber": "பக்கம் {{number}}",
+    "fieldCount": "({{count}} புலங்கள்)",
+    "retried": "(மீண்டும் முயற்சிக்கப்பட்டது)",
+    "errorDetail": "<strong>{{count}} பக்க(ங்கள்)</strong> பகுப்பாய்வு செய்ய இயலவில்லை. இந்தப் பக்கங்கள் அடிப்படை புல தகவலைப் பயன்படுத்தும்."
+  },
+  "inputs": {
+    "enterField": "{{field}} உள்ளிடவும்...",
+    "selectField": "{{field}} தேர்ந்தெடுக்கவும்...",
+    "enterReference": "குறிப்பை உள்ளிடவும்...",
+    "yes": "ஆம்",
+    "no": "இல்லை"
+  }
+}

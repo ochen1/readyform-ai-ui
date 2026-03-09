@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Напредак",
+    "backToForm": "Назад на образац",
+    "openInNewTab": "Отвори у новом табу",
+    "closePreview": "Затвори преглед"
+  },
+  "upload": {
+    "title": "Отпреми PDF образац",
+    "dropHere": "Превуците PDF овде",
+    "dragAndDrop": "Превуците и отпустите или кликните за избор",
+    "getStarted": "Отпремите PDF образац за попуњавање да бисте почели",
+    "button": "Отпреми PDF",
+    "buttonChange": "Отпреми други PDF"
+  },
+  "voice": {
+    "title": "Гласовни асистент",
+    "start": "Покрени гласовни асистент",
+    "end": "Заврши позив",
+    "needPdf": "Отпремите PDF да бисте омогућили гласовни асистент",
+    "thinking": "Размишља...",
+    "speaking": "Говори...",
+    "listening": "Слуша...",
+    "ready": "Спреман",
+    "mute": "Искључи звук",
+    "unmute": "Укључи звук",
+    "muteMic": "Искључи микрофон",
+    "unmuteMic": "Укључи микрофон"
+  },
+  "accessibility": {
+    "title": "Приступачност",
+    "dyslexiaFont": "Фонт прилагођен за дислексију",
+    "fontSize": "Величина фонта",
+    "decreaseFont": "Смањи величину фонта",
+    "increaseFont": "Повећај величину фонта"
+  },
+  "language": {
+    "title": "Језик",
+    "label": "Језик интерфејса",
+    "g7Group": "G7 језици",
+    "euGroup": "EU језици",
+    "otherGroup": "Остали језици"
+  },
+  "form": {
+    "preview": "Преглед обрасца",
+    "completedPreview": "Преглед попуњеног обрасца",
+    "untitled": "Образац без наслова",
+    "actions": "Радње",
+    "calculation": "Прорачун: {{hint}}",
+    "format": "Формат: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Анализирање...",
+    "preparing": "Припрема за анализу...",
+    "loading": "Учитавање PDF-а и извлачење поља.",
+    "enhanced": "Побољшано вештачком интелигенцијом",
+    "failed": "AI побољшање није успело",
+    "fieldsFound": "Пронађено {{count}} поља",
+    "fields": "{{count}} поља",
+    "pagesFailed": "{{count}} страница(е) нису успешно анализиране",
+    "statusCached": "Кеширано",
+    "statusComplete": "Завршено",
+    "statusProcessing": "Обрада",
+    "statusError": "Грешка",
+    "statusPending": "На чекању",
+    "largeFormTitle": "Откривен велики образац",
+    "largeFormMessage": "Овај образац има <strong>{{count}} страница</strong> и биће потребно време за анализу. Можете почети да попуњавате видљива поља док их побољшавамо вештачком интелигенцијом.",
+    "analysisComplete": "Анализа завршена",
+    "analyzingStructure": "Анализирање структуре обрасца...",
+    "pagesComplete": "<strong>{{completed}}</strong> од <strong>{{total}}</strong> страница завршено",
+    "processingCount": "{{count}} у обради",
+    "pendingCount": "{{count}} на чекању",
+    "fromCacheCount": "{{count}} из кеша",
+    "failedCount": "{{count}} неуспешно",
+    "pageNumber": "Страница {{number}}",
+    "fieldCount": "({{count}} поља)",
+    "retried": "(поновљен покушај)",
+    "errorDetail": "<strong>{{count}} страница(е)</strong> нису могле бити анализиране. Ове странице ће користити основне информације о пољима."
+  },
+  "inputs": {
+    "enterField": "Унесите {{field}}...",
+    "selectField": "Изаберите {{field}}...",
+    "enterReference": "Унесите референцу...",
+    "yes": "Да",
+    "no": "Не"
+  }
+}

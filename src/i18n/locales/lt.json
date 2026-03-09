@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Progresas",
+    "backToForm": "Grįžti prie formos",
+    "openInNewTab": "Atidaryti naujame skirtuke",
+    "closePreview": "Uždaryti peržiūrą"
+  },
+  "upload": {
+    "title": "Įkelti PDF formą",
+    "dropHere": "Numeskite PDF čia",
+    "dragAndDrop": "Vilkite ir numeskite arba spustelėkite, kad pasirinktumėte",
+    "getStarted": "Įkelkite užpildomą PDF formą, kad pradėtumėte",
+    "button": "Įkelti PDF",
+    "buttonChange": "Įkelti kitą PDF"
+  },
+  "voice": {
+    "title": "Balso asistentas",
+    "start": "Paleisti balso asistentą",
+    "end": "Baigti skambutį",
+    "needPdf": "Įkelkite PDF, kad aktyvuotumėte balso asistentą",
+    "thinking": "Galvoja...",
+    "speaking": "Kalba...",
+    "listening": "Klausosi...",
+    "ready": "Paruošta",
+    "mute": "Nutildyti",
+    "unmute": "Įjungti garsą",
+    "muteMic": "Nutildyti mikrofoną",
+    "unmuteMic": "Įjungti mikrofoną"
+  },
+  "accessibility": {
+    "title": "Prieinamumas",
+    "dyslexiaFont": "Disleksijai pritaikytas šriftas",
+    "fontSize": "Šrifto dydis",
+    "decreaseFont": "Sumažinti šrifto dydį",
+    "increaseFont": "Padidinti šrifto dydį"
+  },
+  "language": {
+    "title": "Kalba",
+    "label": "Sąsajos kalba",
+    "g7Group": "G7 kalbos",
+    "euGroup": "ES kalbos",
+    "otherGroup": "Kitos kalbos"
+  },
+  "form": {
+    "preview": "Formos peržiūra",
+    "completedPreview": "Užpildytos formos peržiūra",
+    "untitled": "Forma be pavadinimo",
+    "actions": "Veiksmai",
+    "calculation": "Skaičiavimas: {{hint}}",
+    "format": "Formatas: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analizuojama...",
+    "preparing": "Ruošiamasi analizei...",
+    "loading": "Įkeliamas PDF ir išgaunami laukai.",
+    "enhanced": "Patobulinta DI",
+    "failed": "DI patobulinimas nepavyko",
+    "fieldsFound": "Rasta {{count}} laukų",
+    "fields": "{{count}} laukų",
+    "pagesFailed": "{{count}} puslapio(-ių) analizė nepavyko",
+    "statusCached": "Iš podėlio",
+    "statusComplete": "Baigta",
+    "statusProcessing": "Apdorojama",
+    "statusError": "Klaida",
+    "statusPending": "Laukiama",
+    "largeFormTitle": "Aptikta didelė forma",
+    "largeFormMessage": "Šioje formoje yra <strong>{{count}} puslapių</strong> ir analizė užtruks. Galite pradėti pildyti matomus laukus, kol juos tobuliname DI.",
+    "analysisComplete": "Analizė baigta",
+    "analyzingStructure": "Analizuojama formos struktūra...",
+    "pagesComplete": "<strong>{{completed}}</strong> iš <strong>{{total}}</strong> puslapių baigta",
+    "processingCount": "{{count}} apdorojama",
+    "pendingCount": "{{count}} laukia",
+    "fromCacheCount": "{{count}} iš podėlio",
+    "failedCount": "{{count}} nepavyko",
+    "pageNumber": "Puslapis {{number}}",
+    "fieldCount": "({{count}} laukų)",
+    "retried": "(bandyta iš naujo)",
+    "errorDetail": "<strong>{{count}} puslapio(-ių)</strong> nepavyko išanalizuoti. Šie puslapiai naudos pagrindinę laukų informaciją."
+  },
+  "inputs": {
+    "enterField": "Įveskite {{field}}...",
+    "selectField": "Pasirinkite {{field}}...",
+    "enterReference": "Įveskite nuorodą...",
+    "yes": "Taip",
+    "no": "Ne"
+  }
+}

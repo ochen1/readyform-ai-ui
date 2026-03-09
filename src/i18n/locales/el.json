@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Πρόοδος",
+    "backToForm": "Πίσω στη φόρμα",
+    "openInNewTab": "Άνοιγμα σε νέα καρτέλα",
+    "closePreview": "Κλείσιμο προεπισκόπησης"
+  },
+  "upload": {
+    "title": "Ανέβασμα φόρμας PDF",
+    "dropHere": "Αφήστε το PDF εδώ",
+    "dragAndDrop": "Σύρετε και αφήστε ή κάντε κλικ για επιλογή",
+    "getStarted": "Ανεβάστε μια συμπληρώσιμη φόρμα PDF για να ξεκινήσετε",
+    "button": "Ανέβασμα PDF",
+    "buttonChange": "Ανέβασμα διαφορετικού PDF"
+  },
+  "voice": {
+    "title": "Φωνητικός βοηθός",
+    "start": "Εκκίνηση φωνητικού βοηθού",
+    "end": "Τερματισμός κλήσης",
+    "needPdf": "Ανεβάστε ένα PDF για να ενεργοποιήσετε τον φωνητικό βοηθό",
+    "thinking": "Σκέφτεται...",
+    "speaking": "Μιλάει...",
+    "listening": "Ακούει...",
+    "ready": "Έτοιμο",
+    "mute": "Σίγαση",
+    "unmute": "Κατάργηση σίγασης",
+    "muteMic": "Σίγαση μικροφώνου",
+    "unmuteMic": "Κατάργηση σίγασης μικροφώνου"
+  },
+  "accessibility": {
+    "title": "Προσβασιμότητα",
+    "dyslexiaFont": "Γραμματοσειρά φιλική προς τη δυσλεξία",
+    "fontSize": "Μέγεθος γραμματοσειράς",
+    "decreaseFont": "Μείωση μεγέθους γραμματοσειράς",
+    "increaseFont": "Αύξηση μεγέθους γραμματοσειράς"
+  },
+  "language": {
+    "title": "Γλώσσα",
+    "label": "Γλώσσα διεπαφής",
+    "g7Group": "Γλώσσες G7",
+    "euGroup": "Γλώσσες ΕΕ",
+    "otherGroup": "Άλλες γλώσσες"
+  },
+  "form": {
+    "preview": "Προεπισκόπηση φόρμας",
+    "completedPreview": "Προεπισκόπηση συμπληρωμένης φόρμας",
+    "untitled": "Φόρμα χωρίς τίτλο",
+    "actions": "Ενέργειες",
+    "calculation": "Υπολογισμός: {{hint}}",
+    "format": "Μορφή: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Ανάλυση...",
+    "preparing": "Προετοιμασία για ανάλυση...",
+    "loading": "Φόρτωση PDF και εξαγωγή πεδίων.",
+    "enhanced": "Βελτιωμένο με AI",
+    "failed": "Η βελτίωση AI απέτυχε",
+    "fieldsFound": "Βρέθηκαν {{count}} πεδία",
+    "fields": "{{count}} πεδία",
+    "pagesFailed": "{{count}} σελίδα(-ες) απέτυχαν στην ανάλυση",
+    "statusCached": "Αποθηκευμένο",
+    "statusComplete": "Ολοκληρωμένο",
+    "statusProcessing": "Επεξεργασία",
+    "statusError": "Σφάλμα",
+    "statusPending": "Σε αναμονή",
+    "largeFormTitle": "Εντοπίστηκε μεγάλη φόρμα",
+    "largeFormMessage": "Αυτή η φόρμα έχει <strong>{{count}} σελίδες</strong> και θα χρειαστεί λίγο χρόνο για ανάλυση. Μπορείτε να αρχίσετε να συμπληρώνετε τα ορατά πεδία ενώ τα βελτιώνουμε με AI.",
+    "analysisComplete": "Η ανάλυση ολοκληρώθηκε",
+    "analyzingStructure": "Ανάλυση δομής φόρμας...",
+    "pagesComplete": "<strong>{{completed}}</strong> από <strong>{{total}}</strong> σελίδες ολοκληρώθηκαν",
+    "processingCount": "{{count}} σε επεξεργασία",
+    "pendingCount": "{{count}} σε αναμονή",
+    "fromCacheCount": "{{count}} από την προσωρινή μνήμη",
+    "failedCount": "{{count}} απέτυχαν",
+    "pageNumber": "Σελίδα {{number}}",
+    "fieldCount": "({{count}} πεδία)",
+    "retried": "(επαναδοκιμή)",
+    "errorDetail": "<strong>{{count}} σελίδα(-ες)</strong> δεν ήταν δυνατό να αναλυθούν. Αυτές οι σελίδες θα χρησιμοποιήσουν βασικές πληροφορίες πεδίων."
+  },
+  "inputs": {
+    "enterField": "Εισάγετε {{field}}...",
+    "selectField": "Επιλέξτε {{field}}...",
+    "enterReference": "Εισάγετε αναφορά...",
+    "yes": "Ναι",
+    "no": "Όχι"
+  }
+}
