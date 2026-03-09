@@ -37,7 +37,10 @@
   },
   "language": {
     "title": "Sprache",
-    "label": "Oberflächensprache"
+    "label": "Oberflächensprache",
+    "g7Group": "G7-Sprachen",
+    "euGroup": "EU-Sprachen",
+    "otherGroup": "Andere Sprachen"
   },
   "form": {
     "preview": "Formular-Vorschau",

@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "İlerleme",
+    "backToForm": "Forma Dön",
+    "openInNewTab": "Yeni Sekmede Aç",
+    "closePreview": "Önizlemeyi kapat"
+  },
+  "upload": {
+    "title": "PDF Form Yükle",
+    "dropHere": "PDF'yi buraya bırakın",
+    "dragAndDrop": "Sürükleyip bırakın veya seçmek için tıklayın",
+    "getStarted": "Başlamak için doldurulabilir bir PDF form yükleyin",
+    "button": "PDF Yükle",
+    "buttonChange": "Farklı PDF Yükle"
+  },
+  "voice": {
+    "title": "Sesli Asistan",
+    "start": "Sesli Asistanı Başlat",
+    "end": "Aramayı Sonlandır",
+    "needPdf": "Sesli asistanı etkinleştirmek için PDF yükleyin",
+    "thinking": "Düşünüyor...",
+    "speaking": "Konuşuyor...",
+    "listening": "Dinliyor...",
+    "ready": "Hazır",
+    "mute": "Sesi Kapat",
+    "unmute": "Sesi Aç",
+    "muteMic": "Mikrofonu kapat",
+    "unmuteMic": "Mikrofonu aç"
+  },
+  "accessibility": {
+    "title": "Erişilebilirlik",
+    "dyslexiaFont": "Disleksi Dostu Yazı Tipi",
+    "fontSize": "Yazı Tipi Boyutu",
+    "decreaseFont": "Yazı tipi boyutunu küçült",
+    "increaseFont": "Yazı tipi boyutunu büyüt"
+  },
+  "language": {
+    "title": "Dil",
+    "label": "Arayüz Dili",
+    "g7Group": "G7 Dilleri",
+    "euGroup": "AB Dilleri",
+    "otherGroup": "Diğer Diller"
+  },
+  "form": {
+    "preview": "Form Önizleme",
+    "completedPreview": "Tamamlanmış Form Önizlemesi",
+    "untitled": "Başlıksız Form",
+    "actions": "İşlemler",
+    "calculation": "Hesaplama: {{hint}}",
+    "format": "Biçim: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analiz ediliyor...",
+    "preparing": "Analiz için hazırlanıyor...",
+    "loading": "PDF yükleniyor ve alanlar çıkarılıyor.",
+    "enhanced": "Yapay Zeka ile Geliştirildi",
+    "failed": "Yapay zeka geliştirmesi başarısız oldu",
+    "fieldsFound": "{{count}} alan bulundu",
+    "fields": "{{count}} alan",
+    "pagesFailed": "{{count}} sayfa analiz edilemedi",
+    "statusCached": "Önbellekte",
+    "statusComplete": "Tamamlandı",
+    "statusProcessing": "İşleniyor",
+    "statusError": "Hata",
+    "statusPending": "Beklemede",
+    "largeFormTitle": "Büyük Form Algılandı",
+    "largeFormMessage": "Bu formda <strong>{{count}} sayfa</strong> var ve analiz edilmesi biraz zaman alacak. Biz yapay zeka ile geliştirirken görünür alanları doldurmaya başlayabilirsiniz.",
+    "analysisComplete": "Analiz Tamamlandı",
+    "analyzingStructure": "Form Yapısı Analiz Ediliyor...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> sayfa tamamlandı",
+    "processingCount": "{{count}} işleniyor",
+    "pendingCount": "{{count}} beklemede",
+    "fromCacheCount": "{{count}} önbellekten",
+    "failedCount": "{{count}} başarısız",
+    "pageNumber": "Sayfa {{number}}",
+    "fieldCount": "({{count}} alan)",
+    "retried": "(yeniden denendi)",
+    "errorDetail": "<strong>{{count}} sayfa</strong> analiz edilemedi. Bu sayfalar temel alan bilgilerini kullanacak."
+  },
+  "inputs": {
+    "enterField": "{{field}} girin...",
+    "selectField": "{{field}} seçin...",
+    "enterReference": "Referans girin...",
+    "yes": "Evet",
+    "no": "Hayır"
+  }
+}

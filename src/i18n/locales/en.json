@@ -37,7 +37,10 @@
   },
   "language": {
     "title": "Language",
-    "label": "Interface Language"
+    "label": "Interface Language",
+    "g7Group": "G7 Languages",
+    "euGroup": "EU Languages",
+    "otherGroup": "Other Languages"
   },
   "form": {
     "preview": "Preview Form",

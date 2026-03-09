@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "پیشرفت",
+    "backToForm": "بازگشت به فرم",
+    "openInNewTab": "باز کردن در تب جدید",
+    "closePreview": "بستن پیش‌نمایش"
+  },
+  "upload": {
+    "title": "بارگذاری فرم PDF",
+    "dropHere": "PDF را اینجا رها کنید",
+    "dragAndDrop": "بکشید و رها کنید یا برای انتخاب کلیک کنید",
+    "getStarted": "برای شروع یک فرم PDF قابل پر کردن بارگذاری کنید",
+    "button": "بارگذاری PDF",
+    "buttonChange": "بارگذاری PDF دیگر"
+  },
+  "voice": {
+    "title": "دستیار صوتی",
+    "start": "شروع دستیار صوتی",
+    "end": "پایان تماس",
+    "needPdf": "برای فعال‌سازی دستیار صوتی یک PDF بارگذاری کنید",
+    "thinking": "در حال فکر کردن...",
+    "speaking": "در حال صحبت...",
+    "listening": "در حال گوش دادن...",
+    "ready": "آماده",
+    "mute": "بی‌صدا",
+    "unmute": "فعال کردن صدا",
+    "muteMic": "بی‌صدا کردن میکروفون",
+    "unmuteMic": "فعال کردن میکروفون"
+  },
+  "accessibility": {
+    "title": "دسترسی‌پذیری",
+    "dyslexiaFont": "فونت مناسب نارساخوانی",
+    "fontSize": "اندازه فونت",
+    "decreaseFont": "کاهش اندازه فونت",
+    "increaseFont": "افزایش اندازه فونت"
+  },
+  "language": {
+    "title": "زبان",
+    "label": "زبان رابط کاربری",
+    "g7Group": "زبان‌های G7",
+    "euGroup": "زبان‌های اتحادیه اروپا",
+    "otherGroup": "سایر زبان‌ها"
+  },
+  "form": {
+    "preview": "پیش‌نمایش فرم",
+    "completedPreview": "پیش‌نمایش فرم تکمیل‌شده",
+    "untitled": "فرم بدون عنوان",
+    "actions": "اقدامات",
+    "calculation": "محاسبه: {{hint}}",
+    "format": "قالب: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "در حال تحلیل...",
+    "preparing": "آماده‌سازی برای تحلیل...",
+    "loading": "بارگذاری PDF و استخراج فیلدها.",
+    "enhanced": "بهبود یافته با هوش مصنوعی",
+    "failed": "بهبود هوش مصنوعی ناموفق بود",
+    "fieldsFound": "{{count}} فیلد یافت شد",
+    "fields": "{{count}} فیلد",
+    "pagesFailed": "{{count}} صفحه در تحلیل ناموفق بود",
+    "statusCached": "کش شده",
+    "statusComplete": "کامل",
+    "statusProcessing": "در حال پردازش",
+    "statusError": "خطا",
+    "statusPending": "در انتظار",
+    "largeFormTitle": "فرم بزرگ شناسایی شد",
+    "largeFormMessage": "این فرم <strong>{{count}} صفحه</strong> دارد و تحلیل آن کمی زمان می‌برد. می‌توانید در حین بهبود با هوش مصنوعی، فیلدهای قابل مشاهده را پر کنید.",
+    "analysisComplete": "تحلیل کامل شد",
+    "analyzingStructure": "تحلیل ساختار فرم...",
+    "pagesComplete": "<strong>{{completed}}</strong> از <strong>{{total}}</strong> صفحه تکمیل شده",
+    "processingCount": "{{count}} در حال پردازش",
+    "pendingCount": "{{count}} در انتظار",
+    "fromCacheCount": "{{count}} از کش",
+    "failedCount": "{{count}} ناموفق",
+    "pageNumber": "صفحه {{number}}",
+    "fieldCount": "({{count}} فیلد)",
+    "retried": "(تلاش مجدد شده)",
+    "errorDetail": "<strong>{{count}} صفحه</strong> قابل تحلیل نبود. این صفحات از اطلاعات پایه فیلد استفاده خواهند کرد."
+  },
+  "inputs": {
+    "enterField": "{{field}} را وارد کنید...",
+    "selectField": "{{field}} را انتخاب کنید...",
+    "enterReference": "مرجع را وارد کنید...",
+    "yes": "بله",
+    "no": "خیر"
+  }
+}

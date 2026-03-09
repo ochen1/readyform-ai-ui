@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "ความคืบหน้า",
+    "backToForm": "กลับไปที่แบบฟอร์ม",
+    "openInNewTab": "เปิดในแท็บใหม่",
+    "closePreview": "ปิดตัวอย่าง"
+  },
+  "upload": {
+    "title": "อัปโหลดแบบฟอร์ม PDF",
+    "dropHere": "วาง PDF ที่นี่",
+    "dragAndDrop": "ลากแล้ววาง หรือคลิกเพื่อเลือก",
+    "getStarted": "อัปโหลดแบบฟอร์ม PDF ที่กรอกได้เพื่อเริ่มต้น",
+    "button": "อัปโหลด PDF",
+    "buttonChange": "อัปโหลด PDF อื่น"
+  },
+  "voice": {
+    "title": "ผู้ช่วยเสียง",
+    "start": "เริ่มผู้ช่วยเสียง",
+    "end": "วางสาย",
+    "needPdf": "อัปโหลด PDF เพื่อเปิดใช้งานผู้ช่วยเสียง",
+    "thinking": "กำลังคิด...",
+    "speaking": "กำลังพูด...",
+    "listening": "กำลังฟัง...",
+    "ready": "พร้อม",
+    "mute": "ปิดเสียง",
+    "unmute": "เปิดเสียง",
+    "muteMic": "ปิดไมโครโฟน",
+    "unmuteMic": "เปิดไมโครโฟน"
+  },
+  "accessibility": {
+    "title": "การเข้าถึง",
+    "dyslexiaFont": "แบบอักษรสำหรับผู้มีภาวะดิสเล็กเซีย",
+    "fontSize": "ขนาดตัวอักษร",
+    "decreaseFont": "ลดขนาดตัวอักษร",
+    "increaseFont": "เพิ่มขนาดตัวอักษร"
+  },
+  "language": {
+    "title": "ภาษา",
+    "label": "ภาษาของอินเทอร์เฟซ",
+    "g7Group": "ภาษากลุ่ม G7",
+    "euGroup": "ภาษากลุ่ม EU",
+    "otherGroup": "ภาษาอื่น ๆ"
+  },
+  "form": {
+    "preview": "ดูตัวอย่างแบบฟอร์ม",
+    "completedPreview": "ดูตัวอย่างแบบฟอร์มที่กรอกแล้ว",
+    "untitled": "แบบฟอร์มไม่มีชื่อ",
+    "actions": "การดำเนินการ",
+    "calculation": "การคำนวณ: {{hint}}",
+    "format": "รูปแบบ: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "กำลังวิเคราะห์...",
+    "preparing": "กำลังเตรียมวิเคราะห์...",
+    "loading": "กำลังโหลด PDF และดึงข้อมูลฟิลด์",
+    "enhanced": "ปรับปรุงด้วย AI",
+    "failed": "การปรับปรุงด้วย AI ล้มเหลว",
+    "fieldsFound": "พบ {{count}} ฟิลด์",
+    "fields": "{{count}} ฟิลด์",
+    "pagesFailed": "{{count}} หน้าวิเคราะห์ล้มเหลว",
+    "statusCached": "แคชแล้ว",
+    "statusComplete": "เสร็จสมบูรณ์",
+    "statusProcessing": "กำลังประมวลผล",
+    "statusError": "ข้อผิดพลาด",
+    "statusPending": "รอดำเนินการ",
+    "largeFormTitle": "ตรวจพบแบบฟอร์มขนาดใหญ่",
+    "largeFormMessage": "แบบฟอร์มนี้มี <strong>{{count}} หน้า</strong> และจะใช้เวลาในการวิเคราะห์ คุณสามารถเริ่มกรอกฟิลด์ที่มองเห็นได้ในขณะที่เราปรับปรุงด้วย AI",
+    "analysisComplete": "การวิเคราะห์เสร็จสมบูรณ์",
+    "analyzingStructure": "กำลังวิเคราะห์โครงสร้างแบบฟอร์ม...",
+    "pagesComplete": "<strong>{{completed}}</strong> จาก <strong>{{total}}</strong> หน้าเสร็จสมบูรณ์",
+    "processingCount": "{{count}} กำลังประมวลผล",
+    "pendingCount": "{{count}} รอดำเนินการ",
+    "fromCacheCount": "{{count}} จากแคช",
+    "failedCount": "{{count}} ล้มเหลว",
+    "pageNumber": "หน้า {{number}}",
+    "fieldCount": "({{count}} ฟิลด์)",
+    "retried": "(ลองใหม่แล้ว)",
+    "errorDetail": "<strong>{{count}} หน้า</strong> ไม่สามารถวิเคราะห์ได้ หน้าเหล่านี้จะใช้ข้อมูลฟิลด์พื้นฐาน"
+  },
+  "inputs": {
+    "enterField": "กรอก {{field}}...",
+    "selectField": "เลือก {{field}}...",
+    "enterReference": "กรอกข้อมูลอ้างอิง...",
+    "yes": "ใช่",
+    "no": "ไม่"
+  }
+}

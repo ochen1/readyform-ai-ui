@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "অগ্রগতি",
+    "backToForm": "ফর্মে ফিরে যান",
+    "openInNewTab": "নতুন ট্যাবে খুলুন",
+    "closePreview": "প্রিভিউ বন্ধ করুন"
+  },
+  "upload": {
+    "title": "একটি PDF ফর্ম আপলোড করুন",
+    "dropHere": "এখানে PDF ড্রপ করুন",
+    "dragAndDrop": "টেনে আনুন অথবা নির্বাচন করতে ক্লিক করুন",
+    "getStarted": "শুরু করতে একটি পূরণযোগ্য PDF ফর্ম আপলোড করুন",
+    "button": "PDF আপলোড করুন",
+    "buttonChange": "ভিন্ন PDF আপলোড করুন"
+  },
+  "voice": {
+    "title": "ভয়েস সহকারী",
+    "start": "ভয়েস সহকারী শুরু করুন",
+    "end": "কল শেষ করুন",
+    "needPdf": "ভয়েস সহকারী সক্রিয় করতে একটি PDF আপলোড করুন",
+    "thinking": "ভাবছি...",
+    "speaking": "বলছি...",
+    "listening": "শুনছি...",
+    "ready": "প্রস্তুত",
+    "mute": "নিঃশব্দ করুন",
+    "unmute": "শব্দ চালু করুন",
+    "muteMic": "মাইক্রোফোন নিঃশব্দ করুন",
+    "unmuteMic": "মাইক্রোফোন চালু করুন"
+  },
+  "accessibility": {
+    "title": "অ্যাক্সেসিবিলিটি",
+    "dyslexiaFont": "ডিসলেক্সিয়া-বান্ধব ফন্ট",
+    "fontSize": "ফন্টের আকার",
+    "decreaseFont": "ফন্টের আকার কমান",
+    "increaseFont": "ফন্টের আকার বাড়ান"
+  },
+  "language": {
+    "title": "ভাষা",
+    "label": "ইন্টারফেস ভাষা",
+    "g7Group": "G7 ভাষাসমূহ",
+    "euGroup": "EU ভাষাসমূহ",
+    "otherGroup": "অন্যান্য ভাষাসমূহ"
+  },
+  "form": {
+    "preview": "ফর্ম প্রিভিউ",
+    "completedPreview": "সম্পূর্ণ ফর্ম প্রিভিউ",
+    "untitled": "শিরোনামবিহীন ফর্ম",
+    "actions": "অ্যাকশন",
+    "calculation": "গণনা: {{hint}}",
+    "format": "ফরম্যাট: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "বিশ্লেষণ করা হচ্ছে...",
+    "preparing": "বিশ্লেষণের জন্য প্রস্তুত হচ্ছে...",
+    "loading": "PDF লোড হচ্ছে এবং ফিল্ড বের করা হচ্ছে।",
+    "enhanced": "AI উন্নত",
+    "failed": "AI উন্নতকরণ ব্যর্থ হয়েছে",
+    "fieldsFound": "{{count}}টি ফিল্ড পাওয়া গেছে",
+    "fields": "{{count}}টি ফিল্ড",
+    "pagesFailed": "{{count}}টি পৃষ্ঠা বিশ্লেষণে ব্যর্থ হয়েছে",
+    "statusCached": "ক্যাশড",
+    "statusComplete": "সম্পূর্ণ",
+    "statusProcessing": "প্রক্রিয়াকরণ হচ্ছে",
+    "statusError": "ত্রুটি",
+    "statusPending": "মুলতুবি",
+    "largeFormTitle": "বড় ফর্ম সনাক্ত হয়েছে",
+    "largeFormMessage": "এই ফর্মটিতে <strong>{{count}}টি পৃষ্ঠা</strong> রয়েছে এবং বিশ্লেষণ করতে কিছু সময় লাগবে। আমরা AI দিয়ে উন্নত করার সময় আপনি দৃশ্যমান ফিল্ডগুলি পূরণ করতে পারেন।",
+    "analysisComplete": "বিশ্লেষণ সম্পূর্ণ",
+    "analyzingStructure": "ফর্মের কাঠামো বিশ্লেষণ করা হচ্ছে...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> পৃষ্ঠা সম্পূর্ণ",
+    "processingCount": "{{count}}টি প্রক্রিয়াকরণ হচ্ছে",
+    "pendingCount": "{{count}}টি মুলতুবি",
+    "fromCacheCount": "{{count}}টি ক্যাশ থেকে",
+    "failedCount": "{{count}}টি ব্যর্থ",
+    "pageNumber": "পৃষ্ঠা {{number}}",
+    "fieldCount": "({{count}}টি ফিল্ড)",
+    "retried": "(পুনরায় চেষ্টা করা হয়েছে)",
+    "errorDetail": "<strong>{{count}}টি পৃষ্ঠা</strong> বিশ্লেষণ করা যায়নি। এই পৃষ্ঠাগুলি মৌলিক ফিল্ড তথ্য ব্যবহার করবে।"
+  },
+  "inputs": {
+    "enterField": "{{field}} লিখুন...",
+    "selectField": "{{field}} নির্বাচন করুন...",
+    "enterReference": "রেফারেন্স লিখুন...",
+    "yes": "হ্যাঁ",
+    "no": "না"
+  }
+}

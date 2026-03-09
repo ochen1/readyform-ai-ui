@@ -6,7 +6,7 @@ import { useAccessibility } from '../store/AccessibilityContext';
 import { useLanguageContext } from '../store/LanguageContext';
 import type { FormField } from '../store/types';
 import type { SupportedLanguage } from '../store/languageTypes';
-import { SUPPORTED_LANGUAGES } from '../store/languageTypes';
+import { G7_LANGUAGES, EU_LANGUAGES, OTHER_LANGUAGES } from '../store/languageTypes';
 import { VOICE_CONFIGS } from '../i18n/voiceConfig';
 import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X, Globe } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
@@ -904,11 +904,27 @@ export function SimpleForm() {
             onChange={(e) => setLang(e.target.value as SupportedLanguage)}
             className="w-full px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 text-base font-medium focus:border-blue-500 focus:outline-none transition-colors"
           >
-            {SUPPORTED_LANGUAGES.map((lang) => (
-              <option key={lang} value={lang}>
-                {VOICE_CONFIGS[lang].nativeName} ({VOICE_CONFIGS[lang].englishName})
-              </option>
-            ))}
+            <optgroup label={t('language.g7Group')}>
+              {G7_LANGUAGES.map((lang) => (
+                <option key={lang} value={lang}>
+                  {VOICE_CONFIGS[lang].nativeName} ({VOICE_CONFIGS[lang].englishName})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('language.euGroup')}>
+              {EU_LANGUAGES.map((lang) => (
+                <option key={lang} value={lang}>
+                  {VOICE_CONFIGS[lang].nativeName} ({VOICE_CONFIGS[lang].englishName})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('language.otherGroup')}>
+              {OTHER_LANGUAGES.map((lang) => (
+                <option key={lang} value={lang}>
+                  {VOICE_CONFIGS[lang].nativeName} ({VOICE_CONFIGS[lang].englishName})
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 

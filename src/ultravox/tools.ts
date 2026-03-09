@@ -1,4 +1,5 @@
 import type { FormField } from '../store/types';
+import { SUPPORTED_LANGUAGES } from '../store/languageTypes';
 
 /**
  * Tool definition type for Ultravox
@@ -36,7 +37,7 @@ export const staticTools: ToolDefinition[] = [
           schema: {
             type: 'string',
             description: 'BCP47 language code detected from user speech',
-            enum: ['en', 'fr', 'de', 'it', 'ja']
+            enum: [...SUPPORTED_LANGUAGES]
           },
           required: true
         }

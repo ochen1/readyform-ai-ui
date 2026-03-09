@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Průběh",
+    "backToForm": "Zpět na formulář",
+    "openInNewTab": "Otevřít v nové kartě",
+    "closePreview": "Zavřít náhled"
+  },
+  "upload": {
+    "title": "Nahrát PDF formulář",
+    "dropHere": "Přetáhněte PDF sem",
+    "dragAndDrop": "Přetáhněte nebo klikněte pro výběr",
+    "getStarted": "Nahrajte vyplnitelný PDF formulář a začněte",
+    "button": "Nahrát PDF",
+    "buttonChange": "Nahrát jiný PDF"
+  },
+  "voice": {
+    "title": "Hlasový asistent",
+    "start": "Spustit hlasového asistenta",
+    "end": "Ukončit hovor",
+    "needPdf": "Nahrajte PDF pro aktivaci hlasového asistenta",
+    "thinking": "Přemýšlí...",
+    "speaking": "Mluví...",
+    "listening": "Naslouchá...",
+    "ready": "Připraven",
+    "mute": "Ztlumit",
+    "unmute": "Zapnout zvuk",
+    "muteMic": "Ztlumit mikrofon",
+    "unmuteMic": "Zapnout mikrofon"
+  },
+  "accessibility": {
+    "title": "Přístupnost",
+    "dyslexiaFont": "Písmo pro dyslektiky",
+    "fontSize": "Velikost písma",
+    "decreaseFont": "Zmenšit písmo",
+    "increaseFont": "Zvětšit písmo"
+  },
+  "language": {
+    "title": "Jazyk",
+    "label": "Jazyk rozhraní",
+    "g7Group": "Jazyky G7",
+    "euGroup": "Jazyky EU",
+    "otherGroup": "Ostatní jazyky"
+  },
+  "form": {
+    "preview": "Náhled formuláře",
+    "completedPreview": "Náhled vyplněného formuláře",
+    "untitled": "Formulář bez názvu",
+    "actions": "Akce",
+    "calculation": "Výpočet: {{hint}}",
+    "format": "Formát: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyzování...",
+    "preparing": "Příprava na analýzu...",
+    "loading": "Načítání PDF a extrakce polí.",
+    "enhanced": "Vylepšeno AI",
+    "failed": "Vylepšení AI selhalo",
+    "fieldsFound": "Nalezeno {{count}} polí",
+    "fields": "{{count}} polí",
+    "pagesFailed": "Analýza {{count}} stránek selhala",
+    "statusCached": "Z mezipaměti",
+    "statusComplete": "Dokončeno",
+    "statusProcessing": "Zpracování",
+    "statusError": "Chyba",
+    "statusPending": "Čeká",
+    "largeFormTitle": "Zjištěn velký formulář",
+    "largeFormMessage": "Tento formulář má <strong>{{count}} stránek</strong> a analýza chvíli potrvá. Můžete začít vyplňovat viditelná pole, zatímco je vylepšujeme pomocí AI.",
+    "analysisComplete": "Analýza dokončena",
+    "analyzingStructure": "Analyzování struktury formuláře...",
+    "pagesComplete": "<strong>{{completed}}</strong> z <strong>{{total}}</strong> stránek dokončeno",
+    "processingCount": "{{count}} se zpracovává",
+    "pendingCount": "{{count}} čeká",
+    "fromCacheCount": "{{count}} z mezipaměti",
+    "failedCount": "{{count}} selhalo",
+    "pageNumber": "Stránka {{number}}",
+    "fieldCount": "({{count}} polí)",
+    "retried": "(opakováno)",
+    "errorDetail": "<strong>{{count}} stránek</strong> nebylo možné analyzovat. Tyto stránky budou používat základní informace o polích."
+  },
+  "inputs": {
+    "enterField": "Zadejte {{field}}...",
+    "selectField": "Vyberte {{field}}...",
+    "enterReference": "Zadejte referenci...",
+    "yes": "Ano",
+    "no": "Ne"
+  }
+}

@@ -123,7 +123,7 @@ Respond with a valid JSON object in this exact structure:
     {
       "id": "exact_field_id_from_input",
       "displayName": "Human-Friendly Name in English (NO units - units go in 'unit' field)",
-      "localizedNames": { "fr": "French translation", "de": "German translation", "it": "Italian translation", "ja": "Japanese translation" },
+      "localizedNames": { "fr": "French", "de": "German", "it": "Italian", "ja": "Japanese", "es": "Spanish", "pt": "Portuguese", "zh": "Chinese", "ar": "Arabic", "hi": "Hindi", "ru": "Russian", "...and all other 44 non-English languages": "..." },
       "type": "one of the types above",
       "description": "Voice prompt description for the user. Be clear and include format hints.",
       "sectionId": "section_a (reference to a section id, or null if ungrouped)",
@@ -187,10 +187,10 @@ Respond with a valid JSON object in this exact structure:
    - Examples: "Record of Employment", "Primary Elevator Receipt - Form 6", "Application for Employment Insurance Benefits"
    - Do NOT just use the filename
 
-7. **Localization**: For EVERY field, provide a "localizedNames" object with translations of the displayName into these 4 languages: French (fr), German (de), Italian (it), Japanese (ja).
+7. **Localization**: For EVERY field, provide a "localizedNames" object with translations of the displayName into these 44 languages: French (fr), German (de), Italian (it), Japanese (ja), Bulgarian (bg), Czech (cs), Danish (da), Greek (el), Spanish (es), Estonian (et), Finnish (fi), Irish (ga), Croatian (hr), Hungarian (hu), Lithuanian (lt), Latvian (lv), Maltese (mt), Dutch (nl), Polish (pl), Portuguese (pt), Romanian (ro), Slovak (sk), Slovenian (sl), Swedish (sv), Arabic (ar), Belarusian (be), Bengali (bn), Welsh (cy), Persian (fa), Galician (gl), Hindi (hi), Georgian (ka), Macedonian (mk), Marathi (mr), Russian (ru), Serbian (sr), Swahili (sw), Tamil (ta), Thai (th), Turkish (tr), Ukrainian (uk), Urdu (ur), Vietnamese (vi), Chinese (zh).
    - Keep "displayName" in English always (it's the canonical name)
    - Each translation should be a natural, human-friendly name in that language
-   - Example: displayName "Last Name" → localizedNames: { "fr": "Nom de famille", "de": "Nachname", "it": "Cognome", "ja": "姓" }
+   - Example: displayName "Last Name" → localizedNames: { "fr": "Nom de famille", "de": "Nachname", "it": "Cognome", "ja": "姓", "es": "Apellido", "pt": "Sobrenome", "zh": "姓氏", "ar": "اسم العائلة", "hi": "उपनाम", "ru": "Фамилия", ... }
 
 8. **Look at the PDF Image**: Use visual context from the PDF to:
    - Identify labels that may not be in the field names

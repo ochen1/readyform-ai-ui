@@ -1,5 +1,6 @@
 import type { FormField, FormMetadata, FormSection } from '../store/types';
 import type { SupportedLanguage } from '../store/languageTypes';
+import { SUPPORTED_LANGUAGES } from '../store/languageTypes';
 import { VOICE_CONFIGS } from '../i18n/voiceConfig';
 
 /**
@@ -24,12 +25,17 @@ function getCurrentDateInfo(locale?: string): string {
  * Build the multilingual greeting and language detection instructions
  */
 function buildLanguageDetectionBlock(): string {
+  // Build a compact language list for the prompt
+  const languageList = SUPPORTED_LANGUAGES
+    .map(code => `${VOICE_CONFIGS[code].englishName} (${code})`)
+    .join(', ');
+
   return `
 ## Multilingual Greeting & Language Detection
 
 ### Starting the Conversation
 
-Greet the user by cycling through ALL FIVE supported languages:
+Greet the user by cycling through the five G7 languages:
 
 "Hello! Welcome to ReadyFormAI.
 Bonjour! Bienvenue sur ReadyFormAI.
@@ -37,12 +43,12 @@ Hallo! Willkommen bei ReadyFormAI.
 Ciao! Benvenuto su ReadyFormAI.
 こんにちは！ReadyFormAIへようこそ。
 
-Please respond in your preferred language."
+I support over 40 languages. Please respond in your preferred language."
 
 ### Language Detection Protocol
 
 You MUST detect the user's language from their FIRST utterance.
-Supported languages: English (en), French (fr), German (de), Italian (it), Japanese (ja).
+Supported languages: ${languageList}.
 
 When you detect the language:
 1. Call **setLanguage** tool with the language code (e.g., "fr" for French) -- NO SPEECH
@@ -72,9 +78,7 @@ You are communicating with the user in **${config.englishName}** (${config.nativ
 - The user's locale typically uses ${config.dateFormat} format for dates
 - Convert numbers to standard format (no locale separators) for field values
 
-If the user switches to a different supported language (en, fr, de, it, ja):
-1. Call **setLanguage** with the new code -- NO SPEECH
-2. Continue in the new language
+If the user switches to a different supported language, call **setLanguage** with the new code (NO SPEECH) and continue in the new language.
 `;
 }
 

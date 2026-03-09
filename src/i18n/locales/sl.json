@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Napredek",
+    "backToForm": "Nazaj na obrazec",
+    "openInNewTab": "Odpri v novem zavihku",
+    "closePreview": "Zapri predogled"
+  },
+  "upload": {
+    "title": "Naloži PDF obrazec",
+    "dropHere": "Spustite PDF sem",
+    "dragAndDrop": "Povlecite in spustite ali kliknite za izbiro",
+    "getStarted": "Naložite izpolnljiv PDF obrazec za začetek",
+    "button": "Naloži PDF",
+    "buttonChange": "Naloži drug PDF"
+  },
+  "voice": {
+    "title": "Glasovni pomočnik",
+    "start": "Zaženi glasovnega pomočnika",
+    "end": "Končaj klic",
+    "needPdf": "Naložite PDF za aktivacijo glasovnega pomočnika",
+    "thinking": "Razmišlja...",
+    "speaking": "Govori...",
+    "listening": "Posluša...",
+    "ready": "Pripravljeno",
+    "mute": "Utišaj",
+    "unmute": "Vključi zvok",
+    "muteMic": "Utišaj mikrofon",
+    "unmuteMic": "Vključi mikrofon"
+  },
+  "accessibility": {
+    "title": "Dostopnost",
+    "dyslexiaFont": "Pisava prijazna za dislektike",
+    "fontSize": "Velikost pisave",
+    "decreaseFont": "Zmanjšaj velikost pisave",
+    "increaseFont": "Povečaj velikost pisave"
+  },
+  "language": {
+    "title": "Jezik",
+    "label": "Jezik vmesnika",
+    "g7Group": "Jeziki G7",
+    "euGroup": "Jeziki EU",
+    "otherGroup": "Drugi jeziki"
+  },
+  "form": {
+    "preview": "Predogled obrazca",
+    "completedPreview": "Predogled izpolnjenega obrazca",
+    "untitled": "Obrazec brez naslova",
+    "actions": "Dejanja",
+    "calculation": "Izračun: {{hint}}",
+    "format": "Oblika: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analiziranje...",
+    "preparing": "Priprava na analizo...",
+    "loading": "Nalaganje PDF in pridobivanje polj.",
+    "enhanced": "Izboljšano z UI",
+    "failed": "Izboljšava z UI ni uspela",
+    "fieldsFound": "Najdenih {{count}} polj",
+    "fields": "{{count}} polj",
+    "pagesFailed": "Analiza {{count}} strani ni uspela",
+    "statusCached": "Iz predpomnilnika",
+    "statusComplete": "Končano",
+    "statusProcessing": "Obdelava",
+    "statusError": "Napaka",
+    "statusPending": "V čakanju",
+    "largeFormTitle": "Zaznan velik obrazec",
+    "largeFormMessage": "Ta obrazec ima <strong>{{count}} strani</strong> in analiza bo trajala nekaj časa. Lahko začnete izpolnjevati vidna polja, medtem ko jih izboljšujemo z UI.",
+    "analysisComplete": "Analiza končana",
+    "analyzingStructure": "Analiziranje strukture obrazca...",
+    "pagesComplete": "<strong>{{completed}}</strong> od <strong>{{total}}</strong> strani končanih",
+    "processingCount": "{{count}} v obdelavi",
+    "pendingCount": "{{count}} v čakanju",
+    "fromCacheCount": "{{count}} iz predpomnilnika",
+    "failedCount": "{{count}} neuspelih",
+    "pageNumber": "Stran {{number}}",
+    "fieldCount": "({{count}} polj)",
+    "retried": "(ponovljeno)",
+    "errorDetail": "<strong>{{count}} strani</strong> ni bilo mogoče analizirati. Te strani bodo uporabile osnovne podatke o poljih."
+  },
+  "inputs": {
+    "enterField": "Vnesite {{field}}...",
+    "selectField": "Izberite {{field}}...",
+    "enterReference": "Vnesite referenco...",
+    "yes": "Da",
+    "no": "Ne"
+  }
+}

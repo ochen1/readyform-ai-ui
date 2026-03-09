@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Tiến độ",
+    "backToForm": "Quay lại biểu mẫu",
+    "openInNewTab": "Mở trong tab mới",
+    "closePreview": "Đóng xem trước"
+  },
+  "upload": {
+    "title": "Tải lên biểu mẫu PDF",
+    "dropHere": "Thả PDF vào đây",
+    "dragAndDrop": "Kéo và thả hoặc nhấp để chọn",
+    "getStarted": "Tải lên biểu mẫu PDF có thể điền để bắt đầu",
+    "button": "Tải lên PDF",
+    "buttonChange": "Tải lên PDF khác"
+  },
+  "voice": {
+    "title": "Trợ lý giọng nói",
+    "start": "Bắt đầu trợ lý giọng nói",
+    "end": "Kết thúc cuộc gọi",
+    "needPdf": "Tải lên PDF để kích hoạt trợ lý giọng nói",
+    "thinking": "Đang suy nghĩ...",
+    "speaking": "Đang nói...",
+    "listening": "Đang nghe...",
+    "ready": "Sẵn sàng",
+    "mute": "Tắt tiếng",
+    "unmute": "Bật tiếng",
+    "muteMic": "Tắt micrô",
+    "unmuteMic": "Bật micrô"
+  },
+  "accessibility": {
+    "title": "Trợ năng",
+    "dyslexiaFont": "Phông chữ hỗ trợ chứng khó đọc",
+    "fontSize": "Cỡ chữ",
+    "decreaseFont": "Giảm cỡ chữ",
+    "increaseFont": "Tăng cỡ chữ"
+  },
+  "language": {
+    "title": "Ngôn ngữ",
+    "label": "Ngôn ngữ giao diện",
+    "g7Group": "Ngôn ngữ G7",
+    "euGroup": "Ngôn ngữ EU",
+    "otherGroup": "Ngôn ngữ khác"
+  },
+  "form": {
+    "preview": "Xem trước biểu mẫu",
+    "completedPreview": "Xem trước biểu mẫu đã hoàn thành",
+    "untitled": "Biểu mẫu không có tiêu đề",
+    "actions": "Hành động",
+    "calculation": "Phép tính: {{hint}}",
+    "format": "Định dạng: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Đang phân tích...",
+    "preparing": "Đang chuẩn bị phân tích...",
+    "loading": "Đang tải PDF và trích xuất các trường.",
+    "enhanced": "Được AI nâng cao",
+    "failed": "Nâng cao AI thất bại",
+    "fieldsFound": "Tìm thấy {{count}} trường",
+    "fields": "{{count}} trường",
+    "pagesFailed": "{{count}} trang không phân tích được",
+    "statusCached": "Đã lưu bộ nhớ đệm",
+    "statusComplete": "Hoàn tất",
+    "statusProcessing": "Đang xử lý",
+    "statusError": "Lỗi",
+    "statusPending": "Đang chờ",
+    "largeFormTitle": "Phát hiện biểu mẫu lớn",
+    "largeFormMessage": "Biểu mẫu này có <strong>{{count}} trang</strong> và sẽ mất một chút thời gian để phân tích. Bạn có thể bắt đầu điền các trường hiển thị trong khi chúng tôi nâng cao bằng AI.",
+    "analysisComplete": "Phân tích hoàn tất",
+    "analyzingStructure": "Đang phân tích cấu trúc biểu mẫu...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> trang hoàn tất",
+    "processingCount": "{{count}} đang xử lý",
+    "pendingCount": "{{count}} đang chờ",
+    "fromCacheCount": "{{count}} từ bộ nhớ đệm",
+    "failedCount": "{{count}} thất bại",
+    "pageNumber": "Trang {{number}}",
+    "fieldCount": "({{count}} trường)",
+    "retried": "(đã thử lại)",
+    "errorDetail": "<strong>{{count}} trang</strong> không thể phân tích được. Các trang này sẽ sử dụng thông tin trường cơ bản."
+  },
+  "inputs": {
+    "enterField": "Nhập {{field}}...",
+    "selectField": "Chọn {{field}}...",
+    "enterReference": "Nhập tham chiếu...",
+    "yes": "Có",
+    "no": "Không"
+  }
+}

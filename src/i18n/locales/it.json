@@ -37,7 +37,10 @@
   },
   "language": {
     "title": "Lingua",
-    "label": "Lingua dell'interfaccia"
+    "label": "Lingua dell'interfaccia",
+    "g7Group": "Lingue del G7",
+    "euGroup": "Lingue dell'UE",
+    "otherGroup": "Altre lingue"
   },
   "form": {
     "preview": "Anteprima modulo",

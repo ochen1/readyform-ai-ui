@@ -37,7 +37,10 @@
   },
   "language": {
     "title": "言語",
-    "label": "表示言語"
+    "label": "表示言語",
+    "g7Group": "G7言語",
+    "euGroup": "EU言語",
+    "otherGroup": "その他の言語"
   },
   "form": {
     "preview": "フォームプレビュー",

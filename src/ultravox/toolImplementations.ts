@@ -1,4 +1,5 @@
 import type { FormContextValue } from '../store/FormContext';
+import { SUPPORTED_LANGUAGES } from '../store/languageTypes';
 import { fieldAnimationQueue } from '../services/fieldAnimationQueue';
 import { normalizeFieldValue, getCurrentLanguage } from '../services/formatConversion';
 
@@ -23,11 +24,10 @@ export function createToolImplementations(formContext: FormContextValue, endCall
     setLanguage: ({ languageCode }: { languageCode: string }) => {
       console.log(`[Tool Call] setLanguage("${languageCode}")`);
 
-      const validLanguages = ['en', 'fr', 'de', 'it', 'ja'];
-      if (!validLanguages.includes(languageCode)) {
+      if (!SUPPORTED_LANGUAGES.includes(languageCode as typeof SUPPORTED_LANGUAGES[number])) {
         return JSON.stringify({
           success: false,
-          message: `Invalid language code "${languageCode}". Supported: ${validLanguages.join(', ')}`
+          message: `Invalid language code "${languageCode}". Supported: ${SUPPORTED_LANGUAGES.join(', ')}`
         });
       }
 

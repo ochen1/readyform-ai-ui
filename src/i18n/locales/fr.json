@@ -37,7 +37,10 @@
   },
   "language": {
     "title": "Langue",
-    "label": "Langue de l'interface"
+    "label": "Langue de l'interface",
+    "g7Group": "Langues du G7",
+    "euGroup": "Langues de l'UE",
+    "otherGroup": "Autres langues"
   },
   "form": {
     "preview": "Aperçu du formulaire",

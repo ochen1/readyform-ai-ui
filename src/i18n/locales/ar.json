@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "التقدم",
+    "backToForm": "العودة إلى النموذج",
+    "openInNewTab": "فتح في علامة تبويب جديدة",
+    "closePreview": "إغلاق المعاينة"
+  },
+  "upload": {
+    "title": "رفع نموذج PDF",
+    "dropHere": "أسقط ملف PDF هنا",
+    "dragAndDrop": "اسحب وأفلت أو انقر للاختيار",
+    "getStarted": "ارفع نموذج PDF قابل للتعبئة للبدء",
+    "button": "رفع PDF",
+    "buttonChange": "رفع ملف PDF مختلف"
+  },
+  "voice": {
+    "title": "المساعد الصوتي",
+    "start": "بدء المساعد الصوتي",
+    "end": "إنهاء المكالمة",
+    "needPdf": "ارفع ملف PDF لتفعيل المساعد الصوتي",
+    "thinking": "جارٍ التفكير...",
+    "speaking": "جارٍ التحدث...",
+    "listening": "جارٍ الاستماع...",
+    "ready": "جاهز",
+    "mute": "كتم الصوت",
+    "unmute": "إلغاء كتم الصوت",
+    "muteMic": "كتم الميكروفون",
+    "unmuteMic": "إلغاء كتم الميكروفون"
+  },
+  "accessibility": {
+    "title": "إمكانية الوصول",
+    "dyslexiaFont": "خط مناسب لعسر القراءة",
+    "fontSize": "حجم الخط",
+    "decreaseFont": "تصغير حجم الخط",
+    "increaseFont": "تكبير حجم الخط"
+  },
+  "language": {
+    "title": "اللغة",
+    "label": "لغة الواجهة",
+    "g7Group": "لغات مجموعة السبع",
+    "euGroup": "لغات الاتحاد الأوروبي",
+    "otherGroup": "لغات أخرى"
+  },
+  "form": {
+    "preview": "معاينة النموذج",
+    "completedPreview": "معاينة النموذج المكتمل",
+    "untitled": "نموذج بدون عنوان",
+    "actions": "الإجراءات",
+    "calculation": "الحساب: {{hint}}",
+    "format": "التنسيق: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "جارٍ التحليل...",
+    "preparing": "جارٍ التحضير للتحليل...",
+    "loading": "جارٍ تحميل PDF واستخراج الحقول.",
+    "enhanced": "محسّن بالذكاء الاصطناعي",
+    "failed": "فشل التحسين بالذكاء الاصطناعي",
+    "fieldsFound": "تم العثور على {{count}} حقل",
+    "fields": "{{count}} حقل",
+    "pagesFailed": "فشل تحليل {{count}} صفحة (صفحات)",
+    "statusCached": "مخزن مؤقتاً",
+    "statusComplete": "مكتمل",
+    "statusProcessing": "قيد المعالجة",
+    "statusError": "خطأ",
+    "statusPending": "قيد الانتظار",
+    "largeFormTitle": "تم اكتشاف نموذج كبير",
+    "largeFormMessage": "يحتوي هذا النموذج على <strong>{{count}} صفحة</strong> وسيستغرق بعض الوقت للتحليل. يمكنك البدء بملء الحقول المرئية بينما نقوم بتحسينها بالذكاء الاصطناعي.",
+    "analysisComplete": "اكتمل التحليل",
+    "analyzingStructure": "جارٍ تحليل هيكل النموذج...",
+    "pagesComplete": "<strong>{{completed}}</strong> من <strong>{{total}}</strong> صفحة مكتملة",
+    "processingCount": "{{count}} قيد المعالجة",
+    "pendingCount": "{{count}} قيد الانتظار",
+    "fromCacheCount": "{{count}} من الذاكرة المؤقتة",
+    "failedCount": "{{count}} فشل",
+    "pageNumber": "الصفحة {{number}}",
+    "fieldCount": "({{count}} حقل)",
+    "retried": "(أُعيدت المحاولة)",
+    "errorDetail": "<strong>{{count}} صفحة (صفحات)</strong> لم يتمكن من تحليلها. ستستخدم هذه الصفحات معلومات الحقول الأساسية."
+  },
+  "inputs": {
+    "enterField": "أدخل {{field}}...",
+    "selectField": "اختر {{field}}...",
+    "enterReference": "أدخل المرجع...",
+    "yes": "نعم",
+    "no": "لا"
+  }
+}

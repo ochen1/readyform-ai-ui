@@ -1,4 +1,5 @@
 import type { SupportedLanguage } from '../store/languageTypes';
+import { SUPPORTED_LANGUAGES } from '../store/languageTypes';
 import type { FieldType } from '../store/types';
 
 export interface FormatConversionConfig {
@@ -6,6 +7,26 @@ export interface FormatConversionConfig {
   fieldType: FieldType;
   fieldFormat?: string;
 }
+
+// === Date format families ===
+// Month/Day/Year (MDY) - primarily US English
+const MDY_LANGUAGES = new Set<SupportedLanguage>(['en']);
+
+// Year/Month/Day (YMD) - East Asian, some European
+const YMD_LANGUAGES = new Set<SupportedLanguage>(['ja', 'zh', 'fa', 'sv', 'lt', 'hu']);
+
+// All others default to Day/Month/Year (DMY) - most of the world
+
+// === Decimal separator families ===
+// Languages that use comma as decimal separator (and dot/space for thousands)
+const COMMA_DECIMAL_LANGUAGES = new Set<SupportedLanguage>([
+  'fr', 'de', 'it',            // G7
+  'bg', 'cs', 'da', 'el', 'es', 'et', 'fi', 'hr', 'hu',
+  'lt', 'lv', 'nl', 'pl', 'pt', 'ro', 'sk', 'sl', 'sv',  // EU
+  'be', 'gl', 'mk', 'ru', 'sr', 'tr', 'uk', 'vi',        // Other
+]);
+
+// All others use dot as decimal separator (and comma for thousands)
 
 /**
  * Normalize a value from localized voice input to PDF field format.
@@ -32,36 +53,39 @@ export function normalizeFieldValue(
 /**
  * Normalize locale-formatted dates to YYYY-MM-DD (ISO 8601).
  *
- * Handles:
- * - French/Italian: DD/MM/YYYY
- * - German: DD.MM.YYYY
- * - Japanese: YYYY/MM/DD
- * - English: MM/DD/YYYY
- * - Already ISO: YYYY-MM-DD (pass through)
+ * Handles three major date order families:
+ * - MDY: MM/DD/YYYY (US English)
+ * - YMD: YYYY/MM/DD (Japanese, Chinese, etc.)
+ * - DMY: DD/MM/YYYY or DD.MM.YYYY (most of the world)
  */
 function normalizeDate(value: string, language: SupportedLanguage): string {
   // Already ISO format
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
 
-  // DD/MM/YYYY or DD.MM.YYYY pattern
-  const dmy = value.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})$/);
-  if (dmy) {
-    if (language === 'en') {
-      // English: MM/DD/YYYY
-      const [, month, day, year] = dmy;
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    } else {
-      // French/German/Italian: DD/MM/YYYY or DD.MM.YYYY
-      const [, day, month, year] = dmy;
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    }
-  }
-
-  // YYYY/MM/DD pattern (Japanese)
+  // YYYY/MM/DD pattern (YMD languages like Japanese, Chinese, etc.)
+  // Check this FIRST to avoid misinterpreting 2024/01/15 as DD/MM/YYYY
   const ymd = value.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
   if (ymd) {
     const [, year, month, day] = ymd;
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+
+  // DD/MM/YYYY, DD.MM.YYYY, or MM/DD/YYYY pattern
+  const dmy = value.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})$/);
+  if (dmy) {
+    if (MDY_LANGUAGES.has(language)) {
+      // English: MM/DD/YYYY
+      const [, month, day, year] = dmy;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    } else if (YMD_LANGUAGES.has(language)) {
+      // YMD languages with non-standard separator: treat as ambiguous, assume DD/MM/YYYY
+      const [, day, month, year] = dmy;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    } else {
+      // DMY languages (majority): DD/MM/YYYY or DD.MM.YYYY
+      const [, day, month, year] = dmy;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
   }
 
   // Fallback: try native Date parsing
@@ -77,24 +101,21 @@ function normalizeDate(value: string, language: SupportedLanguage): string {
 /**
  * Normalize locale-formatted numbers to standard format.
  *
- * Handles:
- * - French: 1 234,56 (space thousands, comma decimal)
- * - German: 1.234,56 (dot thousands, comma decimal)
- * - Italian: 1.234,56 (same as German)
- * - English/Japanese: 1,234.56 (comma thousands, dot decimal)
+ * Comma-decimal languages: 1.234,56 or 1 234,56 → 1234.56
+ * Dot-decimal languages:   1,234.56 → 1234.56
  */
 function normalizeNumber(value: string, language: SupportedLanguage): string {
   // Strip currency symbols and whitespace at edges
-  let cleaned = value.replace(/[€$£¥₹]/g, '').trim();
+  let cleaned = value.replace(/[€$£¥₹₩₺₽฿₫₱₴₸₵₦₹]/g, '').trim();
 
-  if (['fr', 'de', 'it'].includes(language)) {
+  if (COMMA_DECIMAL_LANGUAGES.has(language)) {
     // European format: remove spaces and dots (thousands), convert comma to dot (decimal)
     cleaned = cleaned
-      .replace(/\s/g, '')    // Remove space thousands (French)
-      .replace(/\./g, '')    // Remove dot thousands (German/Italian)
+      .replace(/\s/g, '')    // Remove space thousands (French, etc.)
+      .replace(/\./g, '')    // Remove dot thousands (German, etc.)
       .replace(',', '.');    // Convert comma decimal to dot
   } else {
-    // English/Japanese: remove commas (thousands separator)
+    // Dot-decimal format: remove commas (thousands separator)
     cleaned = cleaned.replace(/,/g, '');
   }
 
@@ -107,7 +128,7 @@ function normalizeNumber(value: string, language: SupportedLanguage): string {
  */
 export function getCurrentLanguage(): SupportedLanguage {
   const saved = localStorage.getItem('preferred-language');
-  if (saved && ['en', 'fr', 'de', 'it', 'ja'].includes(saved)) {
+  if (saved && SUPPORTED_LANGUAGES.includes(saved as SupportedLanguage)) {
     return saved as SupportedLanguage;
   }
   return 'en';

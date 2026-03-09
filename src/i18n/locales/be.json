@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Прагрэс",
+    "backToForm": "Назад да формы",
+    "openInNewTab": "Адкрыць у новай укладцы",
+    "closePreview": "Закрыць прагляд"
+  },
+  "upload": {
+    "title": "Загрузіць PDF-форму",
+    "dropHere": "Перацягніце PDF сюды",
+    "dragAndDrop": "Перацягніце або націсніце для выбару",
+    "getStarted": "Загрузіце PDF-форму для запаўнення, каб пачаць",
+    "button": "Загрузіць PDF",
+    "buttonChange": "Загрузіць іншы PDF"
+  },
+  "voice": {
+    "title": "Галасавы памочнік",
+    "start": "Запусціць галасавы памочнік",
+    "end": "Завяршыць выклік",
+    "needPdf": "Загрузіце PDF, каб уключыць галасавы памочнік",
+    "thinking": "Думаю...",
+    "speaking": "Гавару...",
+    "listening": "Слухаю...",
+    "ready": "Гатова",
+    "mute": "Выключыць гук",
+    "unmute": "Уключыць гук",
+    "muteMic": "Выключыць мікрафон",
+    "unmuteMic": "Уключыць мікрафон"
+  },
+  "accessibility": {
+    "title": "Даступнасць",
+    "dyslexiaFont": "Шрыфт для дыслексіі",
+    "fontSize": "Памер шрыфта",
+    "decreaseFont": "Паменшыць памер шрыфта",
+    "increaseFont": "Павялічыць памер шрыфта"
+  },
+  "language": {
+    "title": "Мова",
+    "label": "Мова інтэрфейсу",
+    "g7Group": "Мовы G7",
+    "euGroup": "Мовы ЕС",
+    "otherGroup": "Іншыя мовы"
+  },
+  "form": {
+    "preview": "Прагляд формы",
+    "completedPreview": "Прагляд запоўненай формы",
+    "untitled": "Форма без назвы",
+    "actions": "Дзеянні",
+    "calculation": "Разлік: {{hint}}",
+    "format": "Фармат: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Аналіз...",
+    "preparing": "Падрыхтоўка да аналізу...",
+    "loading": "Загрузка PDF і выманне палёў.",
+    "enhanced": "Палепшана ШІ",
+    "failed": "Паляпшэнне ШІ не ўдалося",
+    "fieldsFound": "Знойдзена {{count}} палёў",
+    "fields": "{{count}} палёў",
+    "pagesFailed": "{{count}} старонка(і) не прааналізавана",
+    "statusCached": "З кэша",
+    "statusComplete": "Завершана",
+    "statusProcessing": "Апрацоўка",
+    "statusError": "Памылка",
+    "statusPending": "Чакае",
+    "largeFormTitle": "Выяўлена вялікая форма",
+    "largeFormMessage": "Гэтая форма мае <strong>{{count}} старонак</strong> і спатрэбіцца час на аналіз. Вы можаце пачаць запаўняць бачныя палі, пакуль мы паляпшаем іх з дапамогай ШІ.",
+    "analysisComplete": "Аналіз завершаны",
+    "analyzingStructure": "Аналіз структуры формы...",
+    "pagesComplete": "<strong>{{completed}}</strong> з <strong>{{total}}</strong> старонак завершана",
+    "processingCount": "{{count}} у апрацоўцы",
+    "pendingCount": "{{count}} чакае",
+    "fromCacheCount": "{{count}} з кэша",
+    "failedCount": "{{count}} не ўдалося",
+    "pageNumber": "Старонка {{number}}",
+    "fieldCount": "({{count}} палёў)",
+    "retried": "(паўторна)",
+    "errorDetail": "<strong>{{count}} старонка(і)</strong> не ўдалося прааналізаваць. Гэтыя старонкі будуць выкарыстоўваць базавую інфармацыю аб палях."
+  },
+  "inputs": {
+    "enterField": "Увядзіце {{field}}...",
+    "selectField": "Абярыце {{field}}...",
+    "enterReference": "Увядзіце спасылку...",
+    "yes": "Так",
+    "no": "Не"
+  }
+}

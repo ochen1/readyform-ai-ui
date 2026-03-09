@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Напредък",
+    "backToForm": "Обратно към формуляра",
+    "openInNewTab": "Отвори в нов раздел",
+    "closePreview": "Затвори визуализацията"
+  },
+  "upload": {
+    "title": "Качване на PDF формуляр",
+    "dropHere": "Пуснете PDF тук",
+    "dragAndDrop": "Плъзнете и пуснете или щракнете, за да изберете",
+    "getStarted": "Качете PDF формуляр за попълване, за да започнете",
+    "button": "Качване на PDF",
+    "buttonChange": "Качване на друг PDF"
+  },
+  "voice": {
+    "title": "Гласов асистент",
+    "start": "Стартиране на гласовия асистент",
+    "end": "Край на обаждането",
+    "needPdf": "Качете PDF, за да активирате гласовия асистент",
+    "thinking": "Мисли...",
+    "speaking": "Говори...",
+    "listening": "Слуша...",
+    "ready": "Готов",
+    "mute": "Заглуши",
+    "unmute": "Включи звука",
+    "muteMic": "Заглуши микрофона",
+    "unmuteMic": "Включи микрофона"
+  },
+  "accessibility": {
+    "title": "Достъпност",
+    "dyslexiaFont": "Шрифт за дислексия",
+    "fontSize": "Размер на шрифта",
+    "decreaseFont": "Намали размера на шрифта",
+    "increaseFont": "Увеличи размера на шрифта"
+  },
+  "language": {
+    "title": "Език",
+    "label": "Език на интерфейса",
+    "g7Group": "Езици на Г7",
+    "euGroup": "Езици на ЕС",
+    "otherGroup": "Други езици"
+  },
+  "form": {
+    "preview": "Визуализация на формуляра",
+    "completedPreview": "Визуализация на попълнения формуляр",
+    "untitled": "Формуляр без заглавие",
+    "actions": "Действия",
+    "calculation": "Изчисление: {{hint}}",
+    "format": "Формат: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Анализиране...",
+    "preparing": "Подготовка за анализ...",
+    "loading": "Зареждане на PDF и извличане на полета.",
+    "enhanced": "Подобрен с ИИ",
+    "failed": "Подобряването с ИИ не успя",
+    "fieldsFound": "Намерени {{count}} полета",
+    "fields": "{{count}} полета",
+    "pagesFailed": "{{count}} страница(и) не бяха анализирани",
+    "statusCached": "Кеширано",
+    "statusComplete": "Завършено",
+    "statusProcessing": "Обработка",
+    "statusError": "Грешка",
+    "statusPending": "Изчакване",
+    "largeFormTitle": "Открит е голям формуляр",
+    "largeFormMessage": "Този формуляр има <strong>{{count}} страници</strong> и ще отнеме известно време за анализ. Можете да започнете да попълвате видимите полета, докато ги подобряваме с ИИ.",
+    "analysisComplete": "Анализът е завършен",
+    "analyzingStructure": "Анализиране на структурата на формуляра...",
+    "pagesComplete": "<strong>{{completed}}</strong> от <strong>{{total}}</strong> страници завършени",
+    "processingCount": "{{count}} в обработка",
+    "pendingCount": "{{count}} в изчакване",
+    "fromCacheCount": "{{count}} от кеша",
+    "failedCount": "{{count}} неуспешни",
+    "pageNumber": "Страница {{number}}",
+    "fieldCount": "({{count}} полета)",
+    "retried": "(повторен опит)",
+    "errorDetail": "<strong>{{count}} страница(и)</strong> не можаха да бъдат анализирани. Тези страници ще използват основна информация за полетата."
+  },
+  "inputs": {
+    "enterField": "Въведете {{field}}...",
+    "selectField": "Изберете {{field}}...",
+    "enterReference": "Въведете референция...",
+    "yes": "Да",
+    "no": "Не"
+  }
+}
