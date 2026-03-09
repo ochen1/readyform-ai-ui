@@ -1,5 +1,5 @@
 import { FormProvider } from "./store/FormContext";
-import { UltravoxProvider } from "./ultravox/UltravoxProvider";
+import { ModalProvider } from "./modal/ModalProvider";
 import { AccessibilityProvider } from "./store/AccessibilityContext";
 import { SimpleForm } from "./components/SimpleForm";
 import { useExtensionBridge } from "./hooks/useExtensionBridge";
@@ -9,9 +9,9 @@ function AppInner() {
   useExtensionBridge();
 
   return (
-    <UltravoxProvider>
+    <ModalProvider>
       <SimpleForm />
-    </UltravoxProvider>
+    </ModalProvider>
   );
 }
 
