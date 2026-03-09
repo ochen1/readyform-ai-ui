@@ -249,7 +249,7 @@ export function PipecatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const notifyFieldFocus = useCallback((fieldName: string) => {
-    if (!clientRef.current) return;
+    if (!clientRef.current || status === 'disconnected' || status === 'connecting') return;
     clientRef.current.sendText(
       `[USER CLICKED ON FIELD: ${fieldName}] The user just clicked on the "${fieldName}" field in the form. They may want to discuss or update this field.`
     );
