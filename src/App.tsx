@@ -9,9 +9,9 @@ function AppInner() {
   useExtensionBridge();
 
   return (
-    <UltravoxProvider>
+    <PipecatProvider>
       <SimpleForm />
-    </UltravoxProvider>
+    </PipecatProvider>
   );
 }
 
@@ -19,9 +19,6 @@ function App() {
   return (
     <AccessibilityProvider>
       <FormProvider>
-        <PipecatProvider>
-          <SimpleForm />
-        </PipecatProvider>
         <AppInner />
       </FormProvider>
     </AccessibilityProvider>
