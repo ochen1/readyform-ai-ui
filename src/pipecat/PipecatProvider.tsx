@@ -110,7 +110,7 @@ export function PipecatProvider({ children }: { children: React.ReactNode }) {
       const { session_id: sessionId } = await configResponse.json();
 
       // Step 2: Create PipecatClient with SmallWebRTCTransport
-      const transport = new SmallWebRTCTransport();
+      const transport = new SmallWebRTCTransport({ waitForICEGathering: true });
       const client = new PipecatClient({
         transport,
         enableMic: true,
