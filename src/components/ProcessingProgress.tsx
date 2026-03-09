@@ -1,4 +1,3 @@
-import React from 'react';
 import type { EnhancementProgress, PageProcessingStatus } from '../store/types';
 import { CheckCircle, Circle, AlertCircle, Loader2, Database } from 'lucide-react';
 

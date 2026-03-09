@@ -193,6 +193,78 @@ Respond with a valid JSON object in this exact structure:
    - Identify which fields are likely required
    - Identify section headers and group fields into sections
 
+## Personal Memory Field Identification
+
+Identify fields that contain personal information that should be remembered for future form filling. This enables the autofill feature.
+
+### Memory Field Types
+
+Identify fields that match these personal information types:
+
+| Memory Type | Description | Examples |
+|-------------|-------------|----------|
+| firstName | Person's first/given name | First name, Given name, Prénom |
+| lastName | Person's last/family name | Last name, Surname, Family name, Nom |
+| fullName | Complete name | Full name, Complete name |
+| email | Email address | Email, E-mail, Email address |
+| phone | Phone/mobile number | Phone, Cell, Mobile |
+| telephoneNumber | Landline telephone | Telephone number, Home phone, Work phone |
+| address | Street address | Address, Street, Street address |
+| addressLine1 | First address line | Address line 1, Street address |
+| addressLine2 | Apartment/suite | Address line 2, Apt, Suite, Unit |
+| city | City/town | City, Town, Ville, Municipality |
+| province | Province/state | Province, State, Region |
+| provinceOrTerritory | Canadian province/territory | Province or territory, Prov/Terr |
+| postalCode | Postal/ZIP code | Postal code, ZIP, Code postal |
+| country | Country | Country, Pays |
+| dateOfBirth | Birth date | Date of birth, DOB, Birthday |
+| sin | Social Insurance Number | SIN, SSN, Social insurance number |
+| spouseFirstName | Spouse/partner first name | Spouse first name, Wife name, Husband name |
+| spouseLastName | Spouse/partner last name | Spouse last name, Maiden name |
+| spousePhone | Spouse/partner phone | Spouse phone, Partner phone, Emergency contact |
+| spousePostalCode | Spouse/partner postal code | Spouse postal code, Partner ZIP |
+
+### Person Context
+
+For each memory field, identify which person it belongs to:
+- **self**: The primary form filler (default)
+- **spouse**: Spouse, partner, wife, husband
+- **child**: Child, son, daughter, dependent
+- **parent**: Parent, mother, father
+- **other**: Emergency contact, other person
+
+### Memory Field Detection Guidelines
+
+1. **Look for personal information sections**: Forms often have a "Personal Information" or "Applicant Details" section
+2. **Identify spouse/family fields**: Fields mentioning "spouse", "partner", "wife", "husband", "child", "dependent" belong to those people
+3. **Be conservative**: Only mark fields as memory fields if you're confident they contain personal information
+4. **Use high confidence for obvious fields**: Name, email, phone, address fields should have confidence 0.9-1.0
+5. **Use lower confidence for ambiguous fields**: If unsure, use confidence 0.5-0.7
+
+### Memory Field Output
+
+For each field that should be remembered, add these properties to the field object:
+- memoryType: The memory type from the table above
+- memoryPerson: The person this belongs to ('self', 'spouse', 'child', 'parent', 'other')
+
+Also include a memoryFields array at the root level with all identified memory fields:
+
+Example:
+  "memoryFields": [
+    {
+      "fieldId": "First name",
+      "memoryType": "firstName",
+      "person": "self",
+      "confidence": 0.95
+    },
+    {
+      "fieldId": "Spouse postal code",
+      "memoryType": "spousePostalCode",
+      "person": "spouse",
+      "confidence": 0.9
+    }
+  ]
+
 ## Section Detection
 
 Many government forms are organized into sections (e.g., "Section A - Personal Information", "Part 1 - Applicant Details").

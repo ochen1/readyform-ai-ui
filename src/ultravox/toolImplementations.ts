@@ -1,11 +1,14 @@
 import type { FormContextValue } from '../store/FormContext';
 import { fieldAnimationQueue } from '../services/fieldAnimationQueue';
+import { getAutofillSuggestions, getPersonalMemory } from '../services/personalMemoryService';
 
 /**
  * Create tool implementations that work with dynamic form fields
  * All field lookups are done by display name (case-insensitive)
  */
 export function createToolImplementations(formContext: FormContextValue, endCall: () => void) {
+  // Track pending autofill suggestions for this form instance
+  let pendingAutofillSuggestions: { fieldId: string; fieldName: string; suggestedValue: string }[] = [];
   /**
    * Find a field by its display name (case-insensitive)
    */
@@ -327,6 +330,117 @@ export function createToolImplementations(formContext: FormContextValue, endCall
       console.log(`[Tool Call] hangUp SUCCESS: Showing PDF preview and ending call`);
       
       return JSON.stringify({ success: true, message });
+    },
+    
+    /**
+     * Get autofill suggestions from personal memory
+     */
+    getAutofillSuggestions: () => {
+      console.log(`[Tool Call] getAutofillSuggestions()`);
+      
+      const memory = getPersonalMemory();
+      
+      if (memory.entries.length === 0) {
+        return JSON.stringify({
+          success: false,
+          hasMemory: false,
+          suggestions: [],
+          message: 'No personal information stored in memory. The user can add their details through the Personal Memory settings to enable autofill.'
+        });
+      }
+      
+      const suggestions = getAutofillSuggestions(formContext.state.fields);
+      pendingAutofillSuggestions = suggestions;
+      
+      if (suggestions.length === 0) {
+        return JSON.stringify({
+          success: true,
+          hasMemory: true,
+          suggestions: [],
+          message: 'I checked your saved personal information, but no fields in this form match. You have information stored, but this form doesn\'t have fields that match your saved data.'
+        });
+      }
+      
+      const suggestionList = suggestions.map(s => 
+        `"${s.fieldName}" can be filled with "${s.suggestedValue}"`
+      ).join(', ');
+      
+      return JSON.stringify({
+        success: true,
+        hasMemory: true,
+        suggestions: suggestions.map(s => ({
+          fieldName: s.fieldName,
+          suggestedValue: s.suggestedValue,
+          label: s.memoryEntry.label
+        })),
+        count: suggestions.length,
+        message: `I found ${suggestions.length} field${suggestions.length > 1 ? 's' : ''} that can be autofilled from your personal memory: ${suggestionList}. Would you like me to fill these fields for you? Please confirm which fields you'd like me to fill.`
+      });
+    },
+    
+    /**
+     * Apply autofill after user confirmation
+     */
+    applyAutofill: ({ fieldNames }: { fieldNames: string }) => {
+      console.log(`[Tool Call] applyAutofill("${fieldNames}")`);
+      
+      if (pendingAutofillSuggestions.length === 0) {
+        return JSON.stringify({
+          success: false,
+          message: 'No autofill suggestions available. Please call getAutofillSuggestions first.'
+        });
+      }
+      
+      let fieldsToFill: typeof pendingAutofillSuggestions;
+      
+      if (fieldNames.toLowerCase() === 'all') {
+        fieldsToFill = pendingAutofillSuggestions;
+      } else {
+        const requestedNames = fieldNames.split(',').map(n => n.trim().toLowerCase());
+        fieldsToFill = pendingAutofillSuggestions.filter(s => 
+          requestedNames.some(name => 
+            s.fieldName.toLowerCase().includes(name) || 
+            name.includes(s.fieldName.toLowerCase())
+          )
+        );
+      }
+      
+      if (fieldsToFill.length === 0) {
+        return JSON.stringify({
+          success: false,
+          message: `No matching fields found for "${fieldNames}". Available fields: ${pendingAutofillSuggestions.map(s => s.fieldName).join(', ')}`
+        });
+      }
+      
+      let appliedCount = 0;
+      
+      for (const suggestion of fieldsToFill) {
+        const field = formContext.state.fields.find(f => f.id === suggestion.fieldId);
+        
+        if (field && !field.readonly && !field.ignore) {
+          fieldAnimationQueue.enqueue({
+            fieldId: field.id,
+            value: suggestion.suggestedValue,
+            onSetValue: (fieldId, val) => formContext.setField(fieldId, val),
+            onFocusField: (fieldId) => formContext.focusField(fieldId),
+            onMarkComplete: (fieldId) => formContext.dispatch({ type: 'MARK_FIELD_COMPLETE', fieldId }),
+          });
+          appliedCount++;
+        }
+      }
+      
+      const filledFields = fieldsToFill.map(s => s.fieldName).join(', ');
+      
+      pendingAutofillSuggestions = [];
+      
+      console.log(`[Tool Call] applyAutofill SUCCESS: Filled ${appliedCount} fields`);
+      
+      return JSON.stringify({
+        success: true,
+        appliedCount,
+        fields: filledFields,
+        message: `Successfully autofilled ${appliedCount} field${appliedCount > 1 ? 's' : ''}: ${filledFields}. The values are now entered in the form.`
+      });
     }
   };
 }
