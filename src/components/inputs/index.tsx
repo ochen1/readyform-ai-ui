@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FormField, FieldType } from '../../store/types';
 import { Calendar, DollarSign, Percent, Scale, Hash, MapPin, List, Calculator, ToggleLeft, CheckSquare, Phone, Mail, MapPinned } from 'lucide-react';
 
@@ -62,6 +63,7 @@ export function getFieldTypeIcon(type: FieldType): React.ReactNode {
  * Text Input - Default for most text fields
  */
 export function TextInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
   return (
     <input
       type="text"
@@ -70,7 +72,7 @@ export function TextInput({ field, value, onChange, onFocus, disabled, className
       onFocus={onFocus}
       disabled={disabled}
       className={`${baseInputClass} ${className}`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
     />
   );
 }
@@ -225,6 +227,7 @@ export function DateInput({ field, value, onChange, onFocus, disabled, className
  * Reference Input - For IDs, codes, ticket numbers
  */
 export function ReferenceInput({ field: _field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
   return (
     <input
       type="text"
@@ -233,7 +236,7 @@ export function ReferenceInput({ field: _field, value, onChange, onFocus, disabl
       onFocus={onFocus}
       disabled={disabled}
       className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 font-mono tracking-wider ${className}`}
-      placeholder="Enter reference..."
+      placeholder={t('inputs.enterReference')}
     />
   );
 }
@@ -242,6 +245,7 @@ export function ReferenceInput({ field: _field, value, onChange, onFocus, disabl
  * Selection Input - Dropdown for predefined options
  */
 export function SelectionInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
   const options = field.options || [];
 
   return (
@@ -252,7 +256,7 @@ export function SelectionInput({ field, value, onChange, onFocus, disabled, clas
       disabled={disabled}
       className={`${baseInputClass} ${className} cursor-pointer`}
     >
-      <option value="">Select {field.name}...</option>
+      <option value="">{t('inputs.selectField', { field: field.name })}</option>
       {options.map((option) => (
         <option key={option} value={option}>
           {option}
@@ -266,6 +270,7 @@ export function SelectionInput({ field, value, onChange, onFocus, disabled, clas
  * Address Input - Multi-line textarea for addresses
  */
 export function AddressInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
   return (
     <textarea
       value={value}
@@ -274,7 +279,7 @@ export function AddressInput({ field, value, onChange, onFocus, disabled, classN
       disabled={disabled}
       rows={3}
       className={`${baseInputClass} ${className} resize-none`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
     />
   );
 }
@@ -324,6 +329,7 @@ export function CalculatedInput({ field, value, onFocus: _onFocus, onChange: _on
  * Grade Input - For classifications/grades (could be text or selection)
  */
 export function GradeInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
   // If options are provided, use selection
   if (field.options && field.options.length > 0) {
     return (
@@ -347,7 +353,7 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
       onFocus={onFocus}
       disabled={disabled}
       className={`${baseInputClass} ${className} font-medium`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
     />
   );
 }
@@ -356,6 +362,7 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
  * Boolean Input - Toggle switch for Yes/No questions
  */
 export function BooleanInput({ field, value, onChange, onFocus, disabled, className: _className }: InputProps) {
+  const { t } = useTranslation();
   const isYes = value.toLowerCase() === 'yes' || value === 'true' || value === '1';
 
   return (
@@ -377,7 +384,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
         />
       </button>
       <span className={`text-xl font-medium ${isYes ? 'text-emerald-600' : 'text-slate-800'}`}>
-        {isYes ? 'Yes' : 'No'}
+        {isYes ? t('inputs.yes') : t('inputs.no')}
       </span>
     </div>
   );
@@ -465,6 +472,7 @@ export function PhoneInput({ field, value, onChange, onFocus, disabled, classNam
  * Email Input - Email address with validation styling
  */
 export function EmailInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
   // Basic email validation
   const isValidEmail = (email: string): boolean => {
     if (!email) return true; // Empty is valid (not required)
@@ -482,7 +490,7 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
       disabled={disabled}
       className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${!valid ? 'border-red-300 bg-red-50' : ''
         } ${className}`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: field.name.toLowerCase() })}
     />
   );
 }

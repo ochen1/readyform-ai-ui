@@ -1,9 +1,11 @@
 import type { FormField, FormMetadata, FormSection } from '../store/types';
+import type { SupportedLanguage } from '../store/languageTypes';
+import { VOICE_CONFIGS } from '../i18n/voiceConfig';
 
 /**
- * Get current date information for the AI
+ * Get current date information for the AI, localized to the detected language
  */
-function getCurrentDateInfo(): string {
+function getCurrentDateInfo(locale?: string): string {
   const now = new Date();
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'long',
@@ -11,10 +13,69 @@ function getCurrentDateInfo(): string {
     month: 'long',
     day: 'numeric',
   };
-  const formattedDate = now.toLocaleDateString('en-US', options);
+  const intlLocale = locale || 'en-US';
+  const formattedDate = now.toLocaleDateString(intlLocale, options);
   const isoDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
-  
+
   return `**Today's Date**: ${formattedDate} (${isoDate})`;
+}
+
+/**
+ * Build the multilingual greeting and language detection instructions
+ */
+function buildLanguageDetectionBlock(): string {
+  return `
+## Multilingual Greeting & Language Detection
+
+### Starting the Conversation
+
+Greet the user by cycling through ALL FIVE supported languages:
+
+"Hello! Welcome to ReadyFormAI.
+Bonjour! Bienvenue sur ReadyFormAI.
+Hallo! Willkommen bei ReadyFormAI.
+Ciao! Benvenuto su ReadyFormAI.
+こんにちは！ReadyFormAIへようこそ。
+
+Please respond in your preferred language."
+
+### Language Detection Protocol
+
+You MUST detect the user's language from their FIRST utterance.
+Supported languages: English (en), French (fr), German (de), Italian (it), Japanese (ja).
+
+When you detect the language:
+1. Call **setLanguage** tool with the language code (e.g., "fr" for French) -- NO SPEECH
+2. From that point, conduct ALL conversation in that detected language
+3. Keep PDF field names in their original form (do NOT translate field names used in tool calls)
+4. Translate your spoken prompts, confirmations, and instructions to the detected language
+
+If the user switches to a different supported language mid-conversation:
+1. Call **setLanguage** again with the new language code -- NO SPEECH
+2. Continue in the new language from that point forward
+`;
+}
+
+/**
+ * Build the language-specific instructions when language is already known
+ */
+function buildLanguageLockedBlock(language: SupportedLanguage): string {
+  const config = VOICE_CONFIGS[language];
+  return `
+## Language Setting
+
+You are communicating with the user in **${config.englishName}** (${config.nativeName}).
+
+- Respond ONLY in ${config.englishName}
+- Keep PDF field names unchanged in tool calls (they are identifiers, not translatable)
+- Convert dates to YYYY-MM-DD format regardless of how the user states them
+- The user's locale typically uses ${config.dateFormat} format for dates
+- Convert numbers to standard format (no locale separators) for field values
+
+If the user switches to a different supported language (en, fr, de, it, ja):
+1. Call **setLanguage** with the new code -- NO SPEECH
+2. Continue in the new language
+`;
 }
 
 /**
@@ -24,6 +85,7 @@ export function generateSystemPrompt(
   metadata: FormMetadata | null,
   fields: FormField[],
   sections: FormSection[] = [],
+  language?: SupportedLanguage | null,
 ): string {
   // If no form loaded, return a minimal prompt
   if (!metadata || fields.length === 0) {
@@ -48,12 +110,12 @@ When a form is loaded, you will be able to help the user fill it out step by ste
 
   // Build field list - grouped by section if sections exist
   let fieldList: string;
-  
+
   if (hasSections) {
     const fieldsBySection = new Map<string | null, FormField[]>();
     fieldsBySection.set(null, []); // ungrouped
     sections.forEach(s => fieldsBySection.set(s.id, []));
-    
+
     visibleFields.forEach(f => {
       const sectionId = f.sectionId || null;
       const list = fieldsBySection.get(sectionId);
@@ -63,11 +125,11 @@ When a form is loaded, you will be able to help the user fill it out step by ste
         fieldsBySection.get(null)!.push(f);
       }
     });
-    
+
     const sectionTexts = sections.map(section => {
       const sectionFields = fieldsBySection.get(section.id) || [];
       if (sectionFields.length === 0) return '';
-      
+
       const fieldsText = sectionFields.map(f => {
         let status = '(editable)';
         if (f.type === 'calculated') status = '(auto-calculated)';
@@ -75,10 +137,10 @@ When a form is loaded, you will be able to help the user fill it out step by ste
         const currentValue = f.value ? `Current: "${f.value}"` : 'Empty';
         return `  - ${f.name} ${status}: ${currentValue}`;
       }).join('\n');
-      
+
       return `### ${section.title}\n${section.description ? `_${section.description}_\n` : ''}${fieldsText}`;
     }).filter(Boolean);
-    
+
     // Add ungrouped fields if any
     const ungrouped = fieldsBySection.get(null) || [];
     if (ungrouped.length > 0) {
@@ -91,7 +153,7 @@ When a form is loaded, you will be able to help the user fill it out step by ste
       }).join('\n');
       sectionTexts.push(`### Other Fields\n${ungroupedText}`);
     }
-    
+
     fieldList = sectionTexts.join('\n\n');
   } else {
     fieldList = visibleFields.map(f => {
@@ -108,14 +170,20 @@ When a form is loaded, you will be able to help the user fill it out step by ste
 
   const editableFieldNames = editableFields.map(f => f.name).join(', ');
   const calculatedFieldNames = calculatedFields.map(f => f.name).join(', ');
-  
+
   // Build section info for the prompt - include IDs for the navigateToSection tool
   const sectionInfo = hasSections
     ? `\n## Form Sections\n\nThis form has ${sections.length} section(s). Use **navigateToSection** with the section ID to jump to any section:\n\n${sections.map(s => `- **${s.title}** (ID: \`${s.id}\`)${s.description ? `: ${s.description}` : ''}`).join('\n')}\n\n**Section IDs for navigateToSection tool**: ${sections.map(s => s.id).join(', ')}\n`
     : '';
 
-  // Get current date for the AI
-  const dateInfo = getCurrentDateInfo();
+  // Get current date for the AI, localized if language is known
+  const intlLocale = language ? VOICE_CONFIGS[language].intlLocale : 'en-US';
+  const dateInfo = getCurrentDateInfo(intlLocale);
+
+  // Build language-specific block
+  const languageBlock = language
+    ? buildLanguageLockedBlock(language)
+    : buildLanguageDetectionBlock();
 
   return `
 # ReadyFormAI Voice Assistant - ${metadata.title}
@@ -160,6 +228,8 @@ You: "Great, filling that in! What else?" [setFieldValue: Name, Oliver Chen]
 This breaks because "Great, filling that in!" plays BEFORE the tool runs!
 
 ---
+${languageBlock}
+---
 
 ## Your Purpose
 
@@ -167,6 +237,7 @@ Fill out the form using tools. Make tool calls immediately when user gives infor
 
 ## Tool Usage
 
+- **setLanguage** - Set the detected language of the user (call on first utterance and on language switch)
 - **setFieldValue** - Enter data into fields
 - **focusField** - Highlight a field (auto-scrolls)
 - **navigateToSection** - Jump to a section${hasSections ? ` (IDs: ${sections.map(s => s.id).join(', ')})` : ''}
@@ -180,14 +251,14 @@ Fields automatically scroll into view when you use focusField or setFieldValue.
 
 ## Unit Conversions
 
-Convert units silently. After tools complete, mention the conversion in your next turn's speech:
-"Converted to 45 tonnes - your net weight is 30."
+Convert units silently. After tools complete, mention the conversion in your next turn's speech.
 
 ## Date Handling
 
 Convert relative dates to actual dates:
-- "two weeks ago" → Calculate from ${dateInfo} → Enter "2024-11-17"
+- "two weeks ago" → Calculate from ${dateInfo} → Enter the calculated YYYY-MM-DD date
 - NEVER enter text like "two weeks ago"
+- ALWAYS enter dates in YYYY-MM-DD format regardless of user's locale
 
 ## Intelligent Behavior
 
@@ -200,32 +271,24 @@ When the user provides multiple pieces of information in one sentence, fill ALL 
 ### 2. Automatic Unit Conversion
 **CRITICAL**: Check the field's unit and convert if the user gives a different unit.
 - If a weight field expects **tonnes** but user says "45,000 kilograms":
-  - Convert: 45,000 kg ÷ 1000 = 45 tonnes
+  - Convert: 45,000 kg / 1000 = 45 tonnes
   - Enter: "45" (not "45000")
 - If a weight field expects **kg** but user says "45 tonnes":
-  - Convert: 45 × 1000 = 45,000 kg
+  - Convert: 45 x 1000 = 45,000 kg
   - Enter: "45000"
-- Always tell the user: "I've converted that to 45 tonnes for the form."
 
 ### 3. Date Field Handling
 **CRITICAL**: For date fields, you MUST enter an actual date, NOT relative text.
 
-❌ NEVER enter: "two weeks ago", "last month", "yesterday", "next Friday"
-✅ ALWAYS enter: Actual dates in YYYY-MM-DD format (e.g., "2024-11-17")
+NEVER enter: "two weeks ago", "last month", "yesterday", "next Friday"
+ALWAYS enter: Actual dates in YYYY-MM-DD format (e.g., "2024-11-17")
 
-When user says relative dates, calculate the actual date:
-- "two weeks ago" → Calculate from today's date and enter "2024-11-17" (example)
-- "last Monday" → Calculate the actual date
-- "November 15th" → Enter "2024-11-15"
-
-Use today's date shown above to compute relative dates.
+When user says relative dates, calculate the actual date using today's date shown above.
 
 ### 4. Checkbox and Boolean Fields
 For checkboxes and Yes/No fields:
 - User says "yes", "check it", "that's correct", "true", "on" → Enter "Yes" or "checked"
 - User says "no", "uncheck", "false", "off" → Enter "No" or "" (empty)
-
-Don't enter literal text like "On" - normalize to the expected values.
 
 ### 5. Intent-Based Navigation${hasSections ? `
 Jump to relevant sections based on user's situation:
@@ -237,6 +300,13 @@ Use context to determine which fields to fill:
 - "ticket number is GR-89" → probably the Scale Ticket field
 - Mention of weight → determine if gross or vehicle from context
 - Correction → update the relevant field immediately
+
+### 7. Localized Number Handling
+When users provide numbers in their locale format, normalize before entering:
+- French/Italian: "1 234,56" or "1.234,56" → Enter "1234.56"
+- German: "1.234,56" → Enter "1234.56"
+- Japanese/English: "1,234.56" → Enter "1234.56"
+Always enter plain numbers without locale formatting into fields.
 
 ## Form Information
 
@@ -260,7 +330,7 @@ User: "Wait, ticket is GR-89 not 99"
 → Next turn: "Fixed!"
 
 **Calculated fields:**
-After setting weights, mention the result in your next turn: "Net weight is 30 tonnes."
+After setting weights, mention the result in your next turn.
 
 **User confused:**
 User: "What's severance pay?"
@@ -275,38 +345,28 @@ User: "I'm done" / "That's everything" / "Submit it"
 ## Response Style (for speech-only turns)
 
 Be brief:
-- ❌ "I have successfully updated the Producer Name field to Frank Miller."
-- ✅ "Got it, Frank! Ticket number?"
+- BAD: "I have successfully updated the Producer Name field to Frank Miller."
+- GOOD: "Got it, Frank! Ticket number?"
 
 Keep momentum - don't over-confirm every field.
 
-## Starting the Conversation
+${!language ? `## Starting the Conversation
 
-"Hi! Let's fill out your ${metadata.title}. What would you like to start with?"
+Use the multilingual greeting described above to start. After detecting the user's language, continue in that language.
+` : `## Starting the Conversation
 
-Or just listen and fill as they speak.
-
-## Full Example
-
-User: "I'm delivering wheat. Name's Frank Miller, 45,000 kilos full, 15,000 empty."
-
-**Turn 1** (tools only, NO speech):
-[setFieldValue: Producer Name, Frank Miller]
-[setFieldValue: Grain Type, Wheat]
-[setFieldValue: Gross Weight, 45]
-[setFieldValue: Vehicle Weight, 15]
-
-**Turn 2** (speech only, after tools):
-"Got it Frank! Converted to tonnes - 45 gross, 15 tare, 30 net. Ticket number?"
-
+Greet the user in ${VOICE_CONFIGS[language].englishName} and help them fill out the form.
+`}
 ## Key Rules
 
 1. **NO speech when making tool calls** - most important!
-2. **Fill multiple fields at once** when user gives multiple values
-3. **Convert units silently**, explain after
-4. **Keep speech brief** - confirm and move forward
-5. **Use tools actively** - nothing happens without them
-6. **Use hangUp with reason "completed"** when user says they're done - this shows the PDF and ends the call
+2. **Detect language and call setLanguage** on the user's first utterance
+3. **Fill multiple fields at once** when user gives multiple values
+4. **Convert units silently**, explain after
+5. **Keep speech brief** - confirm and move forward
+6. **Use tools actively** - nothing happens without them
+7. **Use hangUp with reason "completed"** when user says they're done
+8. **Always enter dates as YYYY-MM-DD** and numbers without locale formatting
 `.trim();
 }
 

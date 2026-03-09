@@ -1,5 +1,6 @@
 import type { FormContextValue } from '../store/FormContext';
 import { fieldAnimationQueue } from '../services/fieldAnimationQueue';
+import { normalizeFieldValue, getCurrentLanguage } from '../services/formatConversion';
 
 /**
  * Create tool implementations that work with dynamic form fields
@@ -17,13 +18,41 @@ export function createToolImplementations(formContext: FormContextValue, endCall
 
   return {
     /**
+     * Set the detected language of the user
+     */
+    setLanguage: ({ languageCode }: { languageCode: string }) => {
+      console.log(`[Tool Call] setLanguage("${languageCode}")`);
+
+      const validLanguages = ['en', 'fr', 'de', 'it', 'ja'];
+      if (!validLanguages.includes(languageCode)) {
+        return JSON.stringify({
+          success: false,
+          message: `Invalid language code "${languageCode}". Supported: ${validLanguages.join(', ')}`
+        });
+      }
+
+      // Dispatch event for LanguageContext to pick up
+      window.dispatchEvent(new CustomEvent('language:detected', {
+        detail: { languageCode }
+      }));
+
+      console.log(`[Tool Call] setLanguage SUCCESS: Language set to "${languageCode}"`);
+
+      return JSON.stringify({
+        success: true,
+        message: `Language set to ${languageCode}. UI will update to match.`,
+        languageCode,
+      });
+    },
+
+    /**
      * Set a form field value
      */
     setFieldValue: ({ fieldName, value }: { fieldName: string; value: string }) => {
       console.log(`[Tool Call] setFieldValue("${fieldName}", "${value}")`);
-      
+
       const field = findFieldByName(fieldName);
-      
+
       if (!field) {
         console.warn(`[Tool Call] setFieldValue FAILED: Field "${fieldName}" not found`);
         return JSON.stringify({
@@ -60,6 +89,13 @@ export function createToolImplementations(formContext: FormContextValue, endCall
         }
       }
 
+      // Normalize localized formats (dates, numbers) to PDF-compatible formats
+      processedValue = normalizeFieldValue(processedValue, {
+        language: getCurrentLanguage(),
+        fieldType: field.type,
+        fieldFormat: field.format,
+      });
+
       // Queue the field update for animated display
       // This provides visual feedback with delays so users can follow along
       fieldAnimationQueue.enqueue({
@@ -69,9 +105,9 @@ export function createToolImplementations(formContext: FormContextValue, endCall
         onFocusField: (fieldId) => formContext.focusField(fieldId),
         onMarkComplete: (fieldId) => formContext.dispatch({ type: 'MARK_FIELD_COMPLETE', fieldId }),
       });
-      
+
       console.log(`[Tool Call] setFieldValue QUEUED: "${field.name}" = "${processedValue}"`);
-      
+
       return JSON.stringify({
         success: true,
         message: `Set "${field.name}" to "${processedValue}".`,

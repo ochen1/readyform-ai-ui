@@ -1,0 +1,85 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Progression",
+    "backToForm": "Retour au formulaire",
+    "openInNewTab": "Ouvrir dans un nouvel onglet",
+    "closePreview": "Fermer l'aperçu"
+  },
+  "upload": {
+    "title": "Téléverser un formulaire PDF",
+    "dropHere": "Déposez le PDF ici",
+    "dragAndDrop": "Glissez-déposez ou cliquez pour sélectionner",
+    "getStarted": "Téléversez un formulaire PDF à remplir pour commencer",
+    "button": "Téléverser un PDF",
+    "buttonChange": "Téléverser un autre PDF"
+  },
+  "voice": {
+    "title": "Assistant vocal",
+    "start": "Démarrer l'assistant vocal",
+    "end": "Raccrocher",
+    "needPdf": "Téléversez un PDF pour activer l'assistant vocal",
+    "thinking": "Réflexion...",
+    "speaking": "Parole...",
+    "listening": "Écoute...",
+    "ready": "Prêt",
+    "mute": "Couper le micro",
+    "unmute": "Activer le micro",
+    "muteMic": "Couper le microphone",
+    "unmuteMic": "Activer le microphone"
+  },
+  "accessibility": {
+    "title": "Accessibilité",
+    "dyslexiaFont": "Police adaptée à la dyslexie",
+    "fontSize": "Taille de la police",
+    "decreaseFont": "Réduire la taille de la police",
+    "increaseFont": "Augmenter la taille de la police"
+  },
+  "language": {
+    "title": "Langue",
+    "label": "Langue de l'interface"
+  },
+  "form": {
+    "preview": "Aperçu du formulaire",
+    "completedPreview": "Aperçu du formulaire complété",
+    "untitled": "Formulaire sans titre",
+    "actions": "Actions",
+    "calculation": "Calcul : {{hint}}",
+    "format": "Format : {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyse...",
+    "preparing": "Préparation de l'analyse...",
+    "loading": "Chargement du PDF et extraction des champs.",
+    "enhanced": "Amélioré par l'IA",
+    "failed": "L'amélioration par l'IA a échoué",
+    "fieldsFound": "{{count}} champs trouvés",
+    "fields": "{{count}} champs",
+    "pagesFailed": "{{count}} page(s) non analysée(s)",
+    "statusCached": "En cache",
+    "statusComplete": "Terminé",
+    "statusProcessing": "En cours",
+    "statusError": "Erreur",
+    "statusPending": "En attente",
+    "largeFormTitle": "Grand formulaire détecté",
+    "largeFormMessage": "Ce formulaire comporte <strong>{{count}} pages</strong> et nécessitera un moment pour l'analyse. Vous pouvez commencer à remplir les champs visibles pendant que nous les améliorons avec l'IA.",
+    "analysisComplete": "Analyse terminée",
+    "analyzingStructure": "Analyse de la structure du formulaire...",
+    "pagesComplete": "<strong>{{completed}}</strong> sur <strong>{{total}}</strong> pages terminées",
+    "processingCount": "{{count}} en cours",
+    "pendingCount": "{{count}} en attente",
+    "fromCacheCount": "{{count}} du cache",
+    "failedCount": "{{count}} échoué(s)",
+    "pageNumber": "Page {{number}}",
+    "fieldCount": "({{count}} champs)",
+    "retried": "(réessayé)",
+    "errorDetail": "<strong>{{count}} page(s)</strong> n'ont pas pu être analysées. Ces pages utiliseront les informations de champs de base."
+  },
+  "inputs": {
+    "enterField": "Saisir {{field}}...",
+    "selectField": "Sélectionner {{field}}...",
+    "enterReference": "Saisir la référence...",
+    "yes": "Oui",
+    "no": "Non"
+  }
+}

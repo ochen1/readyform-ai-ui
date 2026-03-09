@@ -1,4 +1,4 @@
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { EnhancementProgress, PageProcessingStatus } from '../store/types';
 import { CheckCircle, Circle, AlertCircle, Loader2, Database } from 'lucide-react';
 
@@ -11,7 +11,7 @@ interface ProcessingProgressProps {
 /**
  * Get icon and color for page status
  */
-function getStatusIcon(status: PageProcessingStatus) {
+function getStatusIcon(status: PageProcessingStatus, t: (key: string) => string) {
   switch (status.status) {
     case 'completed':
       if (status.fromCache) {
@@ -19,28 +19,28 @@ function getStatusIcon(status: PageProcessingStatus) {
           icon: <Database size={18} className="text-blue-500" />,
           color: 'text-blue-600',
           bgColor: 'bg-blue-50',
-          label: 'Cached',
+          label: t('enhancement.statusCached'),
         };
       }
       return {
         icon: <CheckCircle size={18} className="text-emerald-500" />,
         color: 'text-emerald-600',
         bgColor: 'bg-emerald-50',
-        label: 'Complete',
+        label: t('enhancement.statusComplete'),
       };
     case 'processing':
       return {
         icon: <Loader2 size={18} className="text-amber-500 animate-spin" />,
         color: 'text-amber-600',
         bgColor: 'bg-amber-50',
-        label: 'Processing',
+        label: t('enhancement.statusProcessing'),
       };
     case 'error':
       return {
         icon: <AlertCircle size={18} className="text-red-500" />,
         color: 'text-red-600',
         bgColor: 'bg-red-50',
-        label: 'Error',
+        label: t('enhancement.statusError'),
       };
     case 'pending':
     default:
@@ -48,7 +48,7 @@ function getStatusIcon(status: PageProcessingStatus) {
         icon: <Circle size={18} className="text-slate-600" />,
         color: 'text-slate-600',
         bgColor: 'bg-slate-50',
-        label: 'Pending',
+        label: t('enhancement.statusPending'),
       };
   }
 }
@@ -75,6 +75,7 @@ function formatElapsedTime(startTime: number): string {
  * Shows real-time progress of page-by-page enhancement
  */
 export function ProcessingProgress({ progress, showWarning, pageCount }: ProcessingProgressProps) {
+  const { t } = useTranslation();
   const percentage = calculateProgress(progress);
   const elapsed = formatElapsedTime(progress.startTime);
 
@@ -91,11 +92,11 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
           <div className="flex items-start gap-3">
             <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={20} />
             <div>
-              <p className="font-semibold text-amber-800">Large Form Detected</p>
-              <p className="text-amber-700 text-sm mt-1">
-                This form has <strong>{pageCount} pages</strong> and will take a moment to analyze.
-                You can start filling visible fields while we enhance them with AI.
-              </p>
+              <p className="font-semibold text-amber-800">{t('enhancement.largeFormTitle')}</p>
+              <p
+                className="text-amber-700 text-sm mt-1"
+                dangerouslySetInnerHTML={{ __html: t('enhancement.largeFormMessage', { count: pageCount }) }}
+              />
             </div>
           </div>
         </div>
@@ -105,7 +106,7 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
       <div className="px-6 py-4 border-b border-slate-100">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-black text-lg">
-            {percentage === 100 ? 'Analysis Complete' : 'Analyzing Form Structure...'}
+            {percentage === 100 ? t('enhancement.analysisComplete') : t('enhancement.analyzingStructure')}
           </h3>
           <span className="text-sm text-slate-800">{elapsed}</span>
         </div>
@@ -120,9 +121,10 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
 
         {/* Progress Stats */}
         <div className="flex items-center justify-between mt-3 text-sm">
-          <span className="text-slate-900">
-            <strong>{progress.completedPages}</strong> of <strong>{progress.totalPages}</strong> pages complete
-          </span>
+          <span
+            className="text-slate-900"
+            dangerouslySetInnerHTML={{ __html: t('enhancement.pagesComplete', { completed: progress.completedPages, total: progress.totalPages }) }}
+          />
           <span className="font-semibold text-blue-600">{percentage}%</span>
         </div>
 
@@ -130,22 +132,22 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
         <div className="flex gap-4 mt-2 text-xs text-slate-800">
           {processing > 0 && (
             <span className="flex items-center gap-1">
-              <Loader2 size={12} className="animate-spin" /> {processing} processing
+              <Loader2 size={12} className="animate-spin" /> {t('enhancement.processingCount', { count: processing })}
             </span>
           )}
           {pending > 0 && (
             <span className="flex items-center gap-1">
-              <Circle size={12} /> {pending} pending
+              <Circle size={12} /> {t('enhancement.pendingCount', { count: pending })}
             </span>
           )}
           {cached > 0 && (
             <span className="flex items-center gap-1">
-              <Database size={12} /> {cached} from cache
+              <Database size={12} /> {t('enhancement.fromCacheCount', { count: cached })}
             </span>
           )}
           {progress.errorPages > 0 && (
             <span className="flex items-center gap-1 text-red-500">
-              <AlertCircle size={12} /> {progress.errorPages} failed
+              <AlertCircle size={12} /> {t('enhancement.failedCount', { count: progress.errorPages })}
             </span>
           )}
         </div>
@@ -155,7 +157,7 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
       <div className="px-6 py-4 max-h-64 overflow-y-auto">
         <div className="space-y-2">
           {progress.pageStatuses.map((pageStatus) => {
-            const { icon, color, bgColor, label } = getStatusIcon(pageStatus);
+            const { icon, color, bgColor, label } = getStatusIcon(pageStatus, t);
 
             return (
               <div
@@ -165,16 +167,16 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
                 <div className="flex items-center gap-3">
                   {icon}
                   <span className={`font-medium ${color}`}>
-                    Page {pageStatus.pageNumber}
+                    {t('enhancement.pageNumber', { number: pageStatus.pageNumber })}
                   </span>
                   <span className="text-slate-800 text-sm">
-                    ({pageStatus.fieldCount} fields)
+                    {t('enhancement.fieldCount', { count: pageStatus.fieldCount })}
                   </span>
                 </div>
                 <span className={`text-sm font-medium ${color}`}>
                   {label}
                   {pageStatus.retryCount > 0 && pageStatus.status === 'error' && (
-                    <span className="text-xs ml-1">(retried)</span>
+                    <span className="text-xs ml-1">{t('enhancement.retried')}</span>
                   )}
                 </span>
               </div>
@@ -186,10 +188,10 @@ export function ProcessingProgress({ progress, showWarning, pageCount }: Process
       {/* Error Details */}
       {progress.errorPages > 0 && (
         <div className="px-6 py-3 bg-red-50 border-t border-red-100">
-          <p className="text-red-700 text-sm">
-            <strong>{progress.errorPages} page(s)</strong> could not be analyzed.
-            These pages will use basic field information.
-          </p>
+          <p
+            className="text-red-700 text-sm"
+            dangerouslySetInnerHTML={{ __html: t('enhancement.errorDetail', { count: progress.errorPages }) }}
+          />
         </div>
       )}
     </div>

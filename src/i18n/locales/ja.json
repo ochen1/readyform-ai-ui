@@ -1,0 +1,85 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "進捗",
+    "backToForm": "フォームに戻る",
+    "openInNewTab": "新しいタブで開く",
+    "closePreview": "プレビューを閉じる"
+  },
+  "upload": {
+    "title": "PDFフォームをアップロード",
+    "dropHere": "PDFをここにドロップ",
+    "dragAndDrop": "ドラッグ＆ドロップまたはクリックして選択",
+    "getStarted": "記入可能なPDFフォームをアップロードして開始してください",
+    "button": "PDFをアップロード",
+    "buttonChange": "別のPDFをアップロード"
+  },
+  "voice": {
+    "title": "音声アシスタント",
+    "start": "音声アシスタントを開始",
+    "end": "通話を終了",
+    "needPdf": "音声アシスタントを有効にするにはPDFをアップロードしてください",
+    "thinking": "考え中...",
+    "speaking": "話し中...",
+    "listening": "聞き取り中...",
+    "ready": "準備完了",
+    "mute": "ミュート",
+    "unmute": "ミュート解除",
+    "muteMic": "マイクをミュート",
+    "unmuteMic": "マイクのミュートを解除"
+  },
+  "accessibility": {
+    "title": "アクセシビリティ",
+    "dyslexiaFont": "ディスレクシア対応フォント",
+    "fontSize": "文字サイズ",
+    "decreaseFont": "文字サイズを小さくする",
+    "increaseFont": "文字サイズを大きくする"
+  },
+  "language": {
+    "title": "言語",
+    "label": "表示言語"
+  },
+  "form": {
+    "preview": "フォームプレビュー",
+    "completedPreview": "記入済みフォームのプレビュー",
+    "untitled": "無題のフォーム",
+    "actions": "アクション",
+    "calculation": "計算: {{hint}}",
+    "format": "フォーマット: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "分析中...",
+    "preparing": "分析を準備中...",
+    "loading": "PDFを読み込み、フィールドを抽出しています。",
+    "enhanced": "AI強化済み",
+    "failed": "AI強化に失敗しました",
+    "fieldsFound": "{{count}}個のフィールドが見つかりました",
+    "fields": "{{count}}個のフィールド",
+    "pagesFailed": "{{count}}ページの分析に失敗しました",
+    "statusCached": "キャッシュ済み",
+    "statusComplete": "完了",
+    "statusProcessing": "処理中",
+    "statusError": "エラー",
+    "statusPending": "保留中",
+    "largeFormTitle": "大きなフォームを検出",
+    "largeFormMessage": "このフォームには<strong>{{count}}ページ</strong>あり、分析に少し時間がかかります。AIで強化している間に、表示されているフィールドの入力を開始できます。",
+    "analysisComplete": "分析完了",
+    "analyzingStructure": "フォーム構造を分析中...",
+    "pagesComplete": "<strong>{{total}}</strong>ページ中<strong>{{completed}}</strong>ページ完了",
+    "processingCount": "{{count}}件処理中",
+    "pendingCount": "{{count}}件保留中",
+    "fromCacheCount": "{{count}}件キャッシュから",
+    "failedCount": "{{count}}件失敗",
+    "pageNumber": "{{number}}ページ",
+    "fieldCount": "({{count}}フィールド)",
+    "retried": "(再試行済み)",
+    "errorDetail": "<strong>{{count}}ページ</strong>を分析できませんでした。これらのページは基本的なフィールド情報を使用します。"
+  },
+  "inputs": {
+    "enterField": "{{field}}を入力...",
+    "selectField": "{{field}}を選択...",
+    "enterReference": "参照を入力...",
+    "yes": "はい",
+    "no": "いいえ"
+  }
+}

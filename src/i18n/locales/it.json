@@ -1,0 +1,85 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Avanzamento",
+    "backToForm": "Torna al modulo",
+    "openInNewTab": "Apri in una nuova scheda",
+    "closePreview": "Chiudi anteprima"
+  },
+  "upload": {
+    "title": "Carica un modulo PDF",
+    "dropHere": "Rilascia il PDF qui",
+    "dragAndDrop": "Trascina e rilascia o clicca per selezionare",
+    "getStarted": "Carica un modulo PDF compilabile per iniziare",
+    "button": "Carica PDF",
+    "buttonChange": "Carica un altro PDF"
+  },
+  "voice": {
+    "title": "Assistente vocale",
+    "start": "Avvia assistente vocale",
+    "end": "Termina chiamata",
+    "needPdf": "Carica un PDF per attivare l'assistente vocale",
+    "thinking": "Sta pensando...",
+    "speaking": "Sta parlando...",
+    "listening": "In ascolto...",
+    "ready": "Pronto",
+    "mute": "Disattiva microfono",
+    "unmute": "Attiva microfono",
+    "muteMic": "Disattiva il microfono",
+    "unmuteMic": "Attiva il microfono"
+  },
+  "accessibility": {
+    "title": "Accessibilità",
+    "dyslexiaFont": "Carattere adatto alla dislessia",
+    "fontSize": "Dimensione carattere",
+    "decreaseFont": "Riduci dimensione carattere",
+    "increaseFont": "Aumenta dimensione carattere"
+  },
+  "language": {
+    "title": "Lingua",
+    "label": "Lingua dell'interfaccia"
+  },
+  "form": {
+    "preview": "Anteprima modulo",
+    "completedPreview": "Anteprima del modulo compilato",
+    "untitled": "Modulo senza titolo",
+    "actions": "Azioni",
+    "calculation": "Calcolo: {{hint}}",
+    "format": "Formato: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analisi...",
+    "preparing": "Preparazione dell'analisi...",
+    "loading": "Caricamento del PDF ed estrazione dei campi.",
+    "enhanced": "Migliorato dall'IA",
+    "failed": "Miglioramento IA non riuscito",
+    "fieldsFound": "{{count}} campi trovati",
+    "fields": "{{count}} campi",
+    "pagesFailed": "{{count}} pagina/e non analizzata/e",
+    "statusCached": "In cache",
+    "statusComplete": "Completato",
+    "statusProcessing": "In elaborazione",
+    "statusError": "Errore",
+    "statusPending": "In attesa",
+    "largeFormTitle": "Modulo grande rilevato",
+    "largeFormMessage": "Questo modulo ha <strong>{{count}} pagine</strong> e richiederà un momento per l'analisi. Puoi iniziare a compilare i campi visibili mentre li miglioriamo con l'IA.",
+    "analysisComplete": "Analisi completata",
+    "analyzingStructure": "Analisi della struttura del modulo...",
+    "pagesComplete": "<strong>{{completed}}</strong> di <strong>{{total}}</strong> pagine completate",
+    "processingCount": "{{count}} in elaborazione",
+    "pendingCount": "{{count}} in attesa",
+    "fromCacheCount": "{{count}} dalla cache",
+    "failedCount": "{{count}} non riuscito/i",
+    "pageNumber": "Pagina {{number}}",
+    "fieldCount": "({{count}} campi)",
+    "retried": "(ritentato)",
+    "errorDetail": "<strong>{{count}} pagina/e</strong> non hanno potuto essere analizzate. Queste pagine utilizzeranno le informazioni di base dei campi."
+  },
+  "inputs": {
+    "enterField": "Inserisci {{field}}...",
+    "selectField": "Seleziona {{field}}...",
+    "enterReference": "Inserisci riferimento...",
+    "yes": "Sì",
+    "no": "No"
+  }
+}
