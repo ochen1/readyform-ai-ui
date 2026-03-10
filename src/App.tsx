@@ -21,9 +21,7 @@ function App() {
     <AccessibilityProvider>
       <LanguageProvider>
         <FormProvider>
-          <UltravoxProvider>
-            <SimpleForm />
-          </UltravoxProvider>
+          <AppInner />
         </FormProvider>
       </LanguageProvider>
     </AccessibilityProvider>
