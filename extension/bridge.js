@@ -1,6 +1,9 @@
 // ReadyFormAI Chrome Extension - Bridge Script
 // Injected into the ReadyFormAI tab to relay PDF data from the extension
-// to the React app via window.postMessage
+// to the React app via window.postMessage.
+//
+// Reads the PDF from chrome.storage.local (written by background.js) and
+// retries delivery on an exponential backoff until the React app ACKs.
 
 (function () {
   'use strict';
@@ -14,37 +17,45 @@
     return bytes;
   }
 
-  // Buffer for PDF data — holds the message until the React app signals ready
-  let pendingPDF = null;
+  let delivered = false;
+  let retryTimer = null;
 
-  function postPDFToApp(msg) {
-    window.postMessage(msg, window.location.origin);
-  }
+  // Exponential backoff: 0, .5s, 1s, 2s, 4s, 8s, 16s, 30s, 60s
+  const RETRY_DELAYS = [0, 500, 1000, 2000, 4000, 8000, 16000, 30000, 60000];
 
-  function bufferAndPost(fileName, arrayBuffer) {
+  function deliverToApp(fileName, arrayBuffer) {
     const msg = {
       type: 'READYFORM_LOAD_PDF',
       source: 'readyform-extension',
-      fileName: fileName,
+      fileName,
       data: arrayBuffer,
     };
-    pendingPDF = msg;
-    // Try immediately (works if React is already mounted, e.g. reused tab)
-    postPDFToApp(msg);
+
+    let attempt = 0;
+
+    function tryDeliver() {
+      if (delivered) return;
+      console.log('[ReadyFormAI] Delivering PDF to app, attempt', attempt + 1);
+      window.postMessage(msg, window.location.origin);
+      attempt++;
+      if (attempt < RETRY_DELAYS.length) {
+        retryTimer = setTimeout(tryDeliver, RETRY_DELAYS[attempt]);
+      }
+    }
+
+    tryDeliver();
   }
 
-  // When the React app signals it's ready, re-send buffered PDF data.
-  // This handles the case where bridge.js fires before useEffect attaches the listener.
+  // Listen for ACK from the React app — stop retrying and clean up storage
   window.addEventListener('message', (event) => {
     if (
-      event.data?.type === 'READYFORM_BRIDGE_READY' &&
+      event.data?.type === 'READYFORM_PDF_ACK' &&
       event.data?.source === 'readyform-app'
     ) {
-      if (pendingPDF) {
-        console.log('[ReadyFormAI] App ready, sending buffered PDF:', pendingPDF.fileName);
-        postPDFToApp(pendingPDF);
-        pendingPDF = null;
-      }
+      delivered = true;
+      clearTimeout(retryTimer);
+      chrome.storage.local.remove('pendingPDF');
+      console.log('[ReadyFormAI] PDF delivery acknowledged');
     }
 
     // Status requests from the React app
@@ -65,80 +76,17 @@
     }
   });
 
-  // Chunked transfer state
-  let chunkState = null;
-  let chunkTimeout = null;
-
-  function clearChunkState() {
-    chunkState = null;
-    clearTimeout(chunkTimeout);
-    chunkTimeout = null;
-  }
-
-  function startChunkTimeout() {
-    clearTimeout(chunkTimeout);
-    chunkTimeout = setTimeout(() => {
-      if (chunkState) {
-        console.warn('[ReadyFormAI] Chunk transfer timed out, clearing state');
-        clearChunkState();
-      }
-    }, 30000);
-  }
-
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // --- Single-message PDF transfer ---
-    if (message.type === 'LOAD_PDF_DATA') {
-      const uint8Array = base64ToUint8Array(message.data);
-      bufferAndPost(message.fileName, uint8Array.buffer);
-      sendResponse({ ok: true });
-      return true;
+  // Read pending PDF from storage and start delivery
+  chrome.storage.local.get('pendingPDF', (result) => {
+    if (!result.pendingPDF) {
+      console.log('[ReadyFormAI] No pending PDF in storage');
+      return;
     }
 
-    // --- Chunked PDF transfer (for large files) ---
-    if (message.type === 'LOAD_PDF_CHUNK') {
-      if (!chunkState || message.chunkIndex === 0) {
-        clearChunkState();
-        chunkState = {
-          chunks: new Array(message.totalChunks),
-          received: 0,
-          totalChunks: message.totalChunks,
-          fileName: message.fileName,
-        };
-      }
-
-      startChunkTimeout();
-      chunkState.chunks[message.chunkIndex] = base64ToUint8Array(message.data);
-      chunkState.received++;
-
-      // Check if all chunks received
-      if (chunkState.received === chunkState.totalChunks) {
-        // Calculate total size
-        let totalSize = 0;
-        for (const chunk of chunkState.chunks) {
-          totalSize += chunk.length;
-        }
-
-        // Reassemble into single buffer
-        const fullData = new Uint8Array(totalSize);
-        let offset = 0;
-        for (const chunk of chunkState.chunks) {
-          fullData.set(chunk, offset);
-          offset += chunk.length;
-        }
-
-        bufferAndPost(chunkState.fileName, fullData.buffer);
-        clearChunkState();
-      }
-
-      sendResponse({
-        ok: true,
-        received: chunkState?.received ?? message.totalChunks,
-        total: message.totalChunks,
-      });
-      return true;
-    }
-
-    return false;
+    const { data, fileName } = result.pendingPDF;
+    console.log('[ReadyFormAI] Read pending PDF from storage:', fileName);
+    const uint8Array = base64ToUint8Array(data);
+    deliverToApp(fileName, uint8Array.buffer);
   });
 
   console.log('[ReadyFormAI] Bridge script initialized');
