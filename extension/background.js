@@ -259,35 +259,59 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
 
     console.log('[ReadyFormAI] Fillable PDF detected, opening in ReadyFormAI:', pdfName);
 
-    // 3. Store PDF in chrome.storage.local so the bridge can read it
-    //    reliably regardless of timing (eliminates sendMessage race).
-    await chrome.storage.local.set({
-      pendingPDF: {
-        data: uint8ArrayToBase64(new Uint8Array(arrayBuffer)),
-        fileName: pdfName,
-      },
-    });
-
-    // 4. Navigate the source tab to ReadyFormAI
+    // 3. Navigate the source tab to ReadyFormAI
     const readyformUrl = await getReadyFormUrl();
     const tab = await getOrOpenReadyFormTab(sourceTabId);
     readyformTabId = tab.id;
 
-    // 5. Wait for the tab to finish loading the ReadyFormAI page
+    // 4. Wait for the tab to finish loading the ReadyFormAI page
     await waitForTabLoad(tab.id, readyformUrl);
 
-    // 6. Verify the tab actually loaded ReadyFormAI (not an error page)
+    // 5. Verify the tab actually loaded ReadyFormAI (not an error page)
     const loadedTab = await chrome.tabs.get(tab.id);
     if (!loadedTab.url || !loadedTab.url.startsWith(readyformUrl)) {
-      await chrome.storage.local.remove('pendingPDF');
       throw new Error(`ReadyFormAI failed to load (got ${loadedTab.url || 'no URL'})`);
     }
 
-    // 7. Inject the bridge script — it reads from storage and retries
-    //    delivery to the React app until acknowledged.
+    // 6. Deliver PDF directly in the page's MAIN world.
+    //    Content scripts (ISOLATED world) can't reliably postMessage
+    //    to the page — messages never cross the isolation boundary.
+    //    Injecting in MAIN world guarantees delivery to React.
+    const base64Data = uint8ArrayToBase64(new Uint8Array(arrayBuffer));
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      files: ['bridge.js'],
+      world: 'MAIN',
+      func: (base64, fileName) => {
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        const msg = {
+          type: 'READYFORM_LOAD_PDF',
+          source: 'readyform-extension',
+          fileName,
+          data: bytes.buffer,
+        };
+        let delivered = false;
+        const delays = [0, 500, 1000, 2000, 4000, 8000, 16000, 30000, 60000];
+        let attempt = 0;
+        function tryDeliver() {
+          if (delivered || attempt >= delays.length) return;
+          console.log('[ReadyFormAI] Delivering PDF to app, attempt', attempt + 1);
+          window.postMessage(msg, window.location.origin);
+          attempt++;
+          if (attempt < delays.length) setTimeout(tryDeliver, delays[attempt]);
+        }
+        window.addEventListener('message', (event) => {
+          if (event.data?.type === 'READYFORM_PDF_ACK' && event.data?.source === 'readyform-app') {
+            delivered = true;
+            console.log('[ReadyFormAI] PDF delivery acknowledged');
+          }
+        });
+        tryDeliver();
+      },
+      args: [base64Data, pdfName],
     });
 
     currentState = { status: 'processing', pdfName, pdfUrl: null };
