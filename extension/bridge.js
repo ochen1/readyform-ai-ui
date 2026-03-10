@@ -1,9 +1,6 @@
 // ReadyFormAI Chrome Extension - Bridge Script
 // Injected into the ReadyFormAI tab to relay PDF data from the extension
-// to the React app via window.postMessage.
-//
-// Reads the PDF from chrome.storage.local (written by background.js) and
-// retries delivery on an exponential backoff until the React app ACKs.
+// to the React app via window.postMessage
 
 (function () {
   'use strict';
@@ -17,48 +14,103 @@
     return bytes;
   }
 
-  let delivered = false;
-  let retryTimer = null;
+  // Chunked transfer state
+  let chunkState = null;
+  let chunkTimeout = null;
 
-  // Exponential backoff: 0, .5s, 1s, 2s, 4s, 8s, 16s, 30s, 60s
-  const RETRY_DELAYS = [0, 500, 1000, 2000, 4000, 8000, 16000, 30000, 60000];
-
-  function deliverToApp(fileName, arrayBuffer) {
-    const msg = {
-      type: 'READYFORM_LOAD_PDF',
-      source: 'readyform-extension',
-      fileName,
-      data: arrayBuffer,
-    };
-
-    let attempt = 0;
-
-    function tryDeliver() {
-      if (delivered) return;
-      console.log('[ReadyFormAI] Delivering PDF to app, attempt', attempt + 1);
-      window.postMessage(msg, window.location.origin);
-      attempt++;
-      if (attempt < RETRY_DELAYS.length) {
-        retryTimer = setTimeout(tryDeliver, RETRY_DELAYS[attempt]);
-      }
-    }
-
-    tryDeliver();
+  function clearChunkState() {
+    chunkState = null;
+    clearTimeout(chunkTimeout);
+    chunkTimeout = null;
   }
 
-  // Listen for ACK from the React app — stop retrying and clean up storage
-  window.addEventListener('message', (event) => {
-    if (
-      event.data?.type === 'READYFORM_PDF_ACK' &&
-      event.data?.source === 'readyform-app'
-    ) {
-      delivered = true;
-      clearTimeout(retryTimer);
-      chrome.storage.local.remove('pendingPDF');
-      console.log('[ReadyFormAI] PDF delivery acknowledged');
+  function startChunkTimeout() {
+    clearTimeout(chunkTimeout);
+    chunkTimeout = setTimeout(() => {
+      if (chunkState) {
+        console.warn('[ReadyFormAI] Chunk transfer timed out, clearing state');
+        clearChunkState();
+      }
+    }, 30000);
+  }
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // --- Single-message PDF transfer ---
+    if (message.type === 'LOAD_PDF_DATA') {
+      const uint8Array = base64ToUint8Array(message.data);
+
+      window.postMessage(
+        {
+          type: 'READYFORM_LOAD_PDF',
+          source: 'readyform-extension',
+          fileName: message.fileName,
+          data: uint8Array.buffer,
+        },
+        window.location.origin
+      );
+
+      sendResponse({ ok: true });
+      return true;
     }
 
-    // Status requests from the React app
+    // --- Chunked PDF transfer (for large files) ---
+    if (message.type === 'LOAD_PDF_CHUNK') {
+      if (!chunkState || message.chunkIndex === 0) {
+        clearChunkState();
+        chunkState = {
+          chunks: new Array(message.totalChunks),
+          received: 0,
+          totalChunks: message.totalChunks,
+          fileName: message.fileName,
+        };
+      }
+
+      startChunkTimeout();
+      chunkState.chunks[message.chunkIndex] = base64ToUint8Array(message.data);
+      chunkState.received++;
+
+      // Check if all chunks received
+      if (chunkState.received === chunkState.totalChunks) {
+        // Calculate total size
+        let totalSize = 0;
+        for (const chunk of chunkState.chunks) {
+          totalSize += chunk.length;
+        }
+
+        // Reassemble into single buffer
+        const fullData = new Uint8Array(totalSize);
+        let offset = 0;
+        for (const chunk of chunkState.chunks) {
+          fullData.set(chunk, offset);
+          offset += chunk.length;
+        }
+
+        window.postMessage(
+          {
+            type: 'READYFORM_LOAD_PDF',
+            source: 'readyform-extension',
+            fileName: chunkState.fileName,
+            data: fullData.buffer,
+          },
+          window.location.origin
+        );
+
+        clearChunkState();
+      }
+
+      sendResponse({
+        ok: true,
+        received: chunkState?.received ?? message.totalChunks,
+        total: message.totalChunks,
+      });
+      return true;
+    }
+
+    return false;
+  });
+
+  // Listen for status requests from the React app
+  window.addEventListener('message', (event) => {
     if (
       event.data?.type === 'READYFORM_STATUS_REQUEST' &&
       event.data?.source === 'readyform-app'
@@ -74,19 +126,6 @@
         );
       });
     }
-  });
-
-  // Read pending PDF from storage and start delivery
-  chrome.storage.local.get('pendingPDF', (result) => {
-    if (!result.pendingPDF) {
-      console.log('[ReadyFormAI] No pending PDF in storage');
-      return;
-    }
-
-    const { data, fileName } = result.pendingPDF;
-    console.log('[ReadyFormAI] Read pending PDF from storage:', fileName);
-    const uint8Array = base64ToUint8Array(data);
-    deliverToApp(fileName, uint8Array.buffer);
   });
 
   console.log('[ReadyFormAI] Bridge script initialized');
