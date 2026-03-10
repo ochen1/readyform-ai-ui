@@ -14,6 +14,57 @@
     return bytes;
   }
 
+  // Buffer for PDF data — holds the message until the React app signals ready
+  let pendingPDF = null;
+
+  function postPDFToApp(msg) {
+    window.postMessage(msg, window.location.origin);
+  }
+
+  function bufferAndPost(fileName, arrayBuffer) {
+    const msg = {
+      type: 'READYFORM_LOAD_PDF',
+      source: 'readyform-extension',
+      fileName: fileName,
+      data: arrayBuffer,
+    };
+    pendingPDF = msg;
+    // Try immediately (works if React is already mounted, e.g. reused tab)
+    postPDFToApp(msg);
+  }
+
+  // When the React app signals it's ready, re-send buffered PDF data.
+  // This handles the case where bridge.js fires before useEffect attaches the listener.
+  window.addEventListener('message', (event) => {
+    if (
+      event.data?.type === 'READYFORM_BRIDGE_READY' &&
+      event.data?.source === 'readyform-app'
+    ) {
+      if (pendingPDF) {
+        console.log('[ReadyFormAI] App ready, sending buffered PDF:', pendingPDF.fileName);
+        postPDFToApp(pendingPDF);
+        pendingPDF = null;
+      }
+    }
+
+    // Status requests from the React app
+    if (
+      event.data?.type === 'READYFORM_STATUS_REQUEST' &&
+      event.data?.source === 'readyform-app'
+    ) {
+      chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
+        window.postMessage(
+          {
+            type: 'READYFORM_STATUS_RESPONSE',
+            source: 'readyform-extension',
+            status: response,
+          },
+          window.location.origin
+        );
+      });
+    }
+  });
+
   // Chunked transfer state
   let chunkState = null;
   let chunkTimeout = null;
@@ -38,17 +89,7 @@
     // --- Single-message PDF transfer ---
     if (message.type === 'LOAD_PDF_DATA') {
       const uint8Array = base64ToUint8Array(message.data);
-
-      window.postMessage(
-        {
-          type: 'READYFORM_LOAD_PDF',
-          source: 'readyform-extension',
-          fileName: message.fileName,
-          data: uint8Array.buffer,
-        },
-        window.location.origin
-      );
-
+      bufferAndPost(message.fileName, uint8Array.buffer);
       sendResponse({ ok: true });
       return true;
     }
@@ -85,16 +126,7 @@
           offset += chunk.length;
         }
 
-        window.postMessage(
-          {
-            type: 'READYFORM_LOAD_PDF',
-            source: 'readyform-extension',
-            fileName: chunkState.fileName,
-            data: fullData.buffer,
-          },
-          window.location.origin
-        );
-
+        bufferAndPost(chunkState.fileName, fullData.buffer);
         clearChunkState();
       }
 
@@ -107,25 +139,6 @@
     }
 
     return false;
-  });
-
-  // Listen for status requests from the React app
-  window.addEventListener('message', (event) => {
-    if (
-      event.data?.type === 'READYFORM_STATUS_REQUEST' &&
-      event.data?.source === 'readyform-app'
-    ) {
-      chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
-        window.postMessage(
-          {
-            type: 'READYFORM_STATUS_RESPONSE',
-            source: 'readyform-extension',
-            status: response,
-          },
-          window.location.origin
-        );
-      });
-    }
   });
 
   console.log('[ReadyFormAI] Bridge script initialized');
