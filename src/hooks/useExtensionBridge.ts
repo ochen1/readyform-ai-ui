@@ -56,6 +56,15 @@ export function useExtensionBridge() {
 
   useEffect(() => {
     window.addEventListener('message', handleMessage);
+
+    // Signal to the bridge script that the React app is ready to receive PDF data.
+    // The bridge buffers PDF data and re-sends it when it sees this message,
+    // handling the case where bridge.js fires before this listener is attached.
+    window.postMessage(
+      { type: 'READYFORM_BRIDGE_READY', source: 'readyform-app' },
+      window.location.origin
+    );
+
     return () => window.removeEventListener('message', handleMessage);
   }, [handleMessage]);
 
