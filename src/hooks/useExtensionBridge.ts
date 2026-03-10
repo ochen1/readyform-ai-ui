@@ -33,13 +33,6 @@ export function useExtensionBridge() {
 
       const msg = event.data as ExtensionPDFMessage;
       if (msg?.type !== 'READYFORM_LOAD_PDF' || msg?.source !== EXTENSION_SOURCE) return;
-
-      // ACK immediately so the bridge stops retrying
-      window.postMessage(
-        { type: 'READYFORM_PDF_ACK', source: 'readyform-app' },
-        window.location.origin
-      );
-
       if (isLoadingRef.current) return;
 
       isLoadingRef.current = true;

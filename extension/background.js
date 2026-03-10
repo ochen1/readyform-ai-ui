@@ -38,11 +38,14 @@ async function getReadyFormUrl() {
 async function getOrOpenReadyFormTab(sourceTabId) {
   const readyformUrl = await getReadyFormUrl();
 
-  // If we have a source tab (the PDF tab), navigate it to ReadyFormAI.
-  // Use chrome.tabs.update (not location.replace via executeScript) because
-  // Chrome's built-in PDF viewer may block or mishandle injected scripts.
+  // If we have a source tab (the PDF tab), navigate it to ReadyFormAI
+  // Use location.replace() so the PDF page is replaced in history (back skips it)
   if (sourceTabId) {
-    await chrome.tabs.update(sourceTabId, { url: readyformUrl });
+    await chrome.scripting.executeScript({
+      target: { tabId: sourceTabId },
+      func: (url) => window.location.replace(url),
+      args: [readyformUrl],
+    });
     readyformTabId = sourceTabId;
     return await chrome.tabs.get(sourceTabId);
   }
@@ -77,7 +80,7 @@ async function getOrOpenReadyFormTab(sourceTabId) {
   return newTab;
 }
 
-function waitForTabLoad(tabId, expectedUrlPrefix) {
+function waitForTabLoad(tabId) {
   return new Promise((resolve) => {
     let resolved = false;
     function done() {
@@ -86,24 +89,16 @@ function waitForTabLoad(tabId, expectedUrlPrefix) {
       chrome.tabs.onUpdated.removeListener(listener);
       resolve();
     }
-    function isReady(status, url) {
-      if (status !== 'complete') return false;
-      // When navigating the PDF tab to ReadyFormAI, the tab briefly reports
-      // 'complete' from the *previous* page before navigation starts.
-      // Verify the URL matches to avoid injecting the bridge too early.
-      if (expectedUrlPrefix && (!url || !url.startsWith(expectedUrlPrefix))) return false;
-      return true;
-    }
-    function listener(updatedTabId, changeInfo, tab) {
-      if (updatedTabId === tabId && isReady(changeInfo.status, tab.url)) {
+    function listener(updatedTabId, changeInfo) {
+      if (updatedTabId === tabId && changeInfo.status === 'complete') {
         done();
       }
     }
     chrome.tabs.onUpdated.addListener(listener);
 
-    // Also check if already loaded at the right URL
+    // Also check if already loaded
     chrome.tabs.get(tabId).then((tab) => {
-      if (isReady(tab.status, tab.url)) done();
+      if (tab.status === 'complete') done();
     });
 
     // Timeout after 15s to avoid hanging forever
@@ -260,59 +255,26 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
     console.log('[ReadyFormAI] Fillable PDF detected, opening in ReadyFormAI:', pdfName);
 
     // 3. Navigate the source tab to ReadyFormAI
-    const readyformUrl = await getReadyFormUrl();
     const tab = await getOrOpenReadyFormTab(sourceTabId);
     readyformTabId = tab.id;
 
-    // 4. Wait for the tab to finish loading the ReadyFormAI page
-    await waitForTabLoad(tab.id, readyformUrl);
+    // 4. Wait for the tab to finish loading
+    await waitForTabLoad(tab.id);
 
-    // 5. Verify the tab actually loaded ReadyFormAI (not an error page)
-    const loadedTab = await chrome.tabs.get(tab.id);
-    if (!loadedTab.url || !loadedTab.url.startsWith(readyformUrl)) {
-      throw new Error(`ReadyFormAI failed to load (got ${loadedTab.url || 'no URL'})`);
-    }
+    // 5. Small delay to ensure React app is mounted
+    await new Promise((r) => setTimeout(r, 500));
 
-    // 6. Deliver PDF directly in the page's MAIN world.
-    //    Content scripts (ISOLATED world) can't reliably postMessage
-    //    to the page — messages never cross the isolation boundary.
-    //    Injecting in MAIN world guarantees delivery to React.
-    const base64Data = uint8ArrayToBase64(new Uint8Array(arrayBuffer));
+    // 6. Inject the bridge script
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      world: 'MAIN',
-      func: (base64, fileName) => {
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-          bytes[i] = binary.charCodeAt(i);
-        }
-        const msg = {
-          type: 'READYFORM_LOAD_PDF',
-          source: 'readyform-extension',
-          fileName,
-          data: bytes.buffer,
-        };
-        let delivered = false;
-        const delays = [0, 500, 1000, 2000, 4000, 8000, 16000, 30000, 60000];
-        let attempt = 0;
-        function tryDeliver() {
-          if (delivered || attempt >= delays.length) return;
-          console.log('[ReadyFormAI] Delivering PDF to app, attempt', attempt + 1);
-          window.postMessage(msg, window.location.origin);
-          attempt++;
-          if (attempt < delays.length) setTimeout(tryDeliver, delays[attempt]);
-        }
-        window.addEventListener('message', (event) => {
-          if (event.data?.type === 'READYFORM_PDF_ACK' && event.data?.source === 'readyform-app') {
-            delivered = true;
-            console.log('[ReadyFormAI] PDF delivery acknowledged');
-          }
-        });
-        tryDeliver();
-      },
-      args: [base64Data, pdfName],
+      files: ['bridge.js'],
     });
+
+    // 7. Small delay for bridge to initialize
+    await new Promise((r) => setTimeout(r, 100));
+
+    // 8. Send PDF data to the bridge script
+    await sendPDFToTab(tab.id, arrayBuffer, pdfName);
 
     currentState = { status: 'processing', pdfName, pdfUrl: null };
     return true;
