@@ -259,34 +259,36 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
 
     console.log('[ReadyFormAI] Fillable PDF detected, opening in ReadyFormAI:', pdfName);
 
-    // 3. Navigate the source tab to ReadyFormAI
+    // 3. Store PDF in chrome.storage.local so the bridge can read it
+    //    reliably regardless of timing (eliminates sendMessage race).
+    await chrome.storage.local.set({
+      pendingPDF: {
+        data: uint8ArrayToBase64(new Uint8Array(arrayBuffer)),
+        fileName: pdfName,
+      },
+    });
+
+    // 4. Navigate the source tab to ReadyFormAI
     const readyformUrl = await getReadyFormUrl();
     const tab = await getOrOpenReadyFormTab(sourceTabId);
     readyformTabId = tab.id;
 
-    // 4. Wait for the tab to finish loading the ReadyFormAI page
+    // 5. Wait for the tab to finish loading the ReadyFormAI page
     await waitForTabLoad(tab.id, readyformUrl);
 
-    // 5. Verify the tab actually loaded ReadyFormAI (not an error page)
+    // 6. Verify the tab actually loaded ReadyFormAI (not an error page)
     const loadedTab = await chrome.tabs.get(tab.id);
     if (!loadedTab.url || !loadedTab.url.startsWith(readyformUrl)) {
+      await chrome.storage.local.remove('pendingPDF');
       throw new Error(`ReadyFormAI failed to load (got ${loadedTab.url || 'no URL'})`);
     }
 
-    // 6. Small delay to ensure React app is mounted
-    await new Promise((r) => setTimeout(r, 500));
-
-    // 7. Inject the bridge script
+    // 7. Inject the bridge script — it reads from storage and retries
+    //    delivery to the React app until acknowledged.
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ['bridge.js'],
     });
-
-    // 8. Small delay for bridge to initialize
-    await new Promise((r) => setTimeout(r, 100));
-
-    // 9. Send PDF data to the bridge script
-    await sendPDFToTab(tab.id, arrayBuffer, pdfName);
 
     currentState = { status: 'processing', pdfName, pdfUrl: null };
     return true;
