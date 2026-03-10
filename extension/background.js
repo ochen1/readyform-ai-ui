@@ -38,14 +38,11 @@ async function getReadyFormUrl() {
 async function getOrOpenReadyFormTab(sourceTabId) {
   const readyformUrl = await getReadyFormUrl();
 
-  // If we have a source tab (the PDF tab), navigate it to ReadyFormAI
-  // Use location.replace() so the PDF page is replaced in history (back skips it)
+  // If we have a source tab (the PDF tab), navigate it to ReadyFormAI.
+  // Use chrome.tabs.update (not location.replace via executeScript) because
+  // Chrome's built-in PDF viewer may block or mishandle injected scripts.
   if (sourceTabId) {
-    await chrome.scripting.executeScript({
-      target: { tabId: sourceTabId },
-      func: (url) => window.location.replace(url),
-      args: [readyformUrl],
-    });
+    await chrome.tabs.update(sourceTabId, { url: readyformUrl });
     readyformTabId = sourceTabId;
     return await chrome.tabs.get(sourceTabId);
   }
@@ -270,19 +267,25 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
     // 4. Wait for the tab to finish loading the ReadyFormAI page
     await waitForTabLoad(tab.id, readyformUrl);
 
-    // 5. Small delay to ensure React app is mounted
+    // 5. Verify the tab actually loaded ReadyFormAI (not an error page)
+    const loadedTab = await chrome.tabs.get(tab.id);
+    if (!loadedTab.url || !loadedTab.url.startsWith(readyformUrl)) {
+      throw new Error(`ReadyFormAI failed to load (got ${loadedTab.url || 'no URL'})`);
+    }
+
+    // 6. Small delay to ensure React app is mounted
     await new Promise((r) => setTimeout(r, 500));
 
-    // 6. Inject the bridge script
+    // 7. Inject the bridge script
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ['bridge.js'],
     });
 
-    // 7. Small delay for bridge to initialize
+    // 8. Small delay for bridge to initialize
     await new Promise((r) => setTimeout(r, 100));
 
-    // 8. Send PDF data to the bridge script
+    // 9. Send PDF data to the bridge script
     await sendPDFToTab(tab.id, arrayBuffer, pdfName);
 
     currentState = { status: 'processing', pdfName, pdfUrl: null };
