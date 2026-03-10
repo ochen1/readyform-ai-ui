@@ -80,7 +80,7 @@ async function getOrOpenReadyFormTab(sourceTabId) {
   return newTab;
 }
 
-function waitForTabLoad(tabId) {
+function waitForTabLoad(tabId, expectedUrlPrefix) {
   return new Promise((resolve) => {
     let resolved = false;
     function done() {
@@ -89,16 +89,24 @@ function waitForTabLoad(tabId) {
       chrome.tabs.onUpdated.removeListener(listener);
       resolve();
     }
-    function listener(updatedTabId, changeInfo) {
-      if (updatedTabId === tabId && changeInfo.status === 'complete') {
+    function isReady(status, url) {
+      if (status !== 'complete') return false;
+      // When navigating the PDF tab to ReadyFormAI, the tab briefly reports
+      // 'complete' from the *previous* page before navigation starts.
+      // Verify the URL matches to avoid injecting the bridge too early.
+      if (expectedUrlPrefix && (!url || !url.startsWith(expectedUrlPrefix))) return false;
+      return true;
+    }
+    function listener(updatedTabId, changeInfo, tab) {
+      if (updatedTabId === tabId && isReady(changeInfo.status, tab.url)) {
         done();
       }
     }
     chrome.tabs.onUpdated.addListener(listener);
 
-    // Also check if already loaded
+    // Also check if already loaded at the right URL
     chrome.tabs.get(tabId).then((tab) => {
-      if (tab.status === 'complete') done();
+      if (isReady(tab.status, tab.url)) done();
     });
 
     // Timeout after 15s to avoid hanging forever
@@ -255,11 +263,12 @@ async function handleOpenPDF(pdfUrl, pdfName, sourceTabId) {
     console.log('[ReadyFormAI] Fillable PDF detected, opening in ReadyFormAI:', pdfName);
 
     // 3. Navigate the source tab to ReadyFormAI
+    const readyformUrl = await getReadyFormUrl();
     const tab = await getOrOpenReadyFormTab(sourceTabId);
     readyformTabId = tab.id;
 
-    // 4. Wait for the tab to finish loading
-    await waitForTabLoad(tab.id);
+    // 4. Wait for the tab to finish loading the ReadyFormAI page
+    await waitForTabLoad(tab.id, readyformUrl);
 
     // 5. Small delay to ensure React app is mounted
     await new Promise((r) => setTimeout(r, 500));
