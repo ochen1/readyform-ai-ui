@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "პროგრესი",
+    "backToForm": "ფორმაზე დაბრუნება",
+    "openInNewTab": "ახალ ჩანართში გახსნა",
+    "closePreview": "წინასწარი ხედვის დახურვა"
+  },
+  "upload": {
+    "title": "PDF ფორმის ატვირთვა",
+    "dropHere": "ჩააგდეთ PDF აქ",
+    "dragAndDrop": "გადაიტანეთ და ჩააგდეთ ან დააწკაპუნეთ ასარჩევად",
+    "getStarted": "დასაწყებად ატვირთეთ შესავსები PDF ფორმა",
+    "button": "PDF-ის ატვირთვა",
+    "buttonChange": "სხვა PDF-ის ატვირთვა"
+  },
+  "voice": {
+    "title": "ხმოვანი ასისტენტი",
+    "start": "ხმოვანი ასისტენტის დაწყება",
+    "end": "ზარის დასრულება",
+    "needPdf": "ხმოვანი ასისტენტის გასააქტიურებლად ატვირთეთ PDF",
+    "thinking": "ფიქრობს...",
+    "speaking": "საუბრობს...",
+    "listening": "უსმენს...",
+    "ready": "მზადაა",
+    "mute": "დადუმება",
+    "unmute": "ხმის ჩართვა",
+    "muteMic": "მიკროფონის დადუმება",
+    "unmuteMic": "მიკროფონის ჩართვა"
+  },
+  "accessibility": {
+    "title": "ხელმისაწვდომობა",
+    "dyslexiaFont": "დისლექსიისთვის მორგებული შრიფტი",
+    "fontSize": "შრიფტის ზომა",
+    "decreaseFont": "შრიფტის ზომის შემცირება",
+    "increaseFont": "შრიფტის ზომის გაზრდა"
+  },
+  "language": {
+    "title": "ენა",
+    "label": "ინტერფეისის ენა",
+    "g7Group": "G7 ენები",
+    "euGroup": "EU ენები",
+    "otherGroup": "სხვა ენები"
+  },
+  "form": {
+    "preview": "ფორმის წინასწარი ხედვა",
+    "completedPreview": "შევსებული ფორმის წინასწარი ხედვა",
+    "untitled": "უსახელო ფორმა",
+    "actions": "მოქმედებები",
+    "calculation": "გამოთვლა: {{hint}}",
+    "format": "ფორმატი: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "ანალიზი მიმდინარეობს...",
+    "preparing": "ანალიზისთვის მომზადება...",
+    "loading": "PDF იტვირთება და ველები ამოიღება.",
+    "enhanced": "AI-ით გაუმჯობესებული",
+    "failed": "AI გაუმჯობესება ვერ მოხერხდა",
+    "fieldsFound": "ნაპოვნია {{count}} ველი",
+    "fields": "{{count}} ველი",
+    "pagesFailed": "{{count}} გვერდ(ებ)ის ანალიზი ვერ მოხერხდა",
+    "statusCached": "ქეშირებული",
+    "statusComplete": "დასრულებული",
+    "statusProcessing": "მუშავდება",
+    "statusError": "შეცდომა",
+    "statusPending": "მოლოდინში",
+    "largeFormTitle": "დიდი ფორმა აღმოჩენილია",
+    "largeFormMessage": "ამ ფორმას აქვს <strong>{{count}} გვერდი</strong> და ანალიზს გარკვეული დრო დასჭირდება. შეგიძლიათ ხილული ველების შევსება დაიწყოთ, სანამ ჩვენ AI-ით გავაუმჯობესებთ მათ.",
+    "analysisComplete": "ანალიზი დასრულებულია",
+    "analyzingStructure": "ფორმის სტრუქტურის ანალიზი...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> გვერდი დასრულებულია",
+    "processingCount": "{{count}} მუშავდება",
+    "pendingCount": "{{count}} მოლოდინში",
+    "fromCacheCount": "{{count}} ქეშიდან",
+    "failedCount": "{{count}} ვერ მოხერხდა",
+    "pageNumber": "გვერდი {{number}}",
+    "fieldCount": "({{count}} ველი)",
+    "retried": "(ხელახლა სცადა)",
+    "errorDetail": "<strong>{{count}} გვერდ(ებ)ის</strong> ანალიზი ვერ მოხერხდა. ეს გვერდები გამოიყენებენ ძირითად ველის ინფორმაციას."
+  },
+  "inputs": {
+    "enterField": "შეიყვანეთ {{field}}...",
+    "selectField": "აირჩიეთ {{field}}...",
+    "enterReference": "შეიყვანეთ მითითება...",
+    "yes": "დიახ",
+    "no": "არა"
+  }
+}

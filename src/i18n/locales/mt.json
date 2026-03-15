@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Progress",
+    "backToForm": "Lura għall-Formola",
+    "openInNewTab": "Iftaħ f'Tab Ġdida",
+    "closePreview": "Agħlaq il-preview"
+  },
+  "upload": {
+    "title": "Ittella' Formola PDF",
+    "dropHere": "Poġġi l-PDF hawn",
+    "dragAndDrop": "Ġorr u itfa' jew ikklikkja biex tagħżel",
+    "getStarted": "Ittella' formola PDF li tista' timtela biex tibda",
+    "button": "Ittella' PDF",
+    "buttonChange": "Ittella' PDF differenti"
+  },
+  "voice": {
+    "title": "Assistent tal-Vuċi",
+    "start": "Ibda l-Assistent tal-Vuċi",
+    "end": "Temm it-Telefonata",
+    "needPdf": "Ittella' PDF biex tattiva l-assistent tal-vuċi",
+    "thinking": "Qed jaħseb...",
+    "speaking": "Qed jitkellem...",
+    "listening": "Qed jisma'...",
+    "ready": "Lest",
+    "mute": "Iskot",
+    "unmute": "Neħħi l-mute",
+    "muteMic": "Iskot il-mikrofonu",
+    "unmuteMic": "Neħħi l-mute tal-mikrofonu"
+  },
+  "accessibility": {
+    "title": "Aċċessibbiltà",
+    "dyslexiaFont": "Font adattat għad-dislessija",
+    "fontSize": "Daqs tal-Font",
+    "decreaseFont": "Naqqas id-daqs tal-font",
+    "increaseFont": "Kabbar id-daqs tal-font"
+  },
+  "language": {
+    "title": "Lingwa",
+    "label": "Lingwa tal-Interfaċċja",
+    "g7Group": "Lingwi tal-G7",
+    "euGroup": "Lingwi tal-UE",
+    "otherGroup": "Lingwi Oħra"
+  },
+  "form": {
+    "preview": "Preview tal-Formola",
+    "completedPreview": "Preview tal-Formola Mimlija",
+    "untitled": "Formola Bla Titlu",
+    "actions": "Azzjonijiet",
+    "calculation": "Kalkolu: {{hint}}",
+    "format": "Format: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Qed janalizza...",
+    "preparing": "Qed jipprepara għall-analiżi...",
+    "loading": "Qed jittella' l-PDF u joħroġ l-oqsma.",
+    "enhanced": "Imtejjeb bl-IA",
+    "failed": "It-titjib bl-IA falla",
+    "fieldsFound": "Instab(u) {{count}} oqsma",
+    "fields": "{{count}} oqsma",
+    "pagesFailed": "L-analiżi ta' {{count}} paġna/i falliet",
+    "statusCached": "Fil-cache",
+    "statusComplete": "Komplut",
+    "statusProcessing": "Qed jiġi pproċessat",
+    "statusError": "Żball",
+    "statusPending": "Pendenti",
+    "largeFormTitle": "Instabet Formola Kbira",
+    "largeFormMessage": "Din il-formola għandha <strong>{{count}} paġni</strong> u se tieħu ftit biex tiġi analizzata. Tista' tibda timla l-oqsma viżibbli waqt li ntejbuhom bl-IA.",
+    "analysisComplete": "L-Analiżi Kompluta",
+    "analyzingStructure": "Qed janalizza l-istruttura tal-formola...",
+    "pagesComplete": "<strong>{{completed}}</strong> minn <strong>{{total}}</strong> paġni kompluti",
+    "processingCount": "{{count}} qed jiġu pproċessati",
+    "pendingCount": "{{count}} pendenti",
+    "fromCacheCount": "{{count}} mill-cache",
+    "failedCount": "{{count}} fallew",
+    "pageNumber": "Paġna {{number}}",
+    "fieldCount": "({{count}} oqsma)",
+    "retried": "(mġarrab mill-ġdid)",
+    "errorDetail": "<strong>{{count}} paġna/i</strong> ma setgħux jiġu analizzati. Dawn il-paġni se jużaw informazzjoni bażika tal-oqsma."
+  },
+  "inputs": {
+    "enterField": "Daħħal {{field}}...",
+    "selectField": "Agħżel {{field}}...",
+    "enterReference": "Daħħal referenza...",
+    "yes": "Iva",
+    "no": "Le"
+  }
+}

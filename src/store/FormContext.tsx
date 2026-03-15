@@ -91,7 +91,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
             pageImages,
             pageCount,
             writeContext.isXFA,
-            progressCallback
+            progressCallback,
           );
         
         // Step 6: Update state with enhanced fields and sections

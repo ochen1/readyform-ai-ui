@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Haladás",
+    "backToForm": "Vissza az űrlaphoz",
+    "openInNewTab": "Megnyitás új lapon",
+    "closePreview": "Előnézet bezárása"
+  },
+  "upload": {
+    "title": "PDF űrlap feltöltése",
+    "dropHere": "Húzza ide a PDF-et",
+    "dragAndDrop": "Húzza ide vagy kattintson a kiválasztáshoz",
+    "getStarted": "Töltsön fel egy kitölthető PDF űrlapot a kezdéshez",
+    "button": "PDF feltöltése",
+    "buttonChange": "Másik PDF feltöltése"
+  },
+  "voice": {
+    "title": "Hangasszisztens",
+    "start": "Hangasszisztens indítása",
+    "end": "Hívás befejezése",
+    "needPdf": "Töltsön fel egy PDF-et a hangasszisztens aktiválásához",
+    "thinking": "Gondolkodik...",
+    "speaking": "Beszél...",
+    "listening": "Hallgat...",
+    "ready": "Kész",
+    "mute": "Némítás",
+    "unmute": "Némítás feloldása",
+    "muteMic": "Mikrofon némítása",
+    "unmuteMic": "Mikrofon némításának feloldása"
+  },
+  "accessibility": {
+    "title": "Akadálymentesítés",
+    "dyslexiaFont": "Diszlexiabarát betűtípus",
+    "fontSize": "Betűméret",
+    "decreaseFont": "Betűméret csökkentése",
+    "increaseFont": "Betűméret növelése"
+  },
+  "language": {
+    "title": "Nyelv",
+    "label": "Felület nyelve",
+    "g7Group": "G7 nyelvek",
+    "euGroup": "EU nyelvek",
+    "otherGroup": "Egyéb nyelvek"
+  },
+  "form": {
+    "preview": "Űrlap előnézete",
+    "completedPreview": "Kitöltött űrlap előnézete",
+    "untitled": "Névtelen űrlap",
+    "actions": "Műveletek",
+    "calculation": "Számítás: {{hint}}",
+    "format": "Formátum: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Elemzés...",
+    "preparing": "Felkészülés az elemzésre...",
+    "loading": "PDF betöltése és mezők kinyerése.",
+    "enhanced": "AI-val fejlesztett",
+    "failed": "Az AI fejlesztés sikertelen",
+    "fieldsFound": "{{count}} mező található",
+    "fields": "{{count}} mező",
+    "pagesFailed": "{{count}} oldal elemzése sikertelen",
+    "statusCached": "Gyorsítótárból",
+    "statusComplete": "Kész",
+    "statusProcessing": "Feldolgozás",
+    "statusError": "Hiba",
+    "statusPending": "Függőben",
+    "largeFormTitle": "Nagy űrlap észlelve",
+    "largeFormMessage": "Ez az űrlap <strong>{{count}} oldalas</strong> és az elemzése eltart egy ideig. Megkezdheti a látható mezők kitöltését, amíg AI-val fejlesztjük őket.",
+    "analysisComplete": "Elemzés kész",
+    "analyzingStructure": "Űrlap szerkezetének elemzése...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> oldal kész",
+    "processingCount": "{{count}} feldolgozás alatt",
+    "pendingCount": "{{count}} függőben",
+    "fromCacheCount": "{{count}} gyorsítótárból",
+    "failedCount": "{{count}} sikertelen",
+    "pageNumber": "{{number}}. oldal",
+    "fieldCount": "({{count}} mező)",
+    "retried": "(újrapróbálva)",
+    "errorDetail": "<strong>{{count}} oldalt</strong> nem sikerült elemezni. Ezek az oldalak alapvető mezőinformációkat fognak használni."
+  },
+  "inputs": {
+    "enterField": "Adja meg: {{field}}...",
+    "selectField": "Válassza ki: {{field}}...",
+    "enterReference": "Adja meg a hivatkozást...",
+    "yes": "Igen",
+    "no": "Nem"
+  }
+}

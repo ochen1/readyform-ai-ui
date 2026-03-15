@@ -1,6 +1,7 @@
 import { FormProvider } from "./store/FormContext";
 import { ModalProvider } from "./modal/ModalProvider";
 import { AccessibilityProvider } from "./store/AccessibilityContext";
+import { LanguageProvider } from "./store/LanguageContext";
 import { SimpleForm } from "./components/SimpleForm";
 import { useExtensionBridge } from "./hooks/useExtensionBridge";
 
@@ -18,9 +19,11 @@ function AppInner() {
 function App() {
   return (
     <AccessibilityProvider>
-      <FormProvider>
-        <AppInner />
-      </FormProvider>
+      <LanguageProvider>
+        <FormProvider>
+          <AppInner />
+        </FormProvider>
+      </LanguageProvider>
     </AccessibilityProvider>
   );
 }

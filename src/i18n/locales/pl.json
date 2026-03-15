@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Postęp",
+    "backToForm": "Powrót do formularza",
+    "openInNewTab": "Otwórz w nowej karcie",
+    "closePreview": "Zamknij podgląd"
+  },
+  "upload": {
+    "title": "Prześlij formularz PDF",
+    "dropHere": "Upuść PDF tutaj",
+    "dragAndDrop": "Przeciągnij i upuść lub kliknij, aby wybrać",
+    "getStarted": "Prześlij wypełnialny formularz PDF, aby rozpocząć",
+    "button": "Prześlij PDF",
+    "buttonChange": "Prześlij inny PDF"
+  },
+  "voice": {
+    "title": "Asystent głosowy",
+    "start": "Uruchom asystenta głosowego",
+    "end": "Zakończ połączenie",
+    "needPdf": "Prześlij PDF, aby aktywować asystenta głosowego",
+    "thinking": "Myśli...",
+    "speaking": "Mówi...",
+    "listening": "Słucha...",
+    "ready": "Gotowy",
+    "mute": "Wycisz",
+    "unmute": "Włącz dźwięk",
+    "muteMic": "Wycisz mikrofon",
+    "unmuteMic": "Włącz mikrofon"
+  },
+  "accessibility": {
+    "title": "Dostępność",
+    "dyslexiaFont": "Czcionka przyjazna dla dyslektyków",
+    "fontSize": "Rozmiar czcionki",
+    "decreaseFont": "Zmniejsz rozmiar czcionki",
+    "increaseFont": "Zwiększ rozmiar czcionki"
+  },
+  "language": {
+    "title": "Język",
+    "label": "Język interfejsu",
+    "g7Group": "Języki G7",
+    "euGroup": "Języki UE",
+    "otherGroup": "Inne języki"
+  },
+  "form": {
+    "preview": "Podgląd formularza",
+    "completedPreview": "Podgląd wypełnionego formularza",
+    "untitled": "Formularz bez tytułu",
+    "actions": "Akcje",
+    "calculation": "Obliczenie: {{hint}}",
+    "format": "Format: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analizowanie...",
+    "preparing": "Przygotowanie do analizy...",
+    "loading": "Ładowanie PDF i wyodrębnianie pól.",
+    "enhanced": "Ulepszone przez AI",
+    "failed": "Ulepszanie AI nie powiodło się",
+    "fieldsFound": "Znaleziono {{count}} pól",
+    "fields": "{{count}} pól",
+    "pagesFailed": "Analiza {{count}} stron(y) nie powiodła się",
+    "statusCached": "Z pamięci podręcznej",
+    "statusComplete": "Ukończono",
+    "statusProcessing": "Przetwarzanie",
+    "statusError": "Błąd",
+    "statusPending": "Oczekuje",
+    "largeFormTitle": "Wykryto duży formularz",
+    "largeFormMessage": "Ten formularz ma <strong>{{count}} stron</strong> i analiza zajmie chwilę. Możesz zacząć wypełniać widoczne pola, podczas gdy ulepszamy je za pomocą AI.",
+    "analysisComplete": "Analiza zakończona",
+    "analyzingStructure": "Analizowanie struktury formularza...",
+    "pagesComplete": "<strong>{{completed}}</strong> z <strong>{{total}}</strong> stron ukończonych",
+    "processingCount": "{{count}} w trakcie przetwarzania",
+    "pendingCount": "{{count}} oczekujących",
+    "fromCacheCount": "{{count}} z pamięci podręcznej",
+    "failedCount": "{{count}} nieudanych",
+    "pageNumber": "Strona {{number}}",
+    "fieldCount": "({{count}} pól)",
+    "retried": "(ponowiona próba)",
+    "errorDetail": "Nie udało się przeanalizować <strong>{{count}} stron(y)</strong>. Te strony będą korzystać z podstawowych informacji o polach."
+  },
+  "inputs": {
+    "enterField": "Wprowadź {{field}}...",
+    "selectField": "Wybierz {{field}}...",
+    "enterReference": "Wprowadź referencję...",
+    "yes": "Tak",
+    "no": "Nie"
+  }
+}

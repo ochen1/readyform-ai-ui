@@ -1,9 +1,14 @@
 import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFormContext } from '../store/FormContext';
 import { useModal } from '../modal/ModalProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
+import { useLanguageContext } from '../store/LanguageContext';
 import type { FormField } from '../store/types';
-import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X } from 'lucide-react';
+import type { SupportedLanguage } from '../store/languageTypes';
+import { G7_LANGUAGES, EU_LANGUAGES, OTHER_LANGUAGES } from '../store/languageTypes';
+import { VOICE_CONFIGS } from '../i18n/voiceConfig';
+import { CheckCircle, Circle, HelpCircle, Upload, Phone, PhoneOff, Mic, MicOff, Download, FileText, Minus, Plus, Loader2, Sparkles, X, Globe } from 'lucide-react';
 import { DynamicInput, getFieldTypeIcon } from './inputs';
 import Logo from '../assets/logo.svg';
 import { ProcessingProgress } from './ProcessingProgress';
@@ -19,6 +24,8 @@ interface FieldProps {
 }
 
 function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, onFocus, onChange }: FieldProps) {
+  const { t } = useTranslation();
+  const { language: langState } = useLanguageContext();
   const [showTooltip, setShowTooltip] = React.useState(false);
   
   // Show tooltip when forced (via voice command)
@@ -76,7 +83,7 @@ function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, on
           <div className="flex items-center justify-end gap-2">
             {TypeIcon && <span className="text-slate-700 mr-auto">{TypeIcon}</span>}
             <label className={`text-lg ${labelColor}`}>
-              {field.name}
+              {field.localizedNames?.[langState.currentLanguage] || field.name}
             </label>
           </div>
           <div className="flex items-center justify-end gap-1 mt-1">
@@ -112,12 +119,12 @@ function FormFieldComponent({ field, isActive, isCompleted, forceShowTooltip, on
               <p>{field.description}</p>
               {field.calculationHint && (
                 <span className="block mt-1 text-slate-200 italic">
-                  Calculation: {field.calculationHint}
+                  {t('form.calculation', { hint: field.calculationHint })}
                 </span>
               )}
               {field.format && (
                 <span className="block mt-1 text-slate-200">
-                  Format: {field.format}
+                  {t('form.format', { format: field.format })}
                 </span>
               )}
             </div>
@@ -159,6 +166,7 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: () =
 
 // PDF Upload Dropzone Component
 function PDFUploader({ onUpload }: { onUpload: (file: File) => void }) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = React.useState(false);
 
@@ -210,10 +218,10 @@ function PDFUploader({ onUpload }: { onUpload: (file: File) => void }) {
       </div>
       <div className="text-center">
         <p className="text-xl font-semibold text-black">
-          {isDragging ? 'Drop PDF here' : 'Upload a PDF Form'}
+          {isDragging ? t('upload.dropHere') : t('upload.title')}
         </p>
         <p className="text-slate-700 mt-1">
-          Drag and drop or click to select
+          {t('upload.dragAndDrop')}
         </p>
       </div>
       <input
@@ -229,12 +237,13 @@ function PDFUploader({ onUpload }: { onUpload: (file: File) => void }) {
 
 // Empty State Component
 function EmptyState({ onUpload }: { onUpload: (file: File) => void }) {
+  const { t } = useTranslation();
   return (
     <div className="flex-1 flex items-center justify-center p-10">
       <div className="max-w-lg w-full">
         <PDFUploader onUpload={onUpload} />
         <p className="text-center text-slate-700 mt-6 text-lg">
-          Upload a fillable PDF form to get started
+          {t('upload.getStarted')}
         </p>
       </div>
     </div>
@@ -242,9 +251,11 @@ function EmptyState({ onUpload }: { onUpload: (file: File) => void }) {
 }
 
 export function SimpleForm() {
+  const { t } = useTranslation();
   const { state, dispatch, loadPDF, setField } = useFormContext();
   const { isConnected, notifyFieldFocus, status, startCall, endCall, isMicMuted, toggleMic } = useModal();
   const { settings, toggleDyslexiaFont, increaseFontSize, decreaseFontSize } = useAccessibility();
+  const { language, setLanguage: setLang } = useLanguageContext();
   const lastNotifiedFieldRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -631,7 +642,7 @@ export function SimpleForm() {
                   className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
                 >
                   <FileText size={24} />
-                  Preview Form
+                  {t('form.preview')}
                 </button>
               </div>
             </form>
@@ -655,7 +666,7 @@ export function SimpleForm() {
         {state.pdfLoaded && (
           <div className="p-6 border-b border-slate-200 bg-slate-50/50">
             <h2 className="text-lg font-bold text-black leading-tight">
-              {state.metadata ? state.metadata.title : 'Untitled Form'}
+              {state.metadata ? state.metadata.title : t('form.untitled')}
             </h2>
 
             {state.metadata && (
@@ -667,7 +678,7 @@ export function SimpleForm() {
                   {state.isEnhancing && (
                     <span className="flex items-center gap-1 text-blue-600">
                       <Loader2 size={14} className="animate-spin" />
-                      Analyzing...
+                      {t('enhancement.analyzing')}
                     </span>
                   )}
                 </div>
@@ -696,8 +707,8 @@ export function SimpleForm() {
               <div className="mt-4 flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
                 <Loader2 size={20} className="animate-spin text-blue-600" />
                 <div>
-                  <p className="font-medium text-blue-800 text-base">Preparing to analyze...</p>
-                  <p className="text-sm text-blue-600">Loading PDF and extracting fields.</p>
+                  <p className="font-medium text-blue-800 text-base">{t('enhancement.preparing')}</p>
+                  <p className="text-sm text-blue-600">{t('enhancement.loading')}</p>
                 </div>
               </div>
             )}
@@ -709,12 +720,12 @@ export function SimpleForm() {
                 {state.enhancementProgress.errorPages > 0 && (
                   <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
                     <p className="font-medium text-amber-800 text-base">
-                      {state.enhancementProgress.errorPages} page(s) failed analysis
+                      {t('enhancement.pagesFailed', { count: state.enhancementProgress.errorPages })}
                     </p>
                     <div className="mt-1 text-sm text-amber-700">
                       {state.enhancementProgress.pageStatuses
                         .filter(p => p.status === 'error')
-                        .map(p => `Page ${p.pageNumber}`)
+                        .map(p => t('enhancement.pageNumber', { number: p.pageNumber }))
                         .join(', ')}
                     </div>
                   </div>
@@ -725,7 +736,7 @@ export function SimpleForm() {
                   <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
                     <Sparkles size={16} className="text-emerald-600 shrink-0" />
                     <span>
-                      AI Enhanced • {visibleFields.length} fields found
+                      {t('enhancement.enhanced')} • {t('enhancement.fieldsFound', { count: visibleFields.length })}
                     </span>
                   </div>
                 )}
@@ -735,7 +746,7 @@ export function SimpleForm() {
             {/* Global Enhancement Error */}
             {state.enhancementError && (
               <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="font-medium text-amber-800 text-base">AI enhancement failed</p>
+                <p className="font-medium text-amber-800 text-base">{t('enhancement.failed')}</p>
                 <p className="text-sm text-amber-600 mt-1">{state.enhancementError}</p>
               </div>
             )}
@@ -745,14 +756,14 @@ export function SimpleForm() {
               <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
                 <Sparkles size={16} className="text-emerald-600 shrink-0" />
                 <span>
-                  AI Enhanced • {visibleFields.length} fields
+                  {t('enhancement.enhanced')} • {t('enhancement.fields', { count: visibleFields.length })}
                 </span>
               </div>
             )}
 
             <div className="mt-4">
               <div className="flex justify-between text-sm text-slate-800 mb-1">
-                <span>Progress</span>
+                <span>{t('common.progress')}</span>
                 <span>{progressPercentage}%</span>
               </div>
               <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
@@ -767,7 +778,7 @@ export function SimpleForm() {
 
         {/* Voice Assistant Section */}
         <div className="p-6 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-black mb-4">Voice Assistant</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">{t('voice.title')}</h2>
 
           {/* Voice Toggle Button */}
           <button
@@ -783,19 +794,19 @@ export function SimpleForm() {
             {isConnected ? (
               <>
                 <PhoneOff size={22} />
-                End Call
+                {t('voice.end')}
               </>
             ) : (
               <>
                 <Phone size={22} />
-                Start Voice Assistant
+                {t('voice.start')}
               </>
             )}
           </button>
 
           {!state.pdfLoaded && (
             <p className="text-base text-slate-700 mt-2 text-center">
-              Upload a PDF to enable voice assistant
+              {t('voice.needPdf')}
             </p>
           )}
 
@@ -825,33 +836,33 @@ export function SimpleForm() {
                 ? 'bg-red-100 text-red-600 hover:bg-red-200'
                 : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
                 }`}
-              title={isMicMuted ? 'Unmute microphone' : 'Mute microphone'}
+              title={isMicMuted ? t('voice.unmuteMic') : t('voice.muteMic')}
             >
               {isMicMuted ? <MicOff size={24} /> : <Mic size={24} />}
-              <span className="font-medium">{isMicMuted ? 'Unmute' : 'Mute'}</span>
+              <span className="font-medium">{isMicMuted ? t('voice.unmute') : t('voice.mute')}</span>
             </button>
           )}
         </div>
 
         {/* Accessibility Section */}
         <div className="p-6 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-black mb-4">Accessibility</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">{t('accessibility.title')}</h2>
 
           {/* Dyslexia Font Toggle */}
           <Toggle
             checked={settings.dyslexiaFont}
             onChange={toggleDyslexiaFont}
-            label="Dyslexia-Friendly Font"
+            label={t('accessibility.dyslexiaFont')}
           />
 
           {/* Font Size Controls */}
           <div className="mt-4">
-            <label className="block text-black text-lg mb-2">Font Size</label>
+            <label className="block text-black text-lg mb-2">{t('accessibility.fontSize')}</label>
             <div className="flex items-center gap-2">
               <button
                 onClick={decreaseFontSize}
                 className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 hover:text-black transition-colors"
-                title="Decrease font size"
+                title={t('accessibility.decreaseFont')}
               >
                 <Minus size={20} />
               </button>
@@ -861,7 +872,7 @@ export function SimpleForm() {
               <button
                 onClick={increaseFontSize}
                 className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 hover:text-black transition-colors"
-                title="Increase font size"
+                title={t('accessibility.increaseFont')}
               >
                 <Plus size={20} />
               </button>
@@ -869,9 +880,45 @@ export function SimpleForm() {
           </div>
         </div>
 
+        {/* Language Section */}
+        <div className="p-6 border-b border-slate-200">
+          <h2 className="text-lg font-semibold text-black mb-4 flex items-center gap-2">
+            <Globe size={20} />
+            {t('language.title')}
+          </h2>
+          <label className="block text-black text-lg mb-2">{t('language.label')}</label>
+          <select
+            value={language.currentLanguage}
+            onChange={(e) => setLang(e.target.value as SupportedLanguage)}
+            className="w-full px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 text-base font-medium focus:border-blue-500 focus:outline-none transition-colors"
+          >
+            <optgroup label={t('language.g7Group')}>
+              {G7_LANGUAGES.map((lang) => (
+                <option key={lang} value={lang}>
+                  {VOICE_CONFIGS[lang].nativeName} ({VOICE_CONFIGS[lang].englishName})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('language.euGroup')}>
+              {EU_LANGUAGES.map((lang) => (
+                <option key={lang} value={lang}>
+                  {VOICE_CONFIGS[lang].nativeName} ({VOICE_CONFIGS[lang].englishName})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('language.otherGroup')}>
+              {OTHER_LANGUAGES.map((lang) => (
+                <option key={lang} value={lang}>
+                  {VOICE_CONFIGS[lang].nativeName} ({VOICE_CONFIGS[lang].englishName})
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
+
         {/* Actions Section */}
         <div className="p-6">
-          <h2 className="text-lg font-semibold text-black mb-4">Actions</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">{t('form.actions')}</h2>
 
           {/* PDF Upload - Hidden file input with button trigger */}
           <input
@@ -886,7 +933,7 @@ export function SimpleForm() {
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 hover:border-blue-500 hover:text-blue-600 transition-all text-base font-medium"
           >
             <Upload size={20} />
-            {state.pdfLoaded ? 'Upload Different PDF' : 'Upload PDF'}
+            {state.pdfLoaded ? t('upload.buttonChange') : t('upload.button')}
           </button>
 
           {/* Preview Form Button (only when PDF loaded) */}
@@ -896,7 +943,7 @@ export function SimpleForm() {
               className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-emerald-300 bg-emerald-50 text-emerald-700 hover:border-emerald-500 hover:bg-emerald-100 transition-all text-base font-medium"
             >
               <FileText size={20} />
-              Preview Form
+              {t('form.preview')}
             </button>
           )}
         </div>
@@ -918,7 +965,7 @@ export function SimpleForm() {
                   <FileText size={24} className="text-emerald-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-black">Completed Form Preview</h2>
+                  <h2 className="text-lg font-bold text-black">{t('form.completedPreview')}</h2>
                   <p className="text-sm text-slate-600">
                     {state.metadata?.sourceFileName || 'PDF Preview'}
                   </p>
@@ -927,7 +974,7 @@ export function SimpleForm() {
               <button
                 onClick={closePDFPreview}
                 className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-200 transition-colors"
-                title="Close preview"
+                title={t('common.closePreview')}
               >
                 <X size={24} />
               </button>
@@ -938,7 +985,7 @@ export function SimpleForm() {
               <iframe
                 src={pdfPreviewUrl}
                 className="w-full h-full border-0"
-                title="Completed PDF Preview"
+                title={t('form.completedPreview')}
               />
             </div>
             
@@ -948,14 +995,14 @@ export function SimpleForm() {
                 onClick={closePDFPreview}
                 className="px-6 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-100 font-medium transition-colors"
               >
-                Back to Form
+                {t('common.backToForm')}
               </button>
               <button
                 onClick={openPDFInNewTab}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
               >
                 <Download size={20} />
-                Open in New Tab
+                {t('common.openInNewTab')}
               </button>
             </div>
           </div>

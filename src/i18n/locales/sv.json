@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Framsteg",
+    "backToForm": "Tillbaka till formuläret",
+    "openInNewTab": "Öppna i ny flik",
+    "closePreview": "Stäng förhandsgranskning"
+  },
+  "upload": {
+    "title": "Ladda upp ett PDF-formulär",
+    "dropHere": "Släpp PDF här",
+    "dragAndDrop": "Dra och släpp eller klicka för att välja",
+    "getStarted": "Ladda upp ett ifyllbart PDF-formulär för att komma igång",
+    "button": "Ladda upp PDF",
+    "buttonChange": "Ladda upp annan PDF"
+  },
+  "voice": {
+    "title": "Röstassistent",
+    "start": "Starta röstassistent",
+    "end": "Avsluta samtal",
+    "needPdf": "Ladda upp en PDF för att aktivera röstassistenten",
+    "thinking": "Tänker...",
+    "speaking": "Talar...",
+    "listening": "Lyssnar...",
+    "ready": "Redo",
+    "mute": "Stäng av ljud",
+    "unmute": "Slå på ljud",
+    "muteMic": "Stäng av mikrofon",
+    "unmuteMic": "Slå på mikrofon"
+  },
+  "accessibility": {
+    "title": "Tillgänglighet",
+    "dyslexiaFont": "Dyslexivänligt typsnitt",
+    "fontSize": "Teckenstorlek",
+    "decreaseFont": "Minska teckenstorlek",
+    "increaseFont": "Öka teckenstorlek"
+  },
+  "language": {
+    "title": "Språk",
+    "label": "Gränssnittsspråk",
+    "g7Group": "G7-språk",
+    "euGroup": "EU-språk",
+    "otherGroup": "Övriga språk"
+  },
+  "form": {
+    "preview": "Förhandsgranska formulär",
+    "completedPreview": "Förhandsgranskning av ifyllt formulär",
+    "untitled": "Namnlöst formulär",
+    "actions": "Åtgärder",
+    "calculation": "Beräkning: {{hint}}",
+    "format": "Format: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyserar...",
+    "preparing": "Förbereder analys...",
+    "loading": "Laddar PDF och extraherar fält.",
+    "enhanced": "AI-förbättrad",
+    "failed": "AI-förbättring misslyckades",
+    "fieldsFound": "{{count}} fält hittade",
+    "fields": "{{count}} fält",
+    "pagesFailed": "{{count}} sida/sidor kunde inte analyseras",
+    "statusCached": "Cachad",
+    "statusComplete": "Klar",
+    "statusProcessing": "Bearbetar",
+    "statusError": "Fel",
+    "statusPending": "Väntar",
+    "largeFormTitle": "Stort formulär upptäckt",
+    "largeFormMessage": "Detta formulär har <strong>{{count}} sidor</strong> och kommer att ta en stund att analysera. Du kan börja fylla i synliga fält medan vi förbättrar dem med AI.",
+    "analysisComplete": "Analys klar",
+    "analyzingStructure": "Analyserar formulärstruktur...",
+    "pagesComplete": "<strong>{{completed}}</strong> av <strong>{{total}}</strong> sidor klara",
+    "processingCount": "{{count}} bearbetas",
+    "pendingCount": "{{count}} väntar",
+    "fromCacheCount": "{{count}} från cache",
+    "failedCount": "{{count}} misslyckades",
+    "pageNumber": "Sida {{number}}",
+    "fieldCount": "({{count}} fält)",
+    "retried": "(försökt igen)",
+    "errorDetail": "<strong>{{count}} sida/sidor</strong> kunde inte analyseras. Dessa sidor kommer att använda grundläggande fältinformation."
+  },
+  "inputs": {
+    "enterField": "Ange {{field}}...",
+    "selectField": "Välj {{field}}...",
+    "enterReference": "Ange referens...",
+    "yes": "Ja",
+    "no": "Nej"
+  }
+}

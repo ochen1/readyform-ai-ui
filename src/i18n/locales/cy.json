@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Cynnydd",
+    "backToForm": "Yn ôl i'r Ffurflen",
+    "openInNewTab": "Agor mewn Tab Newydd",
+    "closePreview": "Cau'r rhagolwg"
+  },
+  "upload": {
+    "title": "Llwytho Ffurflen PDF",
+    "dropHere": "Gollwng PDF yma",
+    "dragAndDrop": "Llusgwch a gollwng neu cliciwch i ddewis",
+    "getStarted": "Llwythwch ffurflen PDF y gellir ei llenwi i ddechrau",
+    "button": "Llwytho PDF",
+    "buttonChange": "Llwytho PDF Gwahanol"
+  },
+  "voice": {
+    "title": "Cynorthwyydd Llais",
+    "start": "Dechrau Cynorthwyydd Llais",
+    "end": "Gorffen yr Alwad",
+    "needPdf": "Llwythwch PDF i alluogi'r cynorthwyydd llais",
+    "thinking": "Yn meddwl...",
+    "speaking": "Yn siarad...",
+    "listening": "Yn gwrando...",
+    "ready": "Yn barod",
+    "mute": "Tawelu",
+    "unmute": "Dad-dawelu",
+    "muteMic": "Tawelu'r meicroffon",
+    "unmuteMic": "Dad-dawelu'r meicroffon"
+  },
+  "accessibility": {
+    "title": "Hygyrchedd",
+    "dyslexiaFont": "Ffont Cyfeillgar i Ddyslecsia",
+    "fontSize": "Maint y Ffont",
+    "decreaseFont": "Lleihau maint y ffont",
+    "increaseFont": "Cynyddu maint y ffont"
+  },
+  "language": {
+    "title": "Iaith",
+    "label": "Iaith y Rhyngwyneb",
+    "g7Group": "Ieithoedd G7",
+    "euGroup": "Ieithoedd yr UE",
+    "otherGroup": "Ieithoedd Eraill"
+  },
+  "form": {
+    "preview": "Rhagolwg Ffurflen",
+    "completedPreview": "Rhagolwg Ffurflen Wedi'i Chwblhau",
+    "untitled": "Ffurflen Ddi-deitl",
+    "actions": "Gweithredoedd",
+    "calculation": "Cyfrifiad: {{hint}}",
+    "format": "Fformat: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Yn dadansoddi...",
+    "preparing": "Yn paratoi i ddadansoddi...",
+    "loading": "Yn llwytho PDF ac yn echdynnu meysydd.",
+    "enhanced": "Wedi'i Wella gan AI",
+    "failed": "Methodd gwelliant AI",
+    "fieldsFound": "{{count}} maes wedi'u canfod",
+    "fields": "{{count}} maes",
+    "pagesFailed": "Methodd dadansoddi {{count}} tudalen(nau)",
+    "statusCached": "Wedi'i Storio",
+    "statusComplete": "Cwblhawyd",
+    "statusProcessing": "Yn Prosesu",
+    "statusError": "Gwall",
+    "statusPending": "Yn Aros",
+    "largeFormTitle": "Ffurflen Fawr Wedi'i Chanfod",
+    "largeFormMessage": "Mae gan y ffurflen hon <strong>{{count}} tudalen</strong> a bydd yn cymryd eiliad i'w dadansoddi. Gallwch ddechrau llenwi meysydd gweladwy tra byddwn yn eu gwella gydag AI.",
+    "analysisComplete": "Dadansoddiad Wedi'i Gwblhau",
+    "analyzingStructure": "Yn Dadansoddi Strwythur y Ffurflen...",
+    "pagesComplete": "<strong>{{completed}}</strong> o <strong>{{total}}</strong> tudalen wedi'u cwblhau",
+    "processingCount": "{{count}} yn cael eu prosesu",
+    "pendingCount": "{{count}} yn aros",
+    "fromCacheCount": "{{count}} o'r storfa",
+    "failedCount": "{{count}} wedi methu",
+    "pageNumber": "Tudalen {{number}}",
+    "fieldCount": "({{count}} maes)",
+    "retried": "(wedi ailgeisio)",
+    "errorDetail": "Ni ellid dadansoddi <strong>{{count}} tudalen(nau)</strong>. Bydd y tudalennau hyn yn defnyddio gwybodaeth sylfaenol am feysydd."
+  },
+  "inputs": {
+    "enterField": "Rhowch {{field}}...",
+    "selectField": "Dewiswch {{field}}...",
+    "enterReference": "Rhowch gyfeirnod...",
+    "yes": "Ie",
+    "no": "Na"
+  }
+}

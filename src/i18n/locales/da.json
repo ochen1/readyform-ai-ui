@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Fremskridt",
+    "backToForm": "Tilbage til formularen",
+    "openInNewTab": "Åbn i ny fane",
+    "closePreview": "Luk forhåndsvisning"
+  },
+  "upload": {
+    "title": "Upload en PDF-formular",
+    "dropHere": "Slip PDF her",
+    "dragAndDrop": "Træk og slip eller klik for at vælge",
+    "getStarted": "Upload en udfyldelig PDF-formular for at komme i gang",
+    "button": "Upload PDF",
+    "buttonChange": "Upload anden PDF"
+  },
+  "voice": {
+    "title": "Stemmeassistent",
+    "start": "Start stemmeassistent",
+    "end": "Afslut opkald",
+    "needPdf": "Upload en PDF for at aktivere stemmeassistenten",
+    "thinking": "Tænker...",
+    "speaking": "Taler...",
+    "listening": "Lytter...",
+    "ready": "Klar",
+    "mute": "Slå lyd fra",
+    "unmute": "Slå lyd til",
+    "muteMic": "Slå mikrofon fra",
+    "unmuteMic": "Slå mikrofon til"
+  },
+  "accessibility": {
+    "title": "Tilgængelighed",
+    "dyslexiaFont": "Dysleksivenlig skrifttype",
+    "fontSize": "Skriftstørrelse",
+    "decreaseFont": "Formindsk skriftstørrelse",
+    "increaseFont": "Forstør skriftstørrelse"
+  },
+  "language": {
+    "title": "Sprog",
+    "label": "Grænsefladesprog",
+    "g7Group": "G7-sprog",
+    "euGroup": "EU-sprog",
+    "otherGroup": "Andre sprog"
+  },
+  "form": {
+    "preview": "Forhåndsvis formular",
+    "completedPreview": "Forhåndsvisning af udfyldt formular",
+    "untitled": "Unavngiven formular",
+    "actions": "Handlinger",
+    "calculation": "Beregning: {{hint}}",
+    "format": "Format: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyserer...",
+    "preparing": "Forbereder analyse...",
+    "loading": "Indlæser PDF og udtrækker felter.",
+    "enhanced": "AI-forbedret",
+    "failed": "AI-forbedring mislykkedes",
+    "fieldsFound": "{{count}} felter fundet",
+    "fields": "{{count}} felter",
+    "pagesFailed": "{{count}} side(r) kunne ikke analyseres",
+    "statusCached": "Cachelagret",
+    "statusComplete": "Fuldført",
+    "statusProcessing": "Behandler",
+    "statusError": "Fejl",
+    "statusPending": "Afventer",
+    "largeFormTitle": "Stor formular registreret",
+    "largeFormMessage": "Denne formular har <strong>{{count}} sider</strong> og vil tage et øjeblik at analysere. Du kan begynde at udfylde synlige felter, mens vi forbedrer dem med AI.",
+    "analysisComplete": "Analyse fuldført",
+    "analyzingStructure": "Analyserer formularstruktur...",
+    "pagesComplete": "<strong>{{completed}}</strong> af <strong>{{total}}</strong> sider fuldført",
+    "processingCount": "{{count}} behandles",
+    "pendingCount": "{{count}} afventer",
+    "fromCacheCount": "{{count}} fra cache",
+    "failedCount": "{{count}} mislykkedes",
+    "pageNumber": "Side {{number}}",
+    "fieldCount": "({{count}} felter)",
+    "retried": "(forsøgt igen)",
+    "errorDetail": "<strong>{{count}} side(r)</strong> kunne ikke analyseres. Disse sider vil bruge grundlæggende feltoplysninger."
+  },
+  "inputs": {
+    "enterField": "Indtast {{field}}...",
+    "selectField": "Vælg {{field}}...",
+    "enterReference": "Indtast reference...",
+    "yes": "Ja",
+    "no": "Nej"
+  }
+}

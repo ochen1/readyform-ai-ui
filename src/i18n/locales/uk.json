@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Прогрес",
+    "backToForm": "Повернутися до форми",
+    "openInNewTab": "Відкрити в новій вкладці",
+    "closePreview": "Закрити попередній перегляд"
+  },
+  "upload": {
+    "title": "Завантажити PDF-форму",
+    "dropHere": "Перетягніть PDF сюди",
+    "dragAndDrop": "Перетягніть або натисніть для вибору",
+    "getStarted": "Завантажте PDF-форму для заповнення, щоб почати",
+    "button": "Завантажити PDF",
+    "buttonChange": "Завантажити інший PDF"
+  },
+  "voice": {
+    "title": "Голосовий помічник",
+    "start": "Запустити голосовий помічник",
+    "end": "Завершити дзвінок",
+    "needPdf": "Завантажте PDF, щоб увімкнути голосовий помічник",
+    "thinking": "Думаю...",
+    "speaking": "Говорю...",
+    "listening": "Слухаю...",
+    "ready": "Готово",
+    "mute": "Вимкнути звук",
+    "unmute": "Увімкнути звук",
+    "muteMic": "Вимкнути мікрофон",
+    "unmuteMic": "Увімкнути мікрофон"
+  },
+  "accessibility": {
+    "title": "Доступність",
+    "dyslexiaFont": "Шрифт для дислексії",
+    "fontSize": "Розмір шрифту",
+    "decreaseFont": "Зменшити розмір шрифту",
+    "increaseFont": "Збільшити розмір шрифту"
+  },
+  "language": {
+    "title": "Мова",
+    "label": "Мова інтерфейсу",
+    "g7Group": "Мови G7",
+    "euGroup": "Мови ЄС",
+    "otherGroup": "Інші мови"
+  },
+  "form": {
+    "preview": "Попередній перегляд форми",
+    "completedPreview": "Попередній перегляд заповненої форми",
+    "untitled": "Форма без назви",
+    "actions": "Дії",
+    "calculation": "Обчислення: {{hint}}",
+    "format": "Формат: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Аналіз...",
+    "preparing": "Підготовка до аналізу...",
+    "loading": "Завантаження PDF та витягування полів.",
+    "enhanced": "Покращено ШІ",
+    "failed": "Покращення ШІ не вдалося",
+    "fieldsFound": "Знайдено {{count}} полів",
+    "fields": "{{count}} полів",
+    "pagesFailed": "{{count}} сторінок не вдалося проаналізувати",
+    "statusCached": "З кешу",
+    "statusComplete": "Завершено",
+    "statusProcessing": "Обробка",
+    "statusError": "Помилка",
+    "statusPending": "Очікування",
+    "largeFormTitle": "Виявлено велику форму",
+    "largeFormMessage": "Ця форма містить <strong>{{count}} сторінок</strong> і аналіз займе деякий час. Ви можете почати заповнювати видимі поля, поки ми покращуємо їх за допомогою ШІ.",
+    "analysisComplete": "Аналіз завершено",
+    "analyzingStructure": "Аналіз структури форми...",
+    "pagesComplete": "<strong>{{completed}}</strong> з <strong>{{total}}</strong> сторінок завершено",
+    "processingCount": "{{count}} обробляється",
+    "pendingCount": "{{count}} очікує",
+    "fromCacheCount": "{{count}} з кешу",
+    "failedCount": "{{count}} не вдалося",
+    "pageNumber": "Сторінка {{number}}",
+    "fieldCount": "({{count}} полів)",
+    "retried": "(повторна спроба)",
+    "errorDetail": "<strong>{{count}} сторінок</strong> не вдалося проаналізувати. Ці сторінки використовуватимуть базову інформацію про поля."
+  },
+  "inputs": {
+    "enterField": "Введіть {{field}}...",
+    "selectField": "Виберіть {{field}}...",
+    "enterReference": "Введіть посилання...",
+    "yes": "Так",
+    "no": "Ні"
+  }
+}

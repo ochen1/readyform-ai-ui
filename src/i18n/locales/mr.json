@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "प्रगती",
+    "backToForm": "फॉर्मवर परत जा",
+    "openInNewTab": "नवीन टॅबमध्ये उघडा",
+    "closePreview": "पूर्वावलोकन बंद करा"
+  },
+  "upload": {
+    "title": "PDF फॉर्म अपलोड करा",
+    "dropHere": "PDF इथे सोडा",
+    "dragAndDrop": "ड्रॅग आणि ड्रॉप करा किंवा निवडण्यासाठी क्लिक करा",
+    "getStarted": "सुरू करण्यासाठी भरता येणारा PDF फॉर्म अपलोड करा",
+    "button": "PDF अपलोड करा",
+    "buttonChange": "वेगळा PDF अपलोड करा"
+  },
+  "voice": {
+    "title": "व्हॉइस सहाय्यक",
+    "start": "व्हॉइस सहाय्यक सुरू करा",
+    "end": "कॉल संपवा",
+    "needPdf": "व्हॉइस सहाय्यक सक्रिय करण्यासाठी PDF अपलोड करा",
+    "thinking": "विचार करत आहे...",
+    "speaking": "बोलत आहे...",
+    "listening": "ऐकत आहे...",
+    "ready": "तयार",
+    "mute": "म्यूट करा",
+    "unmute": "अनम्यूट करा",
+    "muteMic": "मायक्रोफोन म्यूट करा",
+    "unmuteMic": "मायक्रोफोन अनम्यूट करा"
+  },
+  "accessibility": {
+    "title": "सुलभता",
+    "dyslexiaFont": "डिस्लेक्सिया-अनुकूल फॉन्ट",
+    "fontSize": "फॉन्ट आकार",
+    "decreaseFont": "फॉन्ट आकार कमी करा",
+    "increaseFont": "फॉन्ट आकार वाढवा"
+  },
+  "language": {
+    "title": "भाषा",
+    "label": "इंटरफेस भाषा",
+    "g7Group": "G7 भाषा",
+    "euGroup": "EU भाषा",
+    "otherGroup": "इतर भाषा"
+  },
+  "form": {
+    "preview": "फॉर्म पूर्वावलोकन",
+    "completedPreview": "पूर्ण केलेल्या फॉर्मचे पूर्वावलोकन",
+    "untitled": "शीर्षकहीन फॉर्म",
+    "actions": "कृती",
+    "calculation": "गणना: {{hint}}",
+    "format": "स्वरूप: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "विश्लेषण करत आहे...",
+    "preparing": "विश्लेषणासाठी तयारी करत आहे...",
+    "loading": "PDF लोड करत आहे आणि फील्ड काढत आहे.",
+    "enhanced": "AI ने सुधारित",
+    "failed": "AI सुधारणा अयशस्वी",
+    "fieldsFound": "{{count}} फील्ड सापडले",
+    "fields": "{{count}} फील्ड",
+    "pagesFailed": "{{count}} पृष्ठ(ठे) विश्लेषणात अयशस्वी",
+    "statusCached": "कॅश केलेले",
+    "statusComplete": "पूर्ण",
+    "statusProcessing": "प्रक्रिया करत आहे",
+    "statusError": "त्रुटी",
+    "statusPending": "प्रलंबित",
+    "largeFormTitle": "मोठा फॉर्म आढळला",
+    "largeFormMessage": "या फॉर्ममध्ये <strong>{{count}} पृष्ठे</strong> आहेत आणि विश्लेषणासाठी थोडा वेळ लागेल. AI ने सुधारणा करत असताना तुम्ही दृश्य फील्ड भरणे सुरू करू शकता.",
+    "analysisComplete": "विश्लेषण पूर्ण",
+    "analyzingStructure": "फॉर्मची रचना विश्लेषित करत आहे...",
+    "pagesComplete": "<strong>{{completed}}</strong> / <strong>{{total}}</strong> पृष्ठे पूर्ण",
+    "processingCount": "{{count}} प्रक्रिया करत आहे",
+    "pendingCount": "{{count}} प्रलंबित",
+    "fromCacheCount": "{{count}} कॅशमधून",
+    "failedCount": "{{count}} अयशस्वी",
+    "pageNumber": "पृष्ठ {{number}}",
+    "fieldCount": "({{count}} फील्ड)",
+    "retried": "(पुन्हा प्रयत्न केला)",
+    "errorDetail": "<strong>{{count}} पृष्ठ(ठे)</strong> विश्लेषित करता आले नाहीत. ही पृष्ठे मूलभूत फील्ड माहिती वापरतील."
+  },
+  "inputs": {
+    "enterField": "{{field}} प्रविष्ट करा...",
+    "selectField": "{{field}} निवडा...",
+    "enterReference": "संदर्भ प्रविष्ट करा...",
+    "yes": "हो",
+    "no": "नाही"
+  }
+}

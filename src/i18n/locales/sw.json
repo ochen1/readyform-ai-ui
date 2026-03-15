@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Maendeleo",
+    "backToForm": "Rudi kwenye Fomu",
+    "openInNewTab": "Fungua katika Kichupo Kipya",
+    "closePreview": "Funga hakiki"
+  },
+  "upload": {
+    "title": "Pakia Fomu ya PDF",
+    "dropHere": "Dondosha PDF hapa",
+    "dragAndDrop": "Buruta na udondoshe au bonyeza kuchagua",
+    "getStarted": "Pakia fomu ya PDF inayojazwa ili kuanza",
+    "button": "Pakia PDF",
+    "buttonChange": "Pakia PDF Tofauti"
+  },
+  "voice": {
+    "title": "Msaidizi wa Sauti",
+    "start": "Anza Msaidizi wa Sauti",
+    "end": "Maliza Simu",
+    "needPdf": "Pakia PDF ili kuwezesha msaidizi wa sauti",
+    "thinking": "Inafikiria...",
+    "speaking": "Inazungumza...",
+    "listening": "Inasikiliza...",
+    "ready": "Tayari",
+    "mute": "Nyamazisha",
+    "unmute": "Rejesha sauti",
+    "muteMic": "Nyamazisha maikrofoni",
+    "unmuteMic": "Rejesha maikrofoni"
+  },
+  "accessibility": {
+    "title": "Ufikivu",
+    "dyslexiaFont": "Fonti Rafiki kwa Dyslexia",
+    "fontSize": "Ukubwa wa Fonti",
+    "decreaseFont": "Punguza ukubwa wa fonti",
+    "increaseFont": "Ongeza ukubwa wa fonti"
+  },
+  "language": {
+    "title": "Lugha",
+    "label": "Lugha ya Kiolesura",
+    "g7Group": "Lugha za G7",
+    "euGroup": "Lugha za EU",
+    "otherGroup": "Lugha Nyingine"
+  },
+  "form": {
+    "preview": "Hakiki Fomu",
+    "completedPreview": "Hakiki Fomu Iliyojazwa",
+    "untitled": "Fomu Bila Kichwa",
+    "actions": "Vitendo",
+    "calculation": "Hesabu: {{hint}}",
+    "format": "Muundo: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Inachambua...",
+    "preparing": "Inajiandaa kuchambua...",
+    "loading": "Inapakia PDF na kutoa sehemu.",
+    "enhanced": "Imeboreshwa na AI",
+    "failed": "Uboreshaji wa AI umeshindwa",
+    "fieldsFound": "Sehemu {{count}} zimepatikana",
+    "fields": "Sehemu {{count}}",
+    "pagesFailed": "Kurasa {{count}} zimeshindwa kuchambuliwa",
+    "statusCached": "Imehifadhiwa",
+    "statusComplete": "Imekamilika",
+    "statusProcessing": "Inachakatwa",
+    "statusError": "Hitilafu",
+    "statusPending": "Inasubiri",
+    "largeFormTitle": "Fomu Kubwa Imegunduliwa",
+    "largeFormMessage": "Fomu hii ina <strong>kurasa {{count}}</strong> na itachukua muda kuchambua. Unaweza kuanza kujaza sehemu zinazoonekana huku tukiziboresha kwa AI.",
+    "analysisComplete": "Uchambuzi Umekamilika",
+    "analyzingStructure": "Inachambua Muundo wa Fomu...",
+    "pagesComplete": "<strong>{{completed}}</strong> kati ya <strong>{{total}}</strong> kurasa zimekamilika",
+    "processingCount": "{{count}} zinachakatwa",
+    "pendingCount": "{{count}} zinasubiri",
+    "fromCacheCount": "{{count}} kutoka kwenye hifadhi",
+    "failedCount": "{{count}} zimeshindwa",
+    "pageNumber": "Ukurasa {{number}}",
+    "fieldCount": "(sehemu {{count}})",
+    "retried": "(imejaribiwa tena)",
+    "errorDetail": "<strong>Kurasa {{count}}</strong> hazikuweza kuchambuliwa. Kurasa hizi zitatumia taarifa za msingi za sehemu."
+  },
+  "inputs": {
+    "enterField": "Ingiza {{field}}...",
+    "selectField": "Chagua {{field}}...",
+    "enterReference": "Ingiza rejea...",
+    "yes": "Ndiyo",
+    "no": "Hapana"
+  }
+}

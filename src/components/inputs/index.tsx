@@ -1,6 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FormField, FieldType } from '../../store/types';
+import { useLanguageContext } from '../../store/LanguageContext';
 import { Calendar, DollarSign, Percent, Scale, Hash, MapPin, List, Calculator, ToggleLeft, CheckSquare, Phone, Mail, MapPinned } from 'lucide-react';
+
+/**
+ * Hook to get the localized display name for a field
+ * Falls back to the English name if no translation is available
+ */
+function useLocalizedFieldName(field: FormField): string {
+  const { language } = useLanguageContext();
+  return field.localizedNames?.[language.currentLanguage] || field.name;
+}
 
 /**
  * Props for all input components
@@ -62,6 +73,8 @@ export function getFieldTypeIcon(type: FieldType): React.ReactNode {
  * Text Input - Default for most text fields
  */
 export function TextInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedFieldName(field);
   return (
     <input
       type="text"
@@ -70,7 +83,7 @@ export function TextInput({ field, value, onChange, onFocus, disabled, className
       onFocus={onFocus}
       disabled={disabled}
       className={`${baseInputClass} ${className}`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: localizedName.toLowerCase() })}
     />
   );
 }
@@ -225,6 +238,7 @@ export function DateInput({ field, value, onChange, onFocus, disabled, className
  * Reference Input - For IDs, codes, ticket numbers
  */
 export function ReferenceInput({ field: _field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
   return (
     <input
       type="text"
@@ -233,7 +247,7 @@ export function ReferenceInput({ field: _field, value, onChange, onFocus, disabl
       onFocus={onFocus}
       disabled={disabled}
       className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 font-mono tracking-wider ${className}`}
-      placeholder="Enter reference..."
+      placeholder={t('inputs.enterReference')}
     />
   );
 }
@@ -242,6 +256,8 @@ export function ReferenceInput({ field: _field, value, onChange, onFocus, disabl
  * Selection Input - Dropdown for predefined options
  */
 export function SelectionInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedFieldName(field);
   const options = field.options || [];
 
   return (
@@ -252,7 +268,7 @@ export function SelectionInput({ field, value, onChange, onFocus, disabled, clas
       disabled={disabled}
       className={`${baseInputClass} ${className} cursor-pointer`}
     >
-      <option value="">Select {field.name}...</option>
+      <option value="">{t('inputs.selectField', { field: localizedName })}</option>
       {options.map((option) => (
         <option key={option} value={option}>
           {option}
@@ -266,6 +282,8 @@ export function SelectionInput({ field, value, onChange, onFocus, disabled, clas
  * Address Input - Multi-line textarea for addresses
  */
 export function AddressInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedFieldName(field);
   return (
     <textarea
       value={value}
@@ -274,7 +292,7 @@ export function AddressInput({ field, value, onChange, onFocus, disabled, classN
       disabled={disabled}
       rows={3}
       className={`${baseInputClass} ${className} resize-none`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: localizedName.toLowerCase() })}
     />
   );
 }
@@ -324,6 +342,8 @@ export function CalculatedInput({ field, value, onFocus: _onFocus, onChange: _on
  * Grade Input - For classifications/grades (could be text or selection)
  */
 export function GradeInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedFieldName(field);
   // If options are provided, use selection
   if (field.options && field.options.length > 0) {
     return (
@@ -347,7 +367,7 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
       onFocus={onFocus}
       disabled={disabled}
       className={`${baseInputClass} ${className} font-medium`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: localizedName.toLowerCase() })}
     />
   );
 }
@@ -356,6 +376,8 @@ export function GradeInput({ field, value, onChange, onFocus, disabled, classNam
  * Boolean Input - Toggle switch for Yes/No questions
  */
 export function BooleanInput({ field, value, onChange, onFocus, disabled, className: _className }: InputProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedFieldName(field);
   const isYes = value.toLowerCase() === 'yes' || value === 'true' || value === '1';
 
   return (
@@ -369,7 +391,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
         disabled={disabled}
         className={`relative w-16 h-9 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isYes ? 'bg-emerald-500' : 'bg-slate-400'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-        aria-label={`${field.name}: ${isYes ? 'Yes' : 'No'}`}
+        aria-label={`${localizedName}: ${isYes ? t('inputs.yes') : t('inputs.no')}`}
       >
         <span
           className={`absolute top-1 left-0 w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-200 ${isYes ? 'translate-x-8' : 'translate-x-1'
@@ -377,7 +399,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
         />
       </button>
       <span className={`text-xl font-medium ${isYes ? 'text-emerald-600' : 'text-slate-800'}`}>
-        {isYes ? 'Yes' : 'No'}
+        {isYes ? t('inputs.yes') : t('inputs.no')}
       </span>
     </div>
   );
@@ -387,6 +409,7 @@ export function BooleanInput({ field, value, onChange, onFocus, disabled, classN
  * Checkbox Input - Single checkbox for consent/agreement
  */
 export function CheckboxInput({ field, value, onChange, onFocus, disabled, className: _className }: InputProps) {
+  const localizedName = useLocalizedFieldName(field);
   const isChecked = value.toLowerCase() === 'yes' || value === 'true' || value === '1' || value === 'checked';
 
   return (
@@ -402,7 +425,7 @@ export function CheckboxInput({ field, value, onChange, onFocus, disabled, class
           ? 'bg-blue-600 border-blue-600 text-white'
           : 'bg-white border-slate-300 hover:border-blue-400'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-        aria-label={field.name}
+        aria-label={localizedName}
         aria-checked={isChecked}
         role="checkbox"
       >
@@ -413,7 +436,7 @@ export function CheckboxInput({ field, value, onChange, onFocus, disabled, class
         )}
       </button>
       <span className={`text-lg ${isChecked ? 'text-slate-900' : 'text-slate-800'}`}>
-        {field.description || field.name}
+        {field.description || localizedName}
       </span>
     </div>
   );
@@ -465,6 +488,8 @@ export function PhoneInput({ field, value, onChange, onFocus, disabled, classNam
  * Email Input - Email address with validation styling
  */
 export function EmailInput({ field, value, onChange, onFocus, disabled, className }: InputProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedFieldName(field);
   // Basic email validation
   const isValidEmail = (email: string): boolean => {
     if (!email) return true; // Empty is valid (not required)
@@ -482,7 +507,7 @@ export function EmailInput({ field, value, onChange, onFocus, disabled, classNam
       disabled={disabled}
       className={`flex-1 px-5 py-4 rounded-xl border-2 text-xl focus:outline-none transition-all duration-200 placeholder-slate-700 ${!valid ? 'border-red-300 bg-red-50' : ''
         } ${className}`}
-      placeholder={`Enter ${field.name.toLowerCase()}...`}
+      placeholder={t('inputs.enterField', { field: localizedName.toLowerCase() })}
     />
   );
 }

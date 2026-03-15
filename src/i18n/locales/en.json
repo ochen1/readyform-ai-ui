@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Progress",
+    "backToForm": "Back to Form",
+    "openInNewTab": "Open in New Tab",
+    "closePreview": "Close preview"
+  },
+  "upload": {
+    "title": "Upload a PDF Form",
+    "dropHere": "Drop PDF here",
+    "dragAndDrop": "Drag and drop or click to select",
+    "getStarted": "Upload a fillable PDF form to get started",
+    "button": "Upload PDF",
+    "buttonChange": "Upload Different PDF"
+  },
+  "voice": {
+    "title": "Voice Assistant",
+    "start": "Start Voice Assistant",
+    "end": "End Call",
+    "needPdf": "Upload a PDF to enable voice assistant",
+    "thinking": "Thinking...",
+    "speaking": "Speaking...",
+    "listening": "Listening...",
+    "ready": "Ready",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "muteMic": "Mute microphone",
+    "unmuteMic": "Unmute microphone"
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "dyslexiaFont": "Dyslexia-Friendly Font",
+    "fontSize": "Font Size",
+    "decreaseFont": "Decrease font size",
+    "increaseFont": "Increase font size"
+  },
+  "language": {
+    "title": "Language",
+    "label": "Interface Language",
+    "g7Group": "G7 Languages",
+    "euGroup": "EU Languages",
+    "otherGroup": "Other Languages"
+  },
+  "form": {
+    "preview": "Preview Form",
+    "completedPreview": "Completed Form Preview",
+    "untitled": "Untitled Form",
+    "actions": "Actions",
+    "calculation": "Calculation: {{hint}}",
+    "format": "Format: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Analyzing...",
+    "preparing": "Preparing to analyze...",
+    "loading": "Loading PDF and extracting fields.",
+    "enhanced": "AI Enhanced",
+    "failed": "AI enhancement failed",
+    "fieldsFound": "{{count}} fields found",
+    "fields": "{{count}} fields",
+    "pagesFailed": "{{count}} page(s) failed analysis",
+    "statusCached": "Cached",
+    "statusComplete": "Complete",
+    "statusProcessing": "Processing",
+    "statusError": "Error",
+    "statusPending": "Pending",
+    "largeFormTitle": "Large Form Detected",
+    "largeFormMessage": "This form has <strong>{{count}} pages</strong> and will take a moment to analyze. You can start filling visible fields while we enhance them with AI.",
+    "analysisComplete": "Analysis Complete",
+    "analyzingStructure": "Analyzing Form Structure...",
+    "pagesComplete": "<strong>{{completed}}</strong> of <strong>{{total}}</strong> pages complete",
+    "processingCount": "{{count}} processing",
+    "pendingCount": "{{count}} pending",
+    "fromCacheCount": "{{count}} from cache",
+    "failedCount": "{{count}} failed",
+    "pageNumber": "Page {{number}}",
+    "fieldCount": "({{count}} fields)",
+    "retried": "(retried)",
+    "errorDetail": "<strong>{{count}} page(s)</strong> could not be analyzed. These pages will use basic field information."
+  },
+  "inputs": {
+    "enterField": "Enter {{field}}...",
+    "selectField": "Select {{field}}...",
+    "enterReference": "Enter reference...",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

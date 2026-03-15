@@ -1,0 +1,461 @@
+import type { SupportedLanguage } from '../store/languageTypes';
+
+export interface VoiceLanguageConfig {
+  /** BCP47 language code for Ultravox languageHint */
+  bcp47: string;
+  /** Greeting in this language */
+  greeting: string;
+  /** Language name in its own language */
+  nativeName: string;
+  /** Language name in English */
+  englishName: string;
+  /** Common date format in this locale */
+  dateFormat: string;
+  /** Intl locale string */
+  intlLocale: string;
+  /** Whether Ultravox supports voice for this language */
+  voiceSupported: boolean;
+}
+
+export const VOICE_CONFIGS: Record<SupportedLanguage, VoiceLanguageConfig> = {
+  // ─── G7 Languages ───
+  en: {
+    bcp47: 'en',
+    greeting: 'Hello! Let me help you fill out your form.',
+    nativeName: 'English',
+    englishName: 'English',
+    dateFormat: 'MM/DD/YYYY',
+    intlLocale: 'en-US',
+    voiceSupported: true,
+  },
+  fr: {
+    bcp47: 'fr',
+    greeting: 'Bonjour\u00a0! Je vous aide à remplir votre formulaire.',
+    nativeName: 'Français',
+    englishName: 'French',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'fr-FR',
+    voiceSupported: true,
+  },
+  de: {
+    bcp47: 'de',
+    greeting: 'Hallo! Ich helfe Ihnen beim Ausfüllen Ihres Formulars.',
+    nativeName: 'Deutsch',
+    englishName: 'German',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'de-DE',
+    voiceSupported: true,
+  },
+  it: {
+    bcp47: 'it',
+    greeting: 'Ciao! Vi aiuto a compilare il vostro modulo.',
+    nativeName: 'Italiano',
+    englishName: 'Italian',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'it-IT',
+    voiceSupported: true,
+  },
+  ja: {
+    bcp47: 'ja',
+    greeting: 'こんにちは！フォームの記入をお手伝いします。',
+    nativeName: '日本語',
+    englishName: 'Japanese',
+    dateFormat: 'YYYY/MM/DD',
+    intlLocale: 'ja-JP',
+    voiceSupported: true,
+  },
+
+  // ─── EU Languages ───
+  bg: {
+    bcp47: 'bg',
+    greeting: 'Здравейте! Ще ви помогна да попълните формуляра.',
+    nativeName: 'Български',
+    englishName: 'Bulgarian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'bg-BG',
+    voiceSupported: true,
+  },
+  cs: {
+    bcp47: 'cs',
+    greeting: 'Dobrý den! Pomohu vám vyplnit formulář.',
+    nativeName: 'Čeština',
+    englishName: 'Czech',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'cs-CZ',
+    voiceSupported: true,
+  },
+  da: {
+    bcp47: 'da',
+    greeting: 'Hej! Jeg hjælper dig med at udfylde formularen.',
+    nativeName: 'Dansk',
+    englishName: 'Danish',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'da-DK',
+    voiceSupported: true,
+  },
+  el: {
+    bcp47: 'el',
+    greeting: 'Γεια σας! Θα σας βοηθήσω να συμπληρώσετε τη φόρμα.',
+    nativeName: 'Ελληνικά',
+    englishName: 'Greek',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'el-GR',
+    voiceSupported: true,
+  },
+  es: {
+    bcp47: 'es',
+    greeting: '¡Hola! Le ayudo a completar su formulario.',
+    nativeName: 'Español',
+    englishName: 'Spanish',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'es-ES',
+    voiceSupported: true,
+  },
+  et: {
+    bcp47: 'et',
+    greeting: 'Tere! Aitan teil vormi täita.',
+    nativeName: 'Eesti',
+    englishName: 'Estonian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'et-EE',
+    voiceSupported: true,
+  },
+  fi: {
+    bcp47: 'fi',
+    greeting: 'Hei! Autan sinua täyttämään lomakkeen.',
+    nativeName: 'Suomi',
+    englishName: 'Finnish',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'fi-FI',
+    voiceSupported: true,
+  },
+  ga: {
+    bcp47: 'ga',
+    greeting: 'Dia duit! Cuideoidh mé leat an fhoirm a líonadh.',
+    nativeName: 'Gaeilge',
+    englishName: 'Irish',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'ga-IE',
+    voiceSupported: false,
+  },
+  hr: {
+    bcp47: 'hr',
+    greeting: 'Zdravo! Pomoći ću vam ispuniti obrazac.',
+    nativeName: 'Hrvatski',
+    englishName: 'Croatian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'hr-HR',
+    voiceSupported: false,
+  },
+  hu: {
+    bcp47: 'hu',
+    greeting: 'Szia! Segítek kitölteni az űrlapot.',
+    nativeName: 'Magyar',
+    englishName: 'Hungarian',
+    dateFormat: 'YYYY.MM.DD.',
+    intlLocale: 'hu-HU',
+    voiceSupported: true,
+  },
+  lt: {
+    bcp47: 'lt',
+    greeting: 'Sveiki! Padėsiu užpildyti formą.',
+    nativeName: 'Lietuvių',
+    englishName: 'Lithuanian',
+    dateFormat: 'YYYY-MM-DD',
+    intlLocale: 'lt-LT',
+    voiceSupported: true,
+  },
+  lv: {
+    bcp47: 'lv',
+    greeting: 'Sveiki! Es jums palīdzēšu aizpildīt veidlapu.',
+    nativeName: 'Latviešu',
+    englishName: 'Latvian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'lv-LV',
+    voiceSupported: true,
+  },
+  mt: {
+    bcp47: 'mt',
+    greeting: 'Bonġu! Ngħinek timla l-formola.',
+    nativeName: 'Malti',
+    englishName: 'Maltese',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'mt-MT',
+    voiceSupported: false,
+  },
+  nl: {
+    bcp47: 'nl',
+    greeting: 'Hallo! Ik help u het formulier in te vullen.',
+    nativeName: 'Nederlands',
+    englishName: 'Dutch',
+    dateFormat: 'DD-MM-YYYY',
+    intlLocale: 'nl-NL',
+    voiceSupported: true,
+  },
+  pl: {
+    bcp47: 'pl',
+    greeting: 'Cześć! Pomogę wypełnić formularz.',
+    nativeName: 'Polski',
+    englishName: 'Polish',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'pl-PL',
+    voiceSupported: true,
+  },
+  pt: {
+    bcp47: 'pt',
+    greeting: 'Olá! Vou ajudá-lo a preencher o formulário.',
+    nativeName: 'Português',
+    englishName: 'Portuguese',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'pt-PT',
+    voiceSupported: true,
+  },
+  ro: {
+    bcp47: 'ro',
+    greeting: 'Bună! Vă ajut să completați formularul.',
+    nativeName: 'Română',
+    englishName: 'Romanian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'ro-RO',
+    voiceSupported: true,
+  },
+  sk: {
+    bcp47: 'sk',
+    greeting: 'Dobrý deň! Pomôžem vám vyplniť formulár.',
+    nativeName: 'Slovenčina',
+    englishName: 'Slovak',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'sk-SK',
+    voiceSupported: true,
+  },
+  sl: {
+    bcp47: 'sl',
+    greeting: 'Zdravo! Pomagal vam bom izpolniti obrazec.',
+    nativeName: 'Slovenščina',
+    englishName: 'Slovenian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'sl-SI',
+    voiceSupported: true,
+  },
+  sv: {
+    bcp47: 'sv',
+    greeting: 'Hej! Jag hjälper dig fylla i formuläret.',
+    nativeName: 'Svenska',
+    englishName: 'Swedish',
+    dateFormat: 'YYYY-MM-DD',
+    intlLocale: 'sv-SE',
+    voiceSupported: true,
+  },
+
+  // ─── Other Languages (Ultravox Extended) ───
+  ar: {
+    bcp47: 'ar',
+    greeting: 'مرحبًا! سأساعدك في ملء النموذج.',
+    nativeName: 'العربية',
+    englishName: 'Arabic',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'ar-SA',
+    voiceSupported: true,
+  },
+  be: {
+    bcp47: 'be',
+    greeting: 'Вітаю! Дапамагу вам запоўніць форму.',
+    nativeName: 'Беларуская',
+    englishName: 'Belarusian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'be-BY',
+    voiceSupported: true,
+  },
+  bn: {
+    bcp47: 'bn',
+    greeting: 'নমস্কার! আপনার ফর্ম পূরণে সাহায্য করব।',
+    nativeName: 'বাংলা',
+    englishName: 'Bengali',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'bn-BD',
+    voiceSupported: true,
+  },
+  cy: {
+    bcp47: 'cy',
+    greeting: "Helo! Byddaf yn eich helpu i lenwi'r ffurflen.",
+    nativeName: 'Cymraeg',
+    englishName: 'Welsh',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'cy-GB',
+    voiceSupported: true,
+  },
+  fa: {
+    bcp47: 'fa',
+    greeting: 'سلام! کمکتان می‌کنم فرم را پر کنید.',
+    nativeName: 'فارسی',
+    englishName: 'Persian',
+    dateFormat: 'YYYY/MM/DD',
+    intlLocale: 'fa-IR',
+    voiceSupported: true,
+  },
+  gl: {
+    bcp47: 'gl',
+    greeting: 'Ola! Axúdoche a cubrir o formulario.',
+    nativeName: 'Galego',
+    englishName: 'Galician',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'gl-ES',
+    voiceSupported: true,
+  },
+  hi: {
+    bcp47: 'hi',
+    greeting: 'नमस्ते! मैं आपका फ़ॉर्म भरने में मदद करूँगा।',
+    nativeName: 'हिन्दी',
+    englishName: 'Hindi',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'hi-IN',
+    voiceSupported: true,
+  },
+  ka: {
+    bcp47: 'ka',
+    greeting: 'გამარჯობა! დაგეხმარებით ფორმის შევსებაში.',
+    nativeName: 'ქართული',
+    englishName: 'Georgian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'ka-GE',
+    voiceSupported: true,
+  },
+  mk: {
+    bcp47: 'mk',
+    greeting: 'Здраво! Ќе ви помогнам да го пополните формуларот.',
+    nativeName: 'Македонски',
+    englishName: 'Macedonian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'mk-MK',
+    voiceSupported: true,
+  },
+  mr: {
+    bcp47: 'mr',
+    greeting: 'नमस्कार! मी तुम्हाला फॉर्म भरण्यात मदत करतो.',
+    nativeName: 'मराठी',
+    englishName: 'Marathi',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'mr-IN',
+    voiceSupported: true,
+  },
+  ru: {
+    bcp47: 'ru',
+    greeting: 'Здравствуйте! Помогу вам заполнить форму.',
+    nativeName: 'Русский',
+    englishName: 'Russian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'ru-RU',
+    voiceSupported: true,
+  },
+  sr: {
+    bcp47: 'sr',
+    greeting: 'Здраво! Помоћи ћу вам да попуните формулар.',
+    nativeName: 'Српски',
+    englishName: 'Serbian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'sr-RS',
+    voiceSupported: true,
+  },
+  sw: {
+    bcp47: 'sw',
+    greeting: 'Habari! Nitakusaidia kujaza fomu.',
+    nativeName: 'Kiswahili',
+    englishName: 'Swahili',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'sw-KE',
+    voiceSupported: true,
+  },
+  ta: {
+    bcp47: 'ta',
+    greeting: 'வணக்கம்! படிவத்தை நிரப்ப உதவுகிறேன்.',
+    nativeName: 'தமிழ்',
+    englishName: 'Tamil',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'ta-IN',
+    voiceSupported: true,
+  },
+  th: {
+    bcp47: 'th',
+    greeting: 'สวัสดี! ฉันจะช่วยคุณกรอกแบบฟอร์ม',
+    nativeName: 'ไทย',
+    englishName: 'Thai',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'th-TH',
+    voiceSupported: true,
+  },
+  tr: {
+    bcp47: 'tr',
+    greeting: 'Merhaba! Formu doldurmanıza yardımcı olacağım.',
+    nativeName: 'Türkçe',
+    englishName: 'Turkish',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'tr-TR',
+    voiceSupported: true,
+  },
+  uk: {
+    bcp47: 'uk',
+    greeting: 'Вітаю! Допоможу вам заповнити форму.',
+    nativeName: 'Українська',
+    englishName: 'Ukrainian',
+    dateFormat: 'DD.MM.YYYY',
+    intlLocale: 'uk-UA',
+    voiceSupported: true,
+  },
+  ur: {
+    bcp47: 'ur',
+    greeting: 'السلام علیکم! میں فارم بھرنے میں آپ کی مدد کروں گا۔',
+    nativeName: 'اردو',
+    englishName: 'Urdu',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'ur-PK',
+    voiceSupported: true,
+  },
+  vi: {
+    bcp47: 'vi',
+    greeting: 'Xin chào! Tôi sẽ giúp bạn điền biểu mẫu.',
+    nativeName: 'Tiếng Việt',
+    englishName: 'Vietnamese',
+    dateFormat: 'DD/MM/YYYY',
+    intlLocale: 'vi-VN',
+    voiceSupported: true,
+  },
+  zh: {
+    bcp47: 'zh',
+    greeting: '您好！我来帮您填写表格。',
+    nativeName: '中文',
+    englishName: 'Chinese',
+    dateFormat: 'YYYY/MM/DD',
+    intlLocale: 'zh-CN',
+    voiceSupported: true,
+  },
+};
+
+/**
+ * Build the ElevenLabs external voice configuration for Ultravox API.
+ * Uses the multilingual v2 model for all languages.
+ */
+export function buildElevenLabsVoiceConfig(apiKey: string) {
+  return {
+    elevenLabs: {
+      voiceId: 'pNInz6obpgDQGcFmaJgB',  // "Adam" - multilingual voice
+      model: 'eleven_multilingual_v2',
+      apiKey,
+    },
+  };
+}
+
+/**
+ * Build the multilingual greeting that cycles through G7 languages.
+ * Advertises support for 40+ languages.
+ */
+export function buildMultilingualGreeting(): string {
+  return [
+    'Hello! Welcome to ReadyFormAI.',
+    'Bonjour\u00a0! Bienvenue sur ReadyFormAI.',
+    'Hallo! Willkommen bei ReadyFormAI.',
+    'Ciao! Benvenuto su ReadyFormAI.',
+    'こんにちは！ReadyFormAIへようこそ。',
+    '',
+    'I support over 40 languages. Please respond in your preferred language.',
+  ].join('\n');
+}

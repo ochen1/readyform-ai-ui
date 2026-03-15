@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "ReadyFormAI",
+    "progress": "Прогресс",
+    "backToForm": "Назад к форме",
+    "openInNewTab": "Открыть в новой вкладке",
+    "closePreview": "Закрыть предпросмотр"
+  },
+  "upload": {
+    "title": "Загрузить PDF-форму",
+    "dropHere": "Перетащите PDF сюда",
+    "dragAndDrop": "Перетащите или нажмите для выбора",
+    "getStarted": "Загрузите заполняемую PDF-форму, чтобы начать",
+    "button": "Загрузить PDF",
+    "buttonChange": "Загрузить другой PDF"
+  },
+  "voice": {
+    "title": "Голосовой помощник",
+    "start": "Запустить голосовой помощник",
+    "end": "Завершить звонок",
+    "needPdf": "Загрузите PDF, чтобы включить голосовой помощник",
+    "thinking": "Думаю...",
+    "speaking": "Говорю...",
+    "listening": "Слушаю...",
+    "ready": "Готово",
+    "mute": "Выключить звук",
+    "unmute": "Включить звук",
+    "muteMic": "Выключить микрофон",
+    "unmuteMic": "Включить микрофон"
+  },
+  "accessibility": {
+    "title": "Доступность",
+    "dyslexiaFont": "Шрифт для дислексии",
+    "fontSize": "Размер шрифта",
+    "decreaseFont": "Уменьшить размер шрифта",
+    "increaseFont": "Увеличить размер шрифта"
+  },
+  "language": {
+    "title": "Язык",
+    "label": "Язык интерфейса",
+    "g7Group": "Языки G7",
+    "euGroup": "Языки ЕС",
+    "otherGroup": "Другие языки"
+  },
+  "form": {
+    "preview": "Предпросмотр формы",
+    "completedPreview": "Предпросмотр заполненной формы",
+    "untitled": "Форма без названия",
+    "actions": "Действия",
+    "calculation": "Расчёт: {{hint}}",
+    "format": "Формат: {{format}}"
+  },
+  "enhancement": {
+    "analyzing": "Анализ...",
+    "preparing": "Подготовка к анализу...",
+    "loading": "Загрузка PDF и извлечение полей.",
+    "enhanced": "Улучшено ИИ",
+    "failed": "Улучшение ИИ не удалось",
+    "fieldsFound": "Найдено {{count}} полей",
+    "fields": "{{count}} полей",
+    "pagesFailed": "{{count}} страниц(а) не удалось проанализировать",
+    "statusCached": "Из кэша",
+    "statusComplete": "Завершено",
+    "statusProcessing": "Обработка",
+    "statusError": "Ошибка",
+    "statusPending": "Ожидание",
+    "largeFormTitle": "Обнаружена большая форма",
+    "largeFormMessage": "Эта форма содержит <strong>{{count}} страниц</strong>, и анализ займёт некоторое время. Вы можете начать заполнять видимые поля, пока мы улучшаем их с помощью ИИ.",
+    "analysisComplete": "Анализ завершён",
+    "analyzingStructure": "Анализ структуры формы...",
+    "pagesComplete": "<strong>{{completed}}</strong> из <strong>{{total}}</strong> страниц завершено",
+    "processingCount": "{{count}} обрабатывается",
+    "pendingCount": "{{count}} ожидает",
+    "fromCacheCount": "{{count}} из кэша",
+    "failedCount": "{{count}} не удалось",
+    "pageNumber": "Страница {{number}}",
+    "fieldCount": "({{count}} полей)",
+    "retried": "(повторная попытка)",
+    "errorDetail": "<strong>{{count}} страниц(а)</strong> не удалось проанализировать. Эти страницы будут использовать базовую информацию о полях."
+  },
+  "inputs": {
+    "enterField": "Введите {{field}}...",
+    "selectField": "Выберите {{field}}...",
+    "enterReference": "Введите ссылку...",
+    "yes": "Да",
+    "no": "Нет"
+  }
+}

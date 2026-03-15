@@ -1,4 +1,5 @@
 import type { FormField } from '../store/types';
+import { SUPPORTED_LANGUAGES } from '../store/languageTypes';
 
 /**
  * Tool definition type for Ultravox
@@ -25,6 +26,25 @@ export interface ToolDefinition {
  * Static tools that don't depend on field names
  */
 export const staticTools: ToolDefinition[] = [
+  {
+    temporaryTool: {
+      modelToolName: 'setLanguage',
+      description: 'Set the detected language of the user. Call this immediately when you detect which language the user is speaking. This updates the UI to match their language. Also call this if the user switches language mid-conversation.',
+      dynamicParameters: [
+        {
+          name: 'languageCode',
+          location: 'PARAMETER_LOCATION_BODY',
+          schema: {
+            type: 'string',
+            description: 'BCP47 language code detected from user speech',
+            enum: [...SUPPORTED_LANGUAGES]
+          },
+          required: true
+        }
+      ],
+      client: {}
+    }
+  },
   {
     temporaryTool: {
       modelToolName: 'getFormProgress',
