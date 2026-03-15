@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from '../store/FormContext';
-import { useUltravox } from '../ultravox/UltravoxProvider';
+import { useModal } from '../modal/ModalProvider';
 import { useAccessibility } from '../store/AccessibilityContext';
 import { useLanguageContext } from '../store/LanguageContext';
 import type { FormField } from '../store/types';
@@ -253,7 +253,7 @@ function EmptyState({ onUpload }: { onUpload: (file: File) => void }) {
 export function SimpleForm() {
   const { t } = useTranslation();
   const { state, dispatch, loadPDF, setField } = useFormContext();
-  const { isConnected, notifyFieldFocus, status, startCall, endCall, isMicMuted, toggleMic } = useUltravox();
+  const { isConnected, notifyFieldFocus, status, startCall, endCall, isMicMuted, toggleMic } = useModal();
   const { settings, toggleDyslexiaFont, increaseFontSize, decreaseFontSize } = useAccessibility();
   const { language, setLanguage: setLang } = useLanguageContext();
   const lastNotifiedFieldRef = useRef<string | null>(null);
@@ -813,30 +813,18 @@ export function SimpleForm() {
           {/* Status Indicator */}
           {isConnected && (
             <div className="mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-50">
-              {status === 'thinking' && (
-                <span className="text-amber-600 text-lg flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
-                  {t('voice.thinking')}
-                </span>
-              )}
-              {status === 'speaking' && (
-                <span className="text-blue-600 text-lg flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
-                  {t('voice.speaking')}
-                </span>
-              )}
-              {status === 'listening' && (
-                <span className="text-emerald-600 text-lg flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
-                  {t('voice.listening')}
-                </span>
-              )}
-              {(status === 'idle' || status === 'connecting') && (
-                <span className="text-slate-700 text-lg flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-slate-600" />
-                  {t('voice.ready')}
-                </span>
-              )}
+              <span className="text-emerald-600 text-lg flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                Connected
+              </span>
+            </div>
+          )}
+          {status === 'connecting' && (
+            <div className="mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-50">
+              <span className="text-slate-700 text-lg flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-slate-600 animate-pulse" />
+                Connecting...
+              </span>
             </div>
           )}
 

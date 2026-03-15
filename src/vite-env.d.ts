@@ -1,14 +1,14 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_ULTRAVOX_API_KEY: string;
+  readonly VITE_MODAL_BOT_URL: string;
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
-// Custom events for Ultravox voice tools
+// Custom events for voice tools
 declare global {
   interface WindowEventMap {
     'form:navigate': CustomEvent<{ section: string }>;
